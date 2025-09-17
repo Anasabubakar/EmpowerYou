@@ -28,6 +28,119 @@ import { mockGoals } from '@/lib/data';
 import type { Goal } from '@/lib/types';
 import { PlusCircle } from 'lucide-react';
 import { format } from 'date-fns';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Slider } from '@/components/ui/slider';
+
+function EditGoalDialog({
+  goal,
+  children,
+}: {
+  goal: Goal;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  // To prevent changes in the dialog from affecting the card before saving
+  const [editableGoal, setEditableGoal] = useState(goal);
+
+  const handleSave = () => {
+    // Here you would typically call a function to update the goal in your state or backend
+    console.log('Saving goal:', editableGoal);
+    // For now, we'll just close the dialog.
+    // In a real app you'd update the `goals` state in the parent component.
+    setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle>Edit Goal</DialogTitle>
+          <DialogDescription>
+            Make changes to your goal. Click save when you&apos;re done.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-6 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="title" className="text-right">
+              Title
+            </Label>
+            <Input
+              id="title"
+              value={editableGoal.title}
+              onChange={(e) =>
+                setEditableGoal({ ...editableGoal, title: e.target.value })
+              }
+              className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="description" className="text-right">
+              Description
+            </Label>
+            <Textarea
+              id="description"
+              value={editableGoal.description}
+              onChange={(e) =>
+                setEditableGoal({
+                  ...editableGoal,
+                  description: e.target.value,
+                })
+              }
+              className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label className="text-right">Category</Label>
+            <RadioGroup
+              value={editableGoal.category}
+              onValueChange={(value) =>
+                setEditableGoal({
+                  ...editableGoal,
+                  category: value as 'want' | 'need',
+                })
+              }
+              className="col-span-3 flex gap-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="want" id="r-want" />
+                <Label htmlFor="r-want">Want</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="need" id="r-need" />
+                <Label htmlFor="r-need">Need</Label>
+              </div>
+            </RadioGroup>
+          </div>
+           <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="progress" className="text-right pt-2">
+              Progress
+            </Label>
+            <div className='col-span-3 flex items-center gap-4'>
+                 <Slider
+                    id="progress"
+                    value={[editableGoal.progress]}
+                    onValueChange={(value) => setEditableGoal({...editableGoal, progress: value[0]})}
+                    max={100}
+                    step={1}
+                    className="flex-1"
+                />
+                <span className="text-sm font-medium text-foreground w-12 text-right">
+                    {editableGoal.progress}%
+                </span>
+            </div>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave}>Save Changes</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 function GoalCard({ goal }: { goal: Goal }) {
   return (
@@ -48,7 +161,9 @@ function GoalCard({ goal }: { goal: Goal }) {
         </div>
       </CardContent>
       <CardFooter>
-        <Button variant="outline">Edit Goal</Button>
+        <EditGoalDialog goal={goal}>
+          <Button variant="outline">Edit Goal</Button>
+        </EditGoalDialog>
       </CardFooter>
     </Card>
   );
