@@ -9,6 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -17,6 +25,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAppContext } from '@/context/app-context';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 const ratings = [
   { value: '1', emoji: '😞', label: 'Poor' },
@@ -52,7 +61,10 @@ function EmojiRating({
             />
             <Label
               htmlFor={`${label}-rating-${rating.value}`}
-              className="flex flex-col items-center gap-1 cursor-pointer"
+              className={cn(
+                'flex flex-col items-center gap-1 cursor-pointer p-2 rounded-md transition-all',
+                value === rating.value && 'ring-2 ring-primary bg-primary/10'
+              )}
             >
               <span className="text-3xl transition-transform hover:scale-125">
                 {rating.emoji}
@@ -69,7 +81,7 @@ function EmojiRating({
 export default function RelationshipTrackerPage() {
   const { anasReflection, setAnasReflection } = useAppContext();
   const { toast } = useToast();
-  const router = useRouter();
+  const [isReportOpen, setIsReportOpen] = useState(false);
   
   const [myBehavior, setMyBehavior] = useState(anasReflection.myBehavior);
   const [hisBehavior, setHisBehavior] = useState(anasReflection.hisBehavior);
@@ -87,7 +99,7 @@ export default function RelationshipTrackerPage() {
       title: 'Reflection Saved',
       description: "Your reflection has been saved.",
        action: (
-        <Button variant="outline" size="sm" onClick={() => router.push('/insights')}>
+        <Button variant="outline" size="sm" onClick={() => setIsReportOpen(true)}>
           View Report
         </Button>
       ),
@@ -168,6 +180,42 @@ export default function RelationshipTrackerPage() {
           </Card>
         </TabsContent>
       </Tabs>
+      <Dialog open={isReportOpen} onOpenChange={setIsReportOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Weekly Relationship Report</DialogTitle>
+            <DialogDescription>
+              Here's a summary of your recent reflections.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4 text-sm">
+             <div className="flex justify-between">
+                <p className="font-medium">My average behavior:</p>
+                <p>{ratings.find(r => r.value === anasReflection.myBehavior)?.label} ({anasReflection.myBehavior}/5)</p>
+             </div>
+             <div className="flex justify-between">
+                <p className="font-medium">Their average behavior:</p>
+                <p>{ratings.find(r => r.value === anasReflection.hisBehavior)?.label} ({anasReflection.hisBehavior}/5)</p>
+             </div>
+             <div>
+                <p className="font-medium mb-2">Highlights from your logs:</p>
+                <p className="text-muted-foreground italic border-l-2 pl-4">
+                    &quot;{anasReflection.progressLog}&quot;
+                </p>
+             </div>
+             <div>
+                <p className="font-medium mb-2">Your plans moving forward:</p>
+                <p className="text-muted-foreground italic border-l-2 pl-4">
+                     &quot;{anasReflection.plans}&quot;
+                </p>
+             </div>
+             <p className="text-xs text-center pt-4 text-muted-foreground">This is a summary of your latest entry. Keep logging for more detailed weekly trends!</p>
+          </div>
+          <DialogFooter>
+             <Button onClick={() => setIsReportOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
