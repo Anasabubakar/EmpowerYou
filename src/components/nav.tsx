@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -38,11 +39,12 @@ export function Nav() {
     <SidebarMenu>
       {navItems.map((item) => (
         <SidebarMenuItem key={item.href}>
-          <Link href={item.href} legacyBehavior passHref>
-            <SidebarMenuButton
-              isActive={pathname.startsWith(item.href)}
-              className="font-headline"
-            >
+          <SidebarMenuButton
+            asChild
+            isActive={pathname.startsWith(item.href)}
+            className="font-headline"
+          >
+            <Link href={item.href}>
               <item.icon
                 className={cn(
                   'h-5 w-5',
@@ -60,8 +62,8 @@ export function Nav() {
               >
                 {item.label}
               </span>
-            </SidebarMenuButton>
-          </Link>
+            </Link>
+          </SidebarMenuButton>
         </SidebarMenuItem>
       ))}
     </SidebarMenu>
