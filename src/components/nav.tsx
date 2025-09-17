@@ -3,7 +3,7 @@
 import {
   BookHeart,
   Droplets,
-  HeartHand,
+  HeartHandshake,
   HeartPulse,
   LayoutDashboard,
   ListTodo,
@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/wants-needs', icon: HeartHand, label: 'Wants & Needs' },
+  { href: '/wants-needs', icon: HeartHandshake, label: 'Wants & Needs' },
   { href: '/cycle-tracker', icon: Droplets, label: 'Cycle Tracker' },
   { href: '/tasks', icon: ListTodo, label: 'Task Manager' },
   { href: '/health-metrics', icon: HeartPulse, label: 'Health Metrics' },

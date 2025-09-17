@@ -8,7 +8,7 @@ import {
 import {
   CheckCircle2,
   Droplets,
-  HeartHand,
+  HeartHandshake,
   HeartPulse,
   ListTodo,
   TrendingUp,
@@ -36,7 +36,7 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">
               Wants &amp; Needs Progress
             </CardTitle>
-            <HeartHand className="h-5 w-5 text-muted-foreground" />
+            <HeartHandshake className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{mockGoals.length} Active Goals</div>
