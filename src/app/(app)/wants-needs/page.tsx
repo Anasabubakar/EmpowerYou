@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -50,7 +50,7 @@ function EditGoalDialog({
   };
   
   // Reset editable goal when dialog is opened with a new goal
-  React.useEffect(() => {
+  useEffect(() => {
     if (open) {
       setEditableGoal(goal);
     }
@@ -63,7 +63,7 @@ function EditGoalDialog({
         <DialogHeader>
           <DialogTitle>Edit Goal</DialogTitle>
           <DialogDescription>
-            Make changes to your goal. Click save when you&apos;re done.
+            Make changes to your goal. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4">
