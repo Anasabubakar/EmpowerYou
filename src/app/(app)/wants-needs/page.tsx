@@ -20,6 +20,7 @@ import {
   DialogTrigger,
   DialogFooter,
   DialogDescription,
+  DialogClose,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -175,6 +176,87 @@ function GoalCard({ goal, onGoalUpdate }: { goal: Goal; onGoalUpdate: (updatedGo
   );
 }
 
+function AddGoalDialog({ onAddGoal }: { onAddGoal: (newGoal: Goal) => void }) {
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState<'want' | 'need'>('want');
+
+  const handleSave = () => {
+    if (title) {
+      onAddGoal({
+        id: `g${Date.now()}`,
+        title,
+        description,
+        category,
+        progress: 0,
+        deadline: new Date(new Date().setDate(new Date().getDate() + 30)), // Default 30 days deadline
+      });
+      setOpen(false);
+      setTitle('');
+      setDescription('');
+      setCategory('want');
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button>
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Add New Goal
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Add a New Goal</DialogTitle>
+          <DialogDescription>
+            Turn your desires and needs into actionable goals.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="add-title" className="text-right">
+              Title
+            </Label>
+            <Input id="add-title" value={title} onChange={(e) => setTitle(e.target.value)} className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="add-description" className="text-right">
+              Description
+            </Label>
+            <Textarea id="add-description" value={description} onChange={(e) => setDescription(e.target.value)} className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label className="text-right">Category</Label>
+            <RadioGroup
+              value={category}
+              onValueChange={(value) => setCategory(value as 'want' | 'need')}
+              className="col-span-3 flex gap-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="want" id="r-add-want" />
+                <Label htmlFor="r-add-want">Want</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="need" id="r-add-need" />
+                <Label htmlFor="r-add-need">Need</Label>
+              </div>
+            </RadioGroup>
+          </div>
+        </div>
+        <DialogFooter>
+           <DialogClose asChild>
+             <Button variant="outline">Cancel</Button>
+          </DialogClose>
+          <Button onClick={handleSave}>Save Goal</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+
 export default function WantsNeedsPage() {
   const [goals, setGoals] = useState<Goal[]>(mockGoals);
 
@@ -183,6 +265,10 @@ export default function WantsNeedsPage() {
   
   const handleGoalUpdate = (updatedGoal: Goal) => {
     setGoals(goals.map(g => g.id === updatedGoal.id ? updatedGoal : g));
+  };
+  
+  const handleAddGoal = (newGoal: Goal) => {
+    setGoals([newGoal, ...goals]);
   };
 
   return (
@@ -194,39 +280,7 @@ export default function WantsNeedsPage() {
             Define, track, and achieve your goals.
           </p>
         </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add New Goal
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Add a New Goal</DialogTitle>
-              <DialogDescription>
-                Turn your desires and needs into actionable goals.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="title" className="text-right">
-                  Title
-                </Label>
-                <Input id="title" className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-right">
-                  Description
-                </Label>
-                <Textarea id="description" className="col-span-3" />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit">Save Goal</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <AddGoalDialog onAddGoal={handleAddGoal} />
       </div>
       <Tabs defaultValue="wants">
         <TabsList className="grid w-full grid-cols-2 md:w-1/3">
