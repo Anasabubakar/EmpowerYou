@@ -22,6 +22,7 @@ import { Ellipsis, PlusCircle } from 'lucide-react';
 import { mockTasks } from '@/lib/data';
 import type { Task } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 const priorityColors = {
   high: 'bg-red-200 text-red-800',
@@ -29,22 +30,35 @@ const priorityColors = {
   low: 'bg-green-200 text-green-800',
 };
 
-function TaskItem({ task }: { task: Task }) {
+function TaskItem({
+  task,
+  onToggle,
+  onDelete,
+}: {
+  task: Task;
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
+}) {
   return (
     <div className="flex items-center gap-4 rounded-lg border p-4 transition-colors hover:bg-secondary">
-      <Checkbox id={`task-${task.id}`} checked={task.completed} />
+      <Checkbox
+        id={`task-${task.id}`}
+        checked={task.completed}
+        onCheckedChange={() => onToggle(task.id)}
+      />
       <label
         htmlFor={`task-${task.id}`}
         className={cn(
-          'flex-grow text-sm font-medium',
+          'flex-grow text-sm font-medium cursor-pointer',
           task.completed && 'text-muted-foreground line-through'
         )}
       >
         {task.text}
       </label>
       <Badge
+        variant="outline"
         className={cn(
-          'hidden sm:inline-flex',
+          'hidden sm:inline-flex border-transparent',
           priorityColors[task.priority]
         )}
       >
@@ -57,9 +71,12 @@ function TaskItem({ task }: { task: Task }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Set Priority</DropdownMenuItem>
-          <DropdownMenuItem className="text-destructive">
+          <DropdownMenuItem disabled>Edit</DropdownMenuItem>
+          <DropdownMenuItem disabled>Set Priority</DropdownMenuItem>
+          <DropdownMenuItem
+            className="text-destructive"
+            onClick={() => onDelete(task.id)}
+          >
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -69,6 +86,7 @@ function TaskItem({ task }: { task: Task }) {
 }
 
 export default function TaskManagerPage() {
+  const { toast } = useToast();
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [newTask, setNewTask] = useState('');
 
@@ -82,8 +100,34 @@ export default function TaskManagerPage() {
       };
       setTasks([newTaskItem, ...tasks]);
       setNewTask('');
+      toast({
+        title: 'Task Added',
+        description: `"${newTask.trim()}" has been added to your list.`,
+      });
     }
   };
+
+  const handleToggleTask = (id: string) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
+  const handleDeleteTask = (id: string) => {
+    const taskToDelete = tasks.find((task) => task.id === id);
+    setTasks(tasks.filter((task) => task.id !== id));
+    if (taskToDelete) {
+      toast({
+        title: 'Task Deleted',
+        description: `"${taskToDelete.text}" has been removed.`,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const pendingTasks = tasks.filter((t) => !t.completed).length;
 
   return (
     <div className="space-y-6">
@@ -98,7 +142,9 @@ export default function TaskManagerPage() {
         <CardHeader>
           <CardTitle>To-Do List</CardTitle>
           <CardDescription>
-            You have {tasks.filter((t) => !t.completed).length} pending tasks.
+            {pendingTasks > 0
+              ? `You have ${pendingTasks} pending tasks.`
+              : "You've completed all your tasks! 🎉"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -115,7 +161,12 @@ export default function TaskManagerPage() {
           </div>
           <div className="space-y-2">
             {tasks.map((task) => (
-              <TaskItem key={task.id} task={task} />
+              <TaskItem
+                key={task.id}
+                task={task}
+                onToggle={handleToggleTask}
+                onDelete={handleDeleteTask}
+              />
             ))}
           </div>
         </CardContent>
