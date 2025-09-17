@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Card,
   CardContent,
@@ -17,11 +19,26 @@ import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { mockCycleInfo, mockTasks, mockGoals } from '@/lib/data';
+import { useAppContext } from '@/context/app-context';
+import { HealthMetric } from '@/lib/types';
+import { useEffect, useState } from 'react';
 
 export default function DashboardPage() {
-  const completedTasks = mockTasks.filter((task) => task.completed).length;
-  const totalTasks = mockTasks.length;
+  const { goals, tasks, cycleInfo, healthMetrics } = useAppContext();
+  const [latestMetric, setLatestMetric] = useState<HealthMetric | null>(null);
+
+  useEffect(() => {
+    if (healthMetrics.length > 0) {
+      setLatestMetric(healthMetrics[healthMetrics.length - 1]);
+    }
+  }, [healthMetrics]);
+
+  const completedTasks = tasks.filter((task) => task.completed).length;
+  const totalTasks = tasks.length;
+  
+  const moodEmojis = ['😭', '😟', '😐', '😊', '😁'];
+  const energyEmojis = ['😴', '☕', '⚡️', '⚡️⚡️', '🚀'];
+
 
   return (
     <div className="flex flex-col gap-8">
@@ -39,7 +56,7 @@ export default function DashboardPage() {
             <HeartHandshake className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mockGoals.length} Active Goals</div>
+            <div className="text-2xl font-bold">{goals.length} Active Goals</div>
             <p className="text-xs text-muted-foreground">
               You are making great progress!
             </p>
@@ -61,12 +78,12 @@ export default function DashboardPage() {
               {completedTasks}/{totalTasks}
             </div>
             <p className="text-xs text-muted-foreground">
-              {totalTasks - completedTasks} tasks remaining
+              {totalTasks > 0 ? `${totalTasks - completedTasks} tasks remaining` : "No tasks for today."}
             </p>
             <div className="mt-4 flex items-center gap-2">
-              <Progress value={(completedTasks / totalTasks) * 100} />
+              <Progress value={totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0} />
               <span className="text-sm font-medium">
-                {Math.round((completedTasks / totalTasks) * 100)}%
+                {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}%
               </span>
             </div>
           </CardContent>
@@ -78,9 +95,9 @@ export default function DashboardPage() {
             <Droplets className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Day {mockCycleInfo.currentDay}</div>
+            <div className="text-2xl font-bold">Day {cycleInfo.currentDay}</div>
             <p className="text-xs text-muted-foreground">
-              Next period in {mockCycleInfo.nextPeriodIn} days
+              Next period in {cycleInfo.nextPeriodIn} days
             </p>
             <Link href="/cycle-tracker">
               <Button size="sm" variant="outline" className="mt-4">
@@ -120,16 +137,20 @@ export default function DashboardPage() {
             <HeartPulse className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="flex items-baseline gap-4">
-              <div>
-                <p className="text-xs text-muted-foreground">Mood</p>
-                <p className="text-2xl font-bold">😊</p>
+             {latestMetric ? (
+               <div className="flex items-baseline gap-4">
+                <div>
+                  <p className="text-xs text-muted-foreground">Mood</p>
+                  <p className="text-2xl font-bold">{moodEmojis[latestMetric.mood - 1]}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Energy</p>
+                  <p className="text-2xl font-bold">{energyEmojis[latestMetric.energy - 1]}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Energy</p>
-                <p className="text-2xl font-bold">⚡️⚡️⚡️⚡️</p>
-              </div>
-            </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">No metrics logged yet.</p>
+            )}
             <Link href="/health-metrics">
               <Button size="sm" variant="outline" className="mt-4">
                 Log &amp; View

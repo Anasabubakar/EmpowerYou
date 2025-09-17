@@ -12,32 +12,70 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { generatePersonalizedInsights } from '@/ai/flows/generate-personalized-insights';
 import { Loader2, Sparkles, Lightbulb, ClipboardList, TrendingUp } from 'lucide-react';
-import type { GeneratePersonalizedInsightsOutput } from '@/ai/flows/generate-personalized-insights';
+import type { GeneratePersonalizedInsightsOutput, GeneratePersonalizedInsightsInput } from '@/ai/flows/generate-personalized-insights';
+import { useAppContext } from '@/context/app-context';
 
-const dummyData = {
-  wantsNeedsData:
-    'User is working on learning guitar (25% progress) and getting 8 hours of sleep (70% progress).',
-  menstrualCycleData: 'Currently on day 14 of the cycle. No major symptoms reported.',
-  taskData: 'Completed 2 of 4 tasks today. High priority task is still pending.',
-  healthMetricsData:
-    'Mood has been fluctuating between 3 and 5. Energy levels seem to correlate with mood.',
-  diaryEntries:
-    'User felt productive today but a bit stressed about the remaining tasks. Mentioned feeling happy after talking to a friend.',
-  anasProgressData:
-    'User feels good about recent interactions with Anas, rating her own behavior as 4/5 and his as 5/5.',
-};
+function InsightCard({
+  icon,
+  title,
+  content,
+  iconBgColor,
+  iconColor,
+}: {
+  icon: React.ElementType;
+  title: string;
+  content: string;
+  iconBgColor: string;
+  iconColor: string;
+}) {
+  const Icon = icon;
+  return (
+    <Card className="lg:col-span-1">
+      <CardHeader className="flex flex-row items-center gap-4 space-y-0">
+        <div className={`p-3 rounded-full ${iconBgColor}`}>
+          <Icon className={`h-6 w-6 ${iconColor}`} />
+        </div>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="whitespace-pre-wrap">{content}</p>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function InsightsPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [insights, setInsights] =
     useState<GeneratePersonalizedInsightsOutput | null>(null);
+  
+  const {
+    goals,
+    tasks,
+    cycleInfo,
+    loggedSymptoms,
+    healthMetrics,
+    diaryEntries,
+    anasReflection,
+  } = useAppContext();
 
   const handleGenerate = async () => {
     setLoading(true);
     setInsights(null);
+
+    const input: GeneratePersonalizedInsightsInput = {
+      wantsNeedsData: JSON.stringify(goals),
+      menstrualCycleData: JSON.stringify({ ...cycleInfo, loggedSymptoms }),
+      taskData: JSON.stringify(tasks),
+      healthMetricsData: JSON.stringify(healthMetrics),
+      diaryEntries: JSON.stringify(diaryEntries.slice(-5)), // a few recent entries
+      anasProgressData: JSON.stringify(anasReflection),
+    };
+
+
     try {
-      const result = await generatePersonalizedInsights(dummyData);
+      const result = await generatePersonalizedInsights(input);
       setInsights(result);
     } catch (error) {
       console.error(error);
@@ -69,40 +107,28 @@ export default function InsightsPage() {
       </div>
 
       {insights && (
-        <div className="grid grid-cols-1 gap-6 pt-6 lg:grid-cols-3">
-          <Card className="lg:col-span-1">
-            <CardHeader className="flex flex-row items-center gap-4 space-y-0">
-               <div className="p-3 rounded-full bg-accent/20">
-                <TrendingUp className="h-6 w-6 text-accent" />
-              </div>
-              <CardTitle>Trend Analysis</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="whitespace-pre-wrap">{insights.insights}</p>
-            </CardContent>
-          </Card>
-           <Card className="lg:col-span-1">
-            <CardHeader className="flex flex-row items-center gap-4 space-y-0">
-               <div className="p-3 rounded-full bg-primary/20">
-                <ClipboardList className="h-6 w-6 text-primary" />
-              </div>
-              <CardTitle>Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="whitespace-pre-wrap">{insights.summary}</p>
-            </CardContent>
-          </Card>
-           <Card className="lg:col-span-1">
-            <CardHeader className="flex flex-row items-center gap-4 space-y-0">
-               <div className="p-3 rounded-full bg-secondary-foreground/10">
-                <Lightbulb className="h-6 w-6 text-secondary-foreground" />
-              </div>
-              <CardTitle>Actionable Advice</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="whitespace-pre-wrap">{insights.advice}</p>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 gap-6 pt-6 lg:grid-cols-1">
+          <InsightCard
+            icon={TrendingUp}
+            title="Trend Analysis"
+            content={insights.insights}
+            iconBgColor="bg-accent/20"
+            iconColor="text-accent"
+          />
+          <InsightCard
+            icon={ClipboardList}
+            title="Summary"
+            content={insights.summary}
+            iconBgColor="bg-primary/20"
+            iconColor="text-primary"
+          />
+          <InsightCard
+            icon={Lightbulb}
+            title="Actionable Advice"
+            content={insights.advice}
+            iconBgColor="bg-secondary-foreground/10"
+            iconColor="text-secondary-foreground"
+          />
         </div>
       )}
        {!insights && !loading && (

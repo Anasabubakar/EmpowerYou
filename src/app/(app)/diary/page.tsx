@@ -17,32 +17,28 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { summarizeDailyProgress } from '@/ai/flows/summarize-daily-progress';
 import { Loader2, Sparkles } from 'lucide-react';
-
-type Inputs = {
-  dailyRemark: string;
-  diaryEntry: string;
-  wantsNeedsProgress: string;
-  mood: string;
-  energyLevels: string;
-  anasReflection: string;
-};
+import type { DiaryEntry } from '@/lib/types';
+import { useAppContext } from '@/context/app-context';
 
 export default function DiaryPage() {
-  const { register, handleSubmit } = useForm<Inputs>();
+  const { setDiaryEntries } = useAppContext();
+  const { register, handleSubmit, reset } = useForm<DiaryEntry>();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  const onSubmit: SubmitHandler<DiaryEntry> = async (data) => {
     setLoading(true);
     setSummary(null);
     try {
+      setDiaryEntries((prevEntries) => [...prevEntries, data]);
       const result = await summarizeDailyProgress(data);
       setSummary(result.summary);
       toast({
         title: 'Summary Generated',
         description: 'Your daily summary is ready!',
       });
+      reset();
     } catch (error) {
       console.error(error);
       toast({
@@ -77,7 +73,7 @@ export default function DiaryPage() {
               <Input
                 id="dailyRemark"
                 placeholder="A quick summary of your day..."
-                {...register('dailyRemark')}
+                {...register('dailyRemark', { required: true })}
               />
             </div>
             <div className="space-y-2">
@@ -89,7 +85,7 @@ export default function DiaryPage() {
                 id="diaryEntry"
                 placeholder="Your detailed thoughts and feelings..."
                 rows={6}
-                {...register('diaryEntry')}
+                {...register('diaryEntry', { required: true })}
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

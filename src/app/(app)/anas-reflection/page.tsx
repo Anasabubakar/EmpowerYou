@@ -13,6 +13,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAppContext } from '@/context/app-context';
+import { useToast } from '@/hooks/use-toast';
 
 const ratings = [
   { value: '1', emoji: '😞', label: 'Poor' },
@@ -63,8 +65,26 @@ function EmojiRating({
 }
 
 export default function AnasReflectionPage() {
-  const [myBehavior, setMyBehavior] = useState('4');
-  const [hisBehavior, setHisBehavior] = useState('5');
+  const { anasReflection, setAnasReflection } = useAppContext();
+  const { toast } = useToast();
+  const [myBehavior, setMyBehavior] = useState(anasReflection.myBehavior);
+  const [hisBehavior, setHisBehavior] = useState(anasReflection.hisBehavior);
+  const [progressLog, setProgressLog] = useState(anasReflection.progressLog);
+  const [plans, setPlans] = useState(anasReflection.plans);
+
+  const handleSave = () => {
+    setAnasReflection({
+      myBehavior,
+      hisBehavior,
+      progressLog,
+      plans,
+    });
+    toast({
+      title: 'Reflection Saved',
+      description: "Your reflection has been saved.",
+    });
+  };
+
 
   return (
     <div className="space-y-6">
@@ -105,6 +125,8 @@ export default function AnasReflectionPage() {
                   id="progress-log"
                   placeholder="Log your progress in areas where Anas is providing guidance..."
                   rows={4}
+                  value={progressLog}
+                  onChange={(e) => setProgressLog(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
@@ -113,9 +135,11 @@ export default function AnasReflectionPage() {
                   id="plans"
                   placeholder="What are your plans related to these interactions or areas of progress?"
                   rows={3}
+                  value={plans}
+                  onChange={(e) => setPlans(e.target.value)}
                 />
               </div>
-              <Button>Save Reflection</Button>
+              <Button onClick={handleSave}>Save Reflection</Button>
             </CardContent>
           </Card>
         </TabsContent>

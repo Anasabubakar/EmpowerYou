@@ -13,21 +13,15 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { mockCycleInfo } from '@/lib/data';
+import { useAppContext } from '@/context/app-context';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
-type CycleInfo = {
-  currentDay: number;
-  nextPeriodIn: number;
-  predictedDate: Date;
-};
-
 export default function CycleTrackerPage() {
+  const { cycleInfo, setCycleInfo, loggedSymptoms, setLoggedSymptoms } = useAppContext();
   const { toast } = useToast();
   const [range, setRange] = useState<DateRange | undefined>();
-  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
-  const [cycleInfo, setCycleInfo] = useState<CycleInfo>(mockCycleInfo);
+  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>(loggedSymptoms);
 
   const symptoms = ["Cramps", "Bloating", "Headache", "Mood Swings", "Fatigue", "Acne"];
 
@@ -68,6 +62,7 @@ export default function CycleTrackerPage() {
   
   const handleLogSymptoms = () => {
     if(selectedSymptoms.length > 0) {
+        setLoggedSymptoms(selectedSymptoms);
         toast({
             title: "Symptoms Logged",
             description: `Logged symptoms: ${selectedSymptoms.join(', ')}`,

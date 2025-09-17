@@ -1,4 +1,4 @@
-import type { Task, Goal, HealthMetric } from './types';
+import type { Task, Goal, HealthMetric, CycleInfo, AnasReflection } from './types';
 
 export const mockTasks: Task[] = [
   { id: '1', text: 'Finish project proposal', completed: false, priority: 'high' },
@@ -44,12 +44,14 @@ export const mockHealthMetrics: HealthMetric[] = [
   { date: 'Yesterday', mood: 5, energy: 5 },
 ];
 
-export const mockAnasReflection = {
-  myRating: 4,
-  hisRating: 5,
+export const mockAnasReflection: AnasReflection = {
+  myBehavior: '4',
+  hisBehavior: '5',
+  progressLog: 'Had a very productive conversation about future plans.',
+  plans: 'Continue to be open and honest in our communication.',
 };
 
-export const mockCycleInfo = {
+export const mockCycleInfo: CycleInfo = {
   currentDay: 14,
   nextPeriodIn: 14,
   predictedDate: new Date(new Date().setDate(new Date().getDate() + 14)),

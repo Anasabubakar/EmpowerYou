@@ -34,7 +34,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Ellipsis, PlusCircle } from 'lucide-react';
-import { mockTasks } from '@/lib/data';
+import { useAppContext } from '@/context/app-context';
 import type { Task } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -188,8 +188,8 @@ function TaskItem({
 }
 
 export default function TaskManagerPage() {
+  const { tasks, setTasks } = useAppContext();
   const { toast } = useToast();
-  const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [newTask, setNewTask] = useState('');
 
   const handleAddTask = () => {

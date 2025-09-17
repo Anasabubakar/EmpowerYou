@@ -25,7 +25,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { mockGoals } from '@/lib/data';
+import { useAppContext } from '@/context/app-context';
 import type { Goal } from '@/lib/types';
 import { PlusCircle } from 'lucide-react';
 import { format } from 'date-fns';
@@ -42,7 +42,6 @@ function EditGoalDialog({
   onSave: (updatedGoal: Goal) => void;
 }) {
   const [open, setOpen] = useState(false);
-  // To prevent changes in the dialog from affecting the card before saving
   const [editableGoal, setEditableGoal] = useState(goal);
 
   const handleSave = () => {
@@ -50,7 +49,6 @@ function EditGoalDialog({
     setOpen(false);
   };
   
-  // Reset editable goal when dialog is opened with a new goal
   useEffect(() => {
     if (open) {
       setEditableGoal(goal);
@@ -258,7 +256,7 @@ function AddGoalDialog({ onAddGoal }: { onAddGoal: (newGoal: Goal) => void }) {
 
 
 export default function WantsNeedsPage() {
-  const [goals, setGoals] = useState<Goal[]>(mockGoals);
+  const { goals, setGoals } = useAppContext();
 
   const wants = goals.filter((g) => g.category === 'want');
   const needs = goals.filter((g) => g.category === 'need');
