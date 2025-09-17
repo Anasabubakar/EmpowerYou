@@ -9,7 +9,7 @@ import {
   LayoutDashboard,
   ListTodo,
   Sparkles,
-  UserCheck,
+  Users,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -29,7 +29,7 @@ const navItems = [
   { href: '/health-metrics', icon: HeartPulse, label: 'Health Metrics' },
   { href: '/diary', icon: BookHeart, label: 'Daily Diary' },
   { href: '/insights', icon: Sparkles, label: 'Insights' },
-  { href: '/anas-reflection', icon: UserCheck, label: 'Anas Reflection' },
+  { href: '/anas-reflection', icon: Users, label: 'Relationship Tracker' },
 ];
 
 export function Nav() {

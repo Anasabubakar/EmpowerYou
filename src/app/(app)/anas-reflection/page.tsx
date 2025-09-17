@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -15,12 +16,13 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAppContext } from '@/context/app-context';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 const ratings = [
   { value: '1', emoji: '😞', label: 'Poor' },
   { value: '2', emoji: '😕', label: 'Not great' },
   { value: '3', emoji: '😐', label: 'Okay' },
-  { value: '4', emoji: '😊', label: 'Good' },
+  { value: '4' , emoji: '😊', label: 'Good' },
   { value: '5', emoji: '💖', label: 'Very Sweet' },
 ];
 
@@ -64,9 +66,11 @@ function EmojiRating({
   );
 }
 
-export default function AnasReflectionPage() {
+export default function RelationshipTrackerPage() {
   const { anasReflection, setAnasReflection } = useAppContext();
   const { toast } = useToast();
+  const router = useRouter();
+  
   const [myBehavior, setMyBehavior] = useState(anasReflection.myBehavior);
   const [hisBehavior, setHisBehavior] = useState(anasReflection.hisBehavior);
   const [progressLog, setProgressLog] = useState(anasReflection.progressLog);
@@ -82,6 +86,11 @@ export default function AnasReflectionPage() {
     toast({
       title: 'Reflection Saved',
       description: "Your reflection has been saved.",
+       action: (
+        <Button variant="outline" size="sm" onClick={() => router.push('/insights')}>
+          View Report
+        </Button>
+      ),
     });
   };
 
@@ -89,7 +98,7 @@ export default function AnasReflectionPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-headline font-bold">Progress with Anas</h1>
+        <h1 className="text-3xl font-headline font-bold">Relationship Tracker</h1>
         <p className="text-muted-foreground">
           A private space to reflect on your interactions and personal growth.
         </p>
@@ -105,7 +114,7 @@ export default function AnasReflectionPage() {
             <CardHeader>
               <CardTitle>Today&apos;s Reflection</CardTitle>
               <CardDescription>
-                How did things go with Anas today?
+                How did things go with your partner today?
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -115,7 +124,7 @@ export default function AnasReflectionPage() {
                 onChange={setMyBehavior}
               />
               <EmojiRating
-                label="How he acted today"
+                label="How they acted today"
                 value={hisBehavior}
                 onChange={setHisBehavior}
               />
@@ -123,7 +132,7 @@ export default function AnasReflectionPage() {
                 <Label htmlFor="progress-log">Daily Progress Log</Label>
                 <Textarea
                   id="progress-log"
-                  placeholder="Log your progress in areas where Anas is providing guidance..."
+                  placeholder="Log your progress in areas of your relationship..."
                   rows={4}
                   value={progressLog}
                   onChange={(e) => setProgressLog(e.target.value)}
