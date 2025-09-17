@@ -39,6 +39,10 @@ export default function DiaryPage() {
     try {
       const result = await summarizeDailyProgress(data);
       setSummary(result.summary);
+      toast({
+        title: 'Summary Generated',
+        description: 'Your daily summary is ready!',
+      });
     } catch (error) {
       console.error(error);
       toast({
@@ -77,11 +81,12 @@ export default function DiaryPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>
+              <Label htmlFor="diaryEntry">
                 Future Self Reflection: What have you done today that your
                 future self will thank you for?
               </Label>
               <Textarea
+                id="diaryEntry"
                 placeholder="Your detailed thoughts and feelings..."
                 rows={6}
                 {...register('diaryEntry')}
