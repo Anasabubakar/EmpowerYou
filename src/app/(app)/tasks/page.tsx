@@ -107,7 +107,7 @@ export default function TaskManagerPage() {
               placeholder="Add a new task..."
               value={newTask}
               onChange={(e) => setNewTask(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' &amp;&amp; handleAddTask()}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
             />
             <Button onClick={handleAddTask}>
               <PlusCircle className="mr-2 h-4 w-4" /> Add Task
