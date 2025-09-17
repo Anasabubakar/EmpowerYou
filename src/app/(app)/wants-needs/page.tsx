@@ -34,21 +34,27 @@ import { Slider } from '@/components/ui/slider';
 function EditGoalDialog({
   goal,
   children,
+  onSave,
 }: {
   goal: Goal;
   children: React.ReactNode;
+  onSave: (updatedGoal: Goal) => void;
 }) {
   const [open, setOpen] = useState(false);
   // To prevent changes in the dialog from affecting the card before saving
   const [editableGoal, setEditableGoal] = useState(goal);
 
   const handleSave = () => {
-    // Here you would typically call a function to update the goal in your state or backend
-    console.log('Saving goal:', editableGoal);
-    // For now, we'll just close the dialog.
-    // In a real app you'd update the `goals` state in the parent component.
+    onSave(editableGoal);
     setOpen(false);
   };
+  
+  // Reset editable goal when dialog is opened with a new goal
+  React.useEffect(() => {
+    if (open) {
+      setEditableGoal(goal);
+    }
+  }, [open, goal]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -142,7 +148,7 @@ function EditGoalDialog({
   );
 }
 
-function GoalCard({ goal }: { goal: Goal }) {
+function GoalCard({ goal, onGoalUpdate }: { goal: Goal; onGoalUpdate: (updatedGoal: Goal) => void; }) {
   return (
     <Card>
       <CardHeader>
@@ -161,7 +167,7 @@ function GoalCard({ goal }: { goal: Goal }) {
         </div>
       </CardContent>
       <CardFooter>
-        <EditGoalDialog goal={goal}>
+        <EditGoalDialog goal={goal} onSave={onGoalUpdate}>
           <Button variant="outline">Edit Goal</Button>
         </EditGoalDialog>
       </CardFooter>
@@ -174,6 +180,10 @@ export default function WantsNeedsPage() {
 
   const wants = goals.filter((g) => g.category === 'want');
   const needs = goals.filter((g) => g.category === 'need');
+  
+  const handleGoalUpdate = (updatedGoal: Goal) => {
+    setGoals(goals.map(g => g.id === updatedGoal.id ? updatedGoal : g));
+  };
 
   return (
     <div className="space-y-6">
@@ -226,7 +236,7 @@ export default function WantsNeedsPage() {
         <TabsContent value="wants">
           <div className="grid gap-6 pt-4 md:grid-cols-2 lg:grid-cols-3">
             {wants.map((goal) => (
-              <GoalCard key={goal.id} goal={goal} />
+              <GoalCard key={goal.id} goal={goal} onGoalUpdate={handleGoalUpdate} />
             ))}
              {wants.length === 0 && <p className="text-muted-foreground col-span-full">No wants defined yet. Add a new goal to get started!</p>}
           </div>
@@ -234,7 +244,7 @@ export default function WantsNeedsPage() {
         <TabsContent value="needs">
           <div className="grid gap-6 pt-4 md:grid-cols-2 lg:grid-cols-3">
             {needs.map((goal) => (
-              <GoalCard key={goal.id} goal={goal} />
+              <GoalCard key={goal.id} goal={goal} onGoalUpdate={handleGoalUpdate} />
             ))}
              {needs.length === 0 && <p className="text-muted-foreground col-span-full">No needs defined yet. Add a new goal to get started!</p>}
           </div>
