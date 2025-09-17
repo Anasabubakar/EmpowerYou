@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { format } from 'date-fns';
+import { format, differenceInDays, addDays } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 import {
   Card,
@@ -17,11 +17,18 @@ import { mockCycleInfo } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
+type CycleInfo = {
+  currentDay: number;
+  nextPeriodIn: number;
+  predictedDate: Date;
+};
+
 export default function CycleTrackerPage() {
   const { toast } = useToast();
   const [range, setRange] = useState<DateRange | undefined>();
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
-  
+  const [cycleInfo, setCycleInfo] = useState<CycleInfo>(mockCycleInfo);
+
   const symptoms = ["Cramps", "Bloating", "Headache", "Mood Swings", "Fatigue", "Acne"];
 
   const handleSymptomToggle = (symptom: string) => {
@@ -33,15 +40,27 @@ export default function CycleTrackerPage() {
   };
   
   const handleLogPeriod = () => {
-    if (range?.from && range?.to) {
-       toast({
+    if (range?.from) {
+      const cycleLength = 28; // Assuming an average cycle length
+      const today = new Date();
+      const newCurrentDay = differenceInDays(today, range.from) + 1;
+      const newPredictedDate = addDays(range.from, cycleLength);
+      const newNextPeriodIn = differenceInDays(newPredictedDate, today);
+
+      setCycleInfo({
+        currentDay: newCurrentDay > 0 ? newCurrentDay : 1,
+        predictedDate: newPredictedDate,
+        nextPeriodIn: newNextPeriodIn > 0 ? newNextPeriodIn : 0,
+      });
+
+      toast({
         title: "Period Logged",
-        description: `Your period from ${format(range.from, 'PPP')} to ${format(range.to, 'PPP')} has been logged.`,
+        description: `Your period from ${format(range.from, 'PPP')}${range.to ? ` to ${format(range.to, 'PPP')}`: ''} has been logged.`,
       });
     } else {
-       toast({
+      toast({
         title: "Incomplete Selection",
-        description: "Please select a start and end date for your period.",
+        description: "Please select at least a start date for your period.",
         variant: "destructive",
       });
     }
@@ -81,7 +100,7 @@ export default function CycleTrackerPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Current Cycle Day</p>
                 <p className="text-6xl font-bold text-primary">
-                  {mockCycleInfo.currentDay}
+                  {cycleInfo.currentDay}
                 </p>
               </div>
             </div>
@@ -89,10 +108,10 @@ export default function CycleTrackerPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Next Period Prediction</p>
                 <p className="text-3xl font-bold">
-                  {mockCycleInfo.nextPeriodIn} days
+                  {cycleInfo.nextPeriodIn} days
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  on {format(mockCycleInfo.predictedDate, 'MMM do')}
+                  on {format(cycleInfo.predictedDate, 'MMM do')}
                 </p>
               </div>
             </div>
