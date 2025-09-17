@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { format } from 'date-fns';
+import type { DateRange } from 'react-day-picker';
 import {
   Card,
   CardContent,
@@ -13,11 +14,53 @@ import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { mockCycleInfo } from '@/lib/data';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 export default function CycleTrackerPage() {
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const { toast } = useToast();
+  const [range, setRange] = useState<DateRange | undefined>();
+  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   
-  const symptoms = ["Cramps", "Bloating", "Headache", "Mood Swings"];
+  const symptoms = ["Cramps", "Bloating", "Headache", "Mood Swings", "Fatigue", "Acne"];
+
+  const handleSymptomToggle = (symptom: string) => {
+    setSelectedSymptoms((prev) =>
+      prev.includes(symptom)
+        ? prev.filter((s) => s !== symptom)
+        : [...prev, symptom]
+    );
+  };
+  
+  const handleLogPeriod = () => {
+    if (range?.from && range?.to) {
+       toast({
+        title: "Period Logged",
+        description: `Your period from ${format(range.from, 'PPP')} to ${format(range.to, 'PPP')} has been logged.`,
+      });
+    } else {
+       toast({
+        title: "Incomplete Selection",
+        description: "Please select a start and end date for your period.",
+        variant: "destructive",
+      });
+    }
+  }
+  
+  const handleLogSymptoms = () => {
+    if(selectedSymptoms.length > 0) {
+        toast({
+            title: "Symptoms Logged",
+            description: `Logged symptoms: ${selectedSymptoms.join(', ')}`,
+        });
+    } else {
+        toast({
+            title: "No Symptoms Selected",
+            description: "Please select at least one symptom to log.",
+            variant: "destructive",
+        });
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -66,10 +109,11 @@ export default function CycleTrackerPage() {
           <CardContent className="flex flex-col items-center justify-center">
             <Calendar
               mode="range"
-              selected={{ from: new Date(new Date().setDate(new Date().getDate() - mockCycleInfo.currentDay)), to: new Date(new Date().setDate(new Date().getDate() - mockCycleInfo.currentDay + 4)) }}
+              selected={range}
+              onSelect={setRange}
               className="rounded-md border"
             />
-             <Button className="mt-4">Log Period Dates</Button>
+             <Button className="mt-4" onClick={handleLogPeriod}>Log Period Dates</Button>
           </CardContent>
         </Card>
       </div>
@@ -84,12 +128,19 @@ export default function CycleTrackerPage() {
         <CardContent>
           <div className="flex flex-wrap gap-2">
             {symptoms.map((symptom) => (
-              <Badge key={symptom} variant="outline" className="text-lg p-2 cursor-pointer hover:bg-accent">
+              <Badge 
+                key={symptom} 
+                variant={selectedSymptoms.includes(symptom) ? 'default' : 'outline'}
+                onClick={() => handleSymptomToggle(symptom)}
+                className={cn("text-lg p-2 cursor-pointer transition-colors", {
+                  "bg-primary text-primary-foreground": selectedSymptoms.includes(symptom),
+                  "hover:bg-accent": !selectedSymptoms.includes(symptom)
+                })}>
                 {symptom}
               </Badge>
             ))}
           </div>
-          <Button className="mt-4">Save Symptoms</Button>
+          <Button className="mt-4" onClick={handleLogSymptoms}>Save Symptoms</Button>
         </CardContent>
       </Card>
     </div>
