@@ -113,7 +113,7 @@ export default function WantsNeedsPage() {
             {wants.map((goal) => (
               <GoalCard key={goal.id} goal={goal} />
             ))}
-             {wants.length === 0 &amp;&amp; <p className="text-muted-foreground col-span-full">No wants defined yet. Add a new goal to get started!</p>}
+             {wants.length === 0 && <p className="text-muted-foreground col-span-full">No wants defined yet. Add a new goal to get started!</p>}
           </div>
         </TabsContent>
         <TabsContent value="needs">
@@ -121,7 +121,7 @@ export default function WantsNeedsPage() {
             {needs.map((goal) => (
               <GoalCard key={goal.id} goal={goal} />
             ))}
-             {needs.length === 0 &amp;&amp; <p className="text-muted-foreground col-span-full">No needs defined yet. Add a new goal to get started!</p>}
+             {needs.length === 0 && <p className="text-muted-foreground col-span-full">No needs defined yet. Add a new goal to get started!</p>}
           </div>
         </TabsContent>
       </Tabs>
