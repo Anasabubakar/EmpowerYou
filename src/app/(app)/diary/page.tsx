@@ -1,0 +1,153 @@
+'use client';
+
+import { useState } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { summarizeDailyProgress } from '@/ai/flows/summarize-daily-progress';
+import { Loader2, Sparkles } from 'lucide-react';
+
+type Inputs = {
+  dailyRemark: string;
+  diaryEntry: string;
+  wantsNeedsProgress: string;
+  mood: string;
+  energyLevels: string;
+  anasReflection: string;
+};
+
+export default function DiaryPage() {
+  const { register, handleSubmit } = useForm<Inputs>();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [summary, setSummary] = useState<string | null>(null);
+
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    setLoading(true);
+    setSummary(null);
+    try {
+      const result = await summarizeDailyProgress(data);
+      setSummary(result.summary);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: 'Error',
+        description: 'Failed to generate summary. Please try again.',
+        variant: 'destructive',
+      });
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-headline font-bold">Daily Diary &amp; Reflection</h1>
+        <p className="text-muted-foreground">
+          Your private space for thoughts, feelings, and growth.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Today&apos;s Entry</CardTitle>
+            <CardDescription>
+              Fill out the fields below to reflect on your day.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="dailyRemark">Brief of the Day</Label>
+              <Input
+                id="dailyRemark"
+                placeholder="A quick summary of your day..."
+                {...register('dailyRemark')}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>
+                Future Self Reflection: What have you done today that your
+                future self will thank you for?
+              </Label>
+              <Textarea
+                placeholder="Your detailed thoughts and feelings..."
+                rows={6}
+                {...register('diaryEntry')}
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div className="space-y-2">
+                <Label htmlFor="wantsNeedsProgress">Wants &amp; Needs Progress</Label>
+                <Input
+                    id="wantsNeedsProgress"
+                    placeholder="e.g., Practiced guitar for 30 mins"
+                    {...register('wantsNeedsProgress')}
+                />
+                </div>
+                <div className="space-y-2">
+                <Label htmlFor="mood">Mood</Label>
+                <Input
+                    id="mood"
+                    placeholder="e.g., Cheerful, a bit tired"
+                    {...register('mood')}
+                />
+                </div>
+                <div className="space-y-2">
+                <Label htmlFor="energyLevels">Energy Levels</Label>
+                <Input
+                    id="energyLevels"
+                    placeholder="e.g., High in the morning, dipped in the afternoon"
+                    {...register('energyLevels')}
+                />
+                </div>
+                <div className="space-y-2">
+                <Label htmlFor="anasReflection">Anas Reflection</Label>
+                <Input
+                    id="anasReflection"
+                    placeholder="e.g., Had a productive conversation"
+                    {...register('anasReflection')}
+                />
+                </div>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button type="submit" disabled={loading}>
+              {loading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="mr-2 h-4 w-4" />
+              )}
+              Generate Daily Summary
+            </Button>
+          </CardFooter>
+        </Card>
+      </form>
+
+      {summary && (
+        <Card>
+          <CardHeader>
+            <CardTitle>AI-Powered Summary</CardTitle>
+            <CardDescription>
+              Here are the key insights from your day.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="whitespace-pre-wrap">{summary}</p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
