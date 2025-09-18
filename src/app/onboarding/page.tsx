@@ -16,14 +16,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { AppProvider, useAppContext } from '@/context/app-context';
+import { useAppContext } from '@/context/app-context';
 import { ArrowRight } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import type { Task, Goal } from '@/lib/types';
 import { addDays, differenceInDays } from 'date-fns';
 
-function OnboardingContent() {
+export default function OnboardingPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { 
@@ -196,13 +196,5 @@ function OnboardingContent() {
         </Card>
       </div>
     </div>
-  );
-}
-
-export default function OnboardingPage() {
-  return (
-    <AppProvider>
-      <OnboardingContent />
-    </AppProvider>
   );
 }
