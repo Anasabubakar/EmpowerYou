@@ -1,7 +1,11 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import 'react-image-crop/dist/ReactCrop.css';
+import { AppProvider } from '@/context/app-context';
+import { ThemeProvider } from '@/context/theme-context';
+import { AppGate } from '@/components/app-gate';
 
 export const metadata: Metadata = {
   title: 'EmpowerYou',
@@ -25,7 +29,11 @@ export default function RootLayout({
         
       </head>
       <body className="font-body antialiased">
-          {children}
+        <ThemeProvider>
+          <AppProvider>
+            <AppGate>{children}</AppGate>
+          </AppProvider>
+        </ThemeProvider>
         <Toaster />
       </body>
     </html>

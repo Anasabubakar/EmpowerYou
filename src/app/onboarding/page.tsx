@@ -27,6 +27,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { 
+    userName,
     setUserName, 
     setOnboarded, 
     setGoals, 
@@ -34,7 +35,7 @@ export default function OnboardingPage() {
     setCycleInfo 
   } = useAppContext();
 
-  const [name, setName] = useState('');
+  const [name, setName] = useState(userName);
   const [wants, setWants] = useState('');
   const [needs, setNeeds] = useState('');
   const [tasks, setTasksState] = useState('');
