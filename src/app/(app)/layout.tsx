@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { AppProvider } from '@/context/app-context';
 import { ThemeProvider } from '@/context/theme-context';
-import { AuthProvider, useAuth } from '@/context/auth-context';
+import { useAuth } from '@/context/auth-context';
 
 
 function LogoutButton() {
@@ -33,7 +33,6 @@ function LogoutButton() {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
-      <AuthProvider>
         <AppProvider>
           <SidebarProvider>
             <Sidebar className="bg-background border-r">
@@ -58,7 +57,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </SidebarInset>
           </SidebarProvider>
         </AppProvider>
-      </AuthProvider>
     </ThemeProvider>
   );
 }
