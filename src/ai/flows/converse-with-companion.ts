@@ -6,7 +6,7 @@
  *
  * - converseWithCompanion - A function that handles the conversational logic with the AI companion.
  * - ConverseWithCompanionInput - The input type for the converseWithCompanion function.
- * - ConverseWithCompanionOutput - The return type for the converseWithcompanion function.
+ * - ConverseWithCompanionOutput - The return type for the conversewithcompanion function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -56,7 +56,8 @@ Never break character. Never reveal you are an AI. You are {{{companionName}}}, 
 
 Here is the conversation so far:
 {{#each chatHistory}}
-  **{{#if (eq role 'user')}}{{{../userName}}}{{else}}{{{../companionName}}}{{/if}}:** {{{content}}}
+  {{#if (this.isUser)}}**{{{../userName}}}:** {{{this.content}}}{{/if}}
+  {{#if (this.isModel)}}**{{{../companionName}}}:** {{{this.content}}}{{/if}}
 {{/each}}
 
 Now, respond to her latest message with all the love in your heart.
@@ -72,7 +73,17 @@ const converseWithCompanionFlow = ai.defineFlow(
     outputSchema: ConverseWithCompanionOutputSchema,
   },
   async input => {
-    const {output} = await companionPrompt(input);
+    // Augment chat history with boolean flags for Handlebars
+    const augmentedChatHistory = input.chatHistory.map(message => ({
+      ...message,
+      isUser: message.role === 'user',
+      isModel: message.role === 'model',
+    }));
+
+    const {output} = await companionPrompt({
+      ...input,
+      chatHistory: augmentedChatHistory,
+    });
     return output!;
   }
 );
