@@ -10,7 +10,7 @@ import {
   signInWithEmailAndPassword,
   type User 
 } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Loading from '@/app/(app)/loading';
 
 interface AuthContextType {
@@ -27,14 +27,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
     });
+    // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, [router]);
+  }, []);
 
   const signUp = async (email: string, password: string) => {
     await createUserWithEmailAndPassword(auth, email, password);
@@ -52,22 +54,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Error signing out: ", error);
     }
   };
-
-  if (loading && !user) {
-     const isLoginPage = typeof window !== 'undefined' && window.location.pathname === '/login';
-     if(!isLoginPage) {
-        return <Loading />;
-     }
-  }
   
-  if (!loading && !user) {
-    const isLoginPage = typeof window !== 'undefined' && window.location.pathname === '/login';
-    if(!isLoginPage) {
-      router.push('/login');
-      return <Loading />; // or a redirect component
-    }
+  const isPublicPage = pathname === '/login';
+
+  if (loading) {
+    return <Loading />;
   }
 
+  if (!user && !isPublicPage) {
+    router.push('/login');
+    return <Loading />;
+  }
+
+  if (user && isPublicPage) {
+    router.push('/dashboard');
+    return <Loading />;
+  }
 
   return (
     <AuthContext.Provider value={{ user, loading, signUp, signIn, logout }}>
