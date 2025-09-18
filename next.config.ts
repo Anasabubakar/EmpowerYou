@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -29,6 +30,10 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  experimental: {
+    // This is to allow the Firebase auth redirect to work in development.
+    allowedDevOrigins: ['https://6000-firebase-studio-1758149135118.cluster-cbeiita7rbe7iuwhvjs5zww2i4.cloudworkstations.dev'],
   },
 };
 
