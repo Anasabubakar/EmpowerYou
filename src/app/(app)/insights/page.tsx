@@ -20,10 +20,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { generatePersonalizedInsights } from '@/ai/flows/generate-personalized-insights';
-import { generateShareableSummary } from '@/ai/flows/generate-shareable-summary';
+import { generateShareableSummary, GenerateShareableSummaryInput } from '@/ai/flows/generate-shareable-summary';
 import { Loader2, Sparkles, Lightbulb, ClipboardList, TrendingUp, Share2, ClipboardCopy } from 'lucide-react';
 import type { GeneratePersonalizedInsightsOutput, GeneratePersonalizedInsightsInput } from '@/ai/flows/generate-personalized-insights';
-import type { GenerateShareableSummaryInput } from '@/ai/flows/generate-shareable-summary';
 import { useAppContext } from '@/context/app-context';
 
 function InsightCard({
@@ -130,15 +129,30 @@ export default function InsightsPage() {
     
     const input: GenerateShareableSummaryInput = {
       userName,
-      wantsNeedsData: goals,
-      menstrualCycleData: { ...cycleInfo, loggedSymptoms },
-      taskData: tasks,
-      healthMetricsData: healthMetrics,
-      diaryEntries: diaryEntries.slice(-1), // today's entry
+      companionName,
+      wantsNeedsData: goals.map(g => ({
+        ...g,
+        deadline: g.deadline.toISOString(),
+        createdAt: g.createdAt || new Date(0).toISOString(),
+      })),
+      menstrualCycleData: {
+        ...cycleInfo,
+        predictedDate: cycleInfo.predictedDate.toISOString(),
+        lastPeriodDate: cycleInfo.lastPeriodDate?.toISOString(),
+        loggedSymptoms,
+      },
+      taskData: tasks.map(t => ({
+        ...t,
+        createdAt: t.createdAt || new Date(0).toISOString(),
+      })),
+      healthMetricsData: healthMetrics.map(m => ({
+        ...m,
+        createdAt: m.createdAt || new Date(0).toISOString(),
+      })),
+      diaryEntries: diaryEntries.slice(-1),
       partnerReflectionData: anasReflection,
       companionChat: getTodaysChat(),
-      companionName,
-    }
+    };
     
     try {
       const result = await generateShareableSummary(input);
