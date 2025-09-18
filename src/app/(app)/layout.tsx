@@ -20,18 +20,16 @@ import { ProfileButton } from '@/components/profile-button';
 
 
 function AppContent({ children }: { children: React.ReactNode }) {
-  const { user, onboarded } = useAppContext();
+  const { userName, onboarded } = useAppContext();
   const router = useRouter();
 
   useEffect(() => {
-    if (user === null) {
-        router.push('/onboarding');
-    } else if (user && onboarded === false) {
+    if (onboarded === false) {
       router.push('/onboarding');
     }
-  }, [user, onboarded, router]);
+  }, [onboarded, router]);
 
-  if (!user || onboarded === false) {
+  if (onboarded === false || userName === '') {
     return <Loading />;
   }
   

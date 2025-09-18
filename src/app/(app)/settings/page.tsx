@@ -28,28 +28,32 @@ import {
 import { useAppContext } from '@/context/app-context';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import { auth } from '@/lib/firebase';
 
 export default function SettingsPage() {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
-  const { user, companionName, setCompanionName } = useAppContext();
+  const { userName, setUserName, companionName, setCompanionName } = useAppContext();
   
+  const [uName, setUName] = useState(userName);
   const [cName, setCName] = useState(companionName);
 
   const handleClearData = () => {
-    if (user) {
-        const keysToRemove = Object.keys(localStorage).filter(key => key.startsWith(`empoweryou-${user.uid}`));
-        keysToRemove.forEach(key => localStorage.removeItem(key));
-    }
-    
+    localStorage.clear();
     toast({
       title: 'Local Data Cleared',
-      description: 'All your personal data for this account has been removed. The app will now reload.',
+      description: 'All your personal data has been removed from this browser. The app will now reload.',
       variant: 'destructive',
     });
     // Reload to trigger onboarding
     setTimeout(() => window.location.reload(), 1500);
+  };
+  
+  const handleNameChange = () => {
+    setUserName(uName);
+    toast({
+      title: 'Name Updated',
+      description: `We'll now call you ${uName}.`,
+    });
   };
   
   const handleCompanionNameChange = () => {
@@ -112,9 +116,9 @@ export default function SettingsPage() {
             <div className="space-y-2">
               <Label htmlFor="name">Your Name</Label>
               <div className="flex gap-2">
-                <Input id="name" value={user?.displayName || ''} disabled/>
+                <Input id="name" value={uName} onChange={(e) => setUName(e.target.value)} />
+                <Button onClick={handleNameChange}>Save</Button>
               </div>
-               <p className="text-xs text-muted-foreground">Your name is managed through your Google Account.</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="companion-name">Companion&apos;s Name</Label>
@@ -130,7 +134,7 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Data Management</CardTitle>
           <CardDescription>
-           This will clear all data for your account and restart the app.
+           This will clear all data and restart the app.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -146,7 +150,7 @@ export default function SettingsPage() {
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This action cannot be undone. This will permanently delete all
-                  your data for this account and reset the application to its initial state.
+                  your data from this browser and reset the application to its initial state.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
