@@ -20,7 +20,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useAppContext } from '@/context/app-context';
 import { useToast } from '@/hooks/use-toast';
@@ -28,9 +28,8 @@ import { LogOut, Settings, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import ReactCrop, { type Crop, centerCrop, makeAspectCrop } from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
 
-
+// Function to crop the image
 function getCroppedImg(image: HTMLImageElement, crop: Crop) {
   const canvas = document.createElement('canvas');
   const scaleX = image.naturalWidth / image.width;
@@ -116,6 +115,8 @@ export function ProfileButton() {
       );
       reader.readAsDataURL(e.target.files[0]);
       setIsCropDialogOpen(true);
+      // Clear the input value to allow re-selecting the same file
+      e.target.value = '';
     }
   };
 
@@ -127,7 +128,7 @@ export function ProfileButton() {
           unit: '%',
           width: 90,
         },
-        1,
+        1, // aspect ratio 1:1
         width,
         height
       ),
