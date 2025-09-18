@@ -256,9 +256,9 @@ function AddGoalDialog({ onAddGoal }: { onAddGoal: (newGoal: Goal) => void }) {
   );
 }
 
-function EmptyState({ isWant }: { isWant: boolean }) {
+function EmptyState({ isWant, onAddGoal }: { isWant: boolean, onAddGoal: (newGoal: Goal) => void }) {
     return (
-        <div className="text-center text-muted-foreground p-12 col-span-full border-2 border-dashed rounded-lg">
+        <div className="text-center text-muted-foreground p-12 col-span-full border-2 border-dashed rounded-lg flex flex-col items-center gap-4">
             <Heart className="mx-auto h-12 w-12" />
             <h3 className="mt-4 text-lg font-medium">This space is full of potential</h3>
             {isWant ? (
@@ -266,7 +266,7 @@ function EmptyState({ isWant }: { isWant: boolean }) {
             ) : (
                 <p>What's essential for your well-being, sweetheart? Let's add your first 'Need'.</p>
             )}
-             <AddGoalDialog onAddGoal={() => {}} />
+             <AddGoalDialog onAddGoal={onAddGoal} />
         </div>
     );
 }
@@ -305,19 +305,17 @@ export default function WantsNeedsPage() {
           <div className="grid gap-6 pt-4 md:grid-cols-2 lg:grid-cols-3">
             {wants.length > 0 ? wants.map((goal) => (
               <GoalCard key={goal.id} goal={goal} onGoalUpdate={handleGoalUpdate} />
-            )) : <EmptyState isWant={true} />}
+            )) : <EmptyState isWant={true} onAddGoal={handleAddGoal} />}
           </div>
         </TabsContent>
         <TabsContent value="needs">
           <div className="grid gap-6 pt-4 md:grid-cols-2 lg:grid-cols-3">
             {needs.length > 0 ? needs.map((goal) => (
               <GoalCard key={goal.id} goal={goal} onGoalUpdate={handleGoalUpdate} />
-            )) : <EmptyState isWant={false} />}
+            )) : <EmptyState isWant={false} onAddGoal={handleAddGoal} />}
           </div>
         </TabsContent>
       </Tabs>
     </div>
   );
 }
-
-    

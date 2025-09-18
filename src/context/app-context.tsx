@@ -22,6 +22,25 @@ function getInitialState<T>(key: string, defaultValue: T): T {
         return parsed.map((goal: any) => ({
           ...goal,
           deadline: new Date(goal.deadline),
+          createdAt: goal.createdAt ? goal.createdAt : new Date().toISOString(), // Fallback for old data
+        })) as T;
+      }
+       // Special handling for dates inside Task objects
+      if (key === 'empoweryou-tasks' && item) {
+        const parsed = JSON.parse(item);
+        if (!Array.isArray(parsed)) return defaultValue;
+        return parsed.map((task: any) => ({
+          ...task,
+          createdAt: task.createdAt ? task.createdAt : new Date().toISOString(), // Fallback for old data
+        })) as T;
+      }
+       // Special handling for dates inside HealthMetric objects
+      if (key === 'empoweryou-healthMetrics' && item) {
+        const parsed = JSON.parse(item);
+        if (!Array.isArray(parsed)) return defaultValue;
+        return parsed.map((metric: any) => ({
+          ...metric,
+          createdAt: metric.createdAt ? metric.createdAt : new Date().toISOString(), // Fallback for old data
         })) as T;
       }
       // Special handling for dates inside CycleInfo object

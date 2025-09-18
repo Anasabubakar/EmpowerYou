@@ -30,7 +30,7 @@ function OnboardingContent() {
     setUserName, 
     setOnboarded, 
     setGoals, 
-    setTasks, 
+    setTasks: setTasksContext, 
     setCycleInfo 
   } = useAppContext();
 
@@ -82,7 +82,7 @@ function OnboardingContent() {
         createdAt: new Date().toISOString(),
     }));
 
-    setTasks(tasksArray);
+    setTasksContext(tasksArray);
 
     if (cycleDate) {
       const cycleLength = 28;
