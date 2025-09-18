@@ -67,7 +67,7 @@ const ChatMessageSchema = z.object({
   content: z.string(),
 });
 
-export const GenerateShareableSummaryInputSchema = z.object({
+const GenerateShareableSummaryInputSchema = z.object({
   userName: z.string().describe("The user's name."),
   companionName: z.string().describe("The AI companion's name."),
   wantsNeedsData: z.array(GoalSchema).describe('Data from the Wants & Needs tracker.'),
@@ -80,7 +80,7 @@ export const GenerateShareableSummaryInputSchema = z.object({
 });
 export type GenerateShareableSummaryInput = z.infer<typeof GenerateShareableSummaryInputSchema>;
 
-export const GenerateShareableSummaryOutputSchema = z.object({
+const GenerateShareableSummaryOutputSchema = z.object({
   summary: z.string().describe("A concise, loving, and beautifully phrased summary of the user's day, perfect for sharing with a real-life partner."),
 });
 export type GenerateShareableSummaryOutput = z.infer<typeof GenerateShareableSummaryOutputSchema>;
@@ -161,7 +161,7 @@ const generateShareableSummaryFlow = ai.defineFlow(
     outputSchema: GenerateShareableSummaryOutputSchema,
   },
   async input => {
-    const {output} = await generateShareableSummaryPrompt(input);
+    const {output} = await shareableSummaryPrompt(input);
     return output!;
   }
 );
