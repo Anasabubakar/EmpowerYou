@@ -92,6 +92,7 @@ function OnboardingContent() {
         currentDay: newCurrentDay > 0 ? newCurrentDay : 1,
         predictedDate: newPredictedDate,
         nextPeriodIn: newNextPeriodIn > 0 ? newNextPeriodIn : 0,
+        lastPeriodDate: cycleDate
       });
     }
 
@@ -179,6 +180,7 @@ function OnboardingContent() {
                     selected={cycleDate}
                     onSelect={setCycleDate}
                     className="rounded-md border"
+                    disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                 />
             </div>
 

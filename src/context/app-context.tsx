@@ -3,7 +3,6 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { Task, Goal, HealthMetric, CycleInfo, DiaryEntry, AnasReflection } from '@/lib/types';
-import { mockTasks, mockGoals, mockHealthMetrics, mockCycleInfo, mockAnasReflection } from '@/lib/data';
 
 // Helper function to get initial state from localStorage
 function getInitialState<T>(key: string, defaultValue: T): T {
@@ -17,8 +16,9 @@ function getInitialState<T>(key: string, defaultValue: T): T {
         return JSON.parse(item) as T;
       }
       // Special handling for dates inside Goal objects
-      if (key === 'empoweryou-goals') {
+      if (key === 'empoweryou-goals' && item) {
         const parsed = JSON.parse(item);
+        if (!Array.isArray(parsed)) return defaultValue;
         return parsed.map((goal: any) => ({
           ...goal,
           deadline: new Date(goal.deadline),
@@ -30,6 +30,7 @@ function getInitialState<T>(key: string, defaultValue: T): T {
         return {
           ...parsed,
           predictedDate: new Date(parsed.predictedDate),
+          lastPeriodDate: parsed.lastPeriodDate ? new Date(parsed.lastPeriodDate) : undefined,
         } as T;
       }
       return JSON.parse(item);
@@ -40,6 +41,18 @@ function getInitialState<T>(key: string, defaultValue: T): T {
   return defaultValue;
 }
 
+const initialCycleInfo: CycleInfo = {
+  currentDay: 0,
+  nextPeriodIn: 0,
+  predictedDate: new Date(),
+};
+
+const initialAnasReflection: AnasReflection = {
+  myBehavior: '3',
+  hisBehavior: '3',
+  progressLog: '',
+  plans: '',
+};
 
 interface AppContextType {
   onboarded?: boolean;
@@ -67,13 +80,13 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [onboarded, setOnboarded] = useState<boolean | undefined>(undefined);
   const [userName, setUserName] = useState<string>(() => getInitialState('empoweryou-userName', ''));
-  const [tasks, setTasks] = useState<Task[]>(() => getInitialState('empoweryou-tasks', mockTasks));
-  const [goals, setGoals] = useState<Goal[]>(() => getInitialState('empoweryou-goals', mockGoals));
-  const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>(() => getInitialState('empoweryou-healthMetrics', mockHealthMetrics));
-  const [cycleInfo, setCycleInfo] = useState<CycleInfo>(() => getInitialState('empoweryou-cycleInfo', mockCycleInfo));
+  const [tasks, setTasks] = useState<Task[]>(() => getInitialState('empoweryou-tasks', []));
+  const [goals, setGoals] = useState<Goal[]>(() => getInitialState('empoweryou-goals', []));
+  const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>(() => getInitialState('empoweryou-healthMetrics', []));
+  const [cycleInfo, setCycleInfo] = useState<CycleInfo>(() => getInitialState('empoweryou-cycleInfo', initialCycleInfo));
   const [loggedSymptoms, setLoggedSymptoms] = useState<string[]>(() => getInitialState('empoweryou-loggedSymptoms', []));
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>(() => getInitialState('empoweryou-diaryEntries', []));
-  const [anasReflection, setAnasReflection] = useState<AnasReflection>(() => getInitialState('empoweryou-anasReflection', mockAnasReflection));
+  const [anasReflection, setAnasReflection] = useState<AnasReflection>(() => getInitialState('empoweryou-anasReflection', initialAnasReflection));
   
   useEffect(() => {
     const storedOnboarded = getInitialState('empoweryou-onboarded', false);

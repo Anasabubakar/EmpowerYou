@@ -18,6 +18,7 @@ export type CycleInfo = {
   currentDay: number;
   nextPeriodIn: number;
   predictedDate: Date;
+  lastPeriodDate?: Date;
 };
 
 export type HealthMetric = {
