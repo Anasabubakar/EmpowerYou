@@ -51,7 +51,7 @@ export function Nav() {
             <SidebarMenuButton
               asChild
               isActive={pathname.startsWith(item.href)}
-              className="font-headline"
+              className="font-headline cursor-pointer"
             >
               <div>
                 <item.icon
