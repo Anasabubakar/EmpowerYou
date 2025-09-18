@@ -54,7 +54,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
            </div>
         </header>
         <main className="min-h-screen bg-background pt-16 md:pt-0">
-            <div className="p-4 sm:p-6 lg:p-8">{children}</div>
+            <div className="p-4 sm:p-6 lg:p-8 animate-fade-in-up">{children}</div>
         </main>
       </SidebarInset>
     </SidebarProvider>
