@@ -2,11 +2,12 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { auth, googleProvider } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
 import { 
   onAuthStateChanged, 
-  signInWithPopup, 
   signOut,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   type User 
 } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
@@ -15,7 +16,8 @@ import Loading from '@/app/(app)/loading';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signInWithGoogle: () => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -30,19 +32,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
-      if (user) {
-        router.push('/dashboard');
-      }
     });
     return () => unsubscribe();
   }, [router]);
 
-  const signInWithGoogle = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (error) {
-      console.error("Error signing in with Google: ", error);
-    }
+  const signUp = async (email: string, password: string) => {
+    await createUserWithEmailAndPassword(auth, email, password);
+  };
+  
+  const signIn = async (email: string, password: string) => {
+    await signInWithEmailAndPassword(auth, email, password);
   };
 
   const logout = async () => {
@@ -54,12 +53,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  if (loading) {
-    return <Loading />;
+  if (loading && !user) {
+     const isLoginPage = typeof window !== 'undefined' && window.location.pathname === '/login';
+     if(!isLoginPage) {
+        return <Loading />;
+     }
+  }
+  
+  if (!loading && !user) {
+    const isLoginPage = typeof window !== 'undefined' && window.location.pathname === '/login';
+    if(!isLoginPage) {
+      router.push('/login');
+      return <Loading />; // or a redirect component
+    }
   }
 
+
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, loading, signUp, signIn, logout }}>
       {children}
     </AuthContext.Provider>
   );
