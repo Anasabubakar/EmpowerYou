@@ -18,6 +18,8 @@
     --muted-foreground: 270 10% 50%;
     --accent: 270 44% 70%;
     --accent-foreground: 270 10% 15%;
+    --sidebar-accent: hsl(var(--primary));
+    --sidebar-accent-foreground: hsl(var(--primary-foreground));
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 270 33% 88%;
@@ -45,6 +47,8 @@
     --muted-foreground: 270 10% 55%;
     --accent: 270 44% 70%;
     --accent-foreground: 270 10% 95%;
+    --sidebar-accent: hsl(var(--primary));
+    --sidebar-accent-foreground: hsl(var(--primary-foreground));
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 270 10% 25%;

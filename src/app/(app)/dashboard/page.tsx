@@ -53,7 +53,7 @@ function CompanionGreeting() {
             &quot;{greeting}&quot;
         </p>
          <Link href="/companion">
-              <Button size="sm" variant="ghost" className="mt-2 text-primary hover:text-primary">
+              <Button size="sm" variant="link" className="mt-2 px-0">
                 Talk to her
               </Button>
             </Link>
