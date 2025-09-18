@@ -45,7 +45,7 @@ export default function SettingsPage() {
     setOnboarded,
     setCycleInfo,
     setLoggedSymptoms,
-    setRelationshipTracker,
+    setAnasReflection,
     setChatHistory,
   } = useAppContext();
   
@@ -64,7 +64,7 @@ export default function SettingsPage() {
     setProfilePicture(null);
     setCycleInfo({ currentDay: 0, nextPeriodIn: 0, predictedDate: new Date(), lastPeriodDate: undefined });
     setLoggedSymptoms([]);
-    setRelationshipTracker({ myBehavior: '3', hisBehavior: '3', progressLog: '', plans: '' });
+    setAnasReflection({ myBehavior: '3', hisBehavior: '3', progressLog: '', plans: '' });
     setChatHistory([]);
     if(setOnboarded) setOnboarded(false);
     toast({

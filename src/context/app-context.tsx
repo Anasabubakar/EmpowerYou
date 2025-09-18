@@ -136,8 +136,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       if (onboarded !== undefined) {
         window.localStorage.setItem('empoweryou-onboarded', JSON.stringify(onboarded));
       }
-      window.localStorage.setItem('empoweryou-userName', JSON.stringify(userName));
-      window.localStorage.setItem('empoweryou-companionName', JSON.stringify(companionName));
+      window.localStorage.setItem('empoweryou-userName', userName);
+      window.localStorage.setItem('empoweryou-companionName', companionName);
       if (profilePicture) {
         window.localStorage.setItem('empoweryou-profilePicture', profilePicture);
       } else {

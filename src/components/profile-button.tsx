@@ -30,7 +30,7 @@ import { useRef, useState } from 'react';
 import ReactCrop, { type Crop, centerCrop, makeAspectCrop } from 'react-image-crop';
 
 // Function to crop the image
-function getCroppedImg(image: HTMLImageElement, crop: Crop) {
+function getCroppedImg(image: HTMLImageElement, crop: Crop): string | null {
   const canvas = document.createElement('canvas');
   const scaleX = image.naturalWidth / image.width;
   const scaleY = image.naturalHeight / image.height;
@@ -69,7 +69,7 @@ export function ProfileButton() {
     setOnboarded,
     setCycleInfo,
     setLoggedSymptoms,
-    setRelationshipTracker,
+    setAnasReflection,
     setChatHistory,
   } = useAppContext();
   
@@ -95,7 +95,7 @@ export function ProfileButton() {
     setProfilePicture(null);
     setCycleInfo({ currentDay: 0, nextPeriodIn: 0, predictedDate: new Date(), lastPeriodDate: undefined });
     setLoggedSymptoms([]);
-    setRelationshipTracker({ myBehavior: '3', hisBehavior: '3', progressLog: '', plans: '' });
+    setAnasReflection({ myBehavior: '3', hisBehavior: '3', progressLog: '', plans: '' });
     setChatHistory([]);
     if(setOnboarded) setOnboarded(false);
 
@@ -110,11 +110,11 @@ export function ProfileButton() {
     if (e.target.files && e.target.files.length > 0) {
       setCrop(undefined); // Makes crop preview update between images.
       const reader = new FileReader();
-      reader.addEventListener('load', () =>
-        setImgSrc(reader.result?.toString() || '')
-      );
+      reader.addEventListener('load', () => {
+        setImgSrc(reader.result?.toString() || '');
+        setIsCropDialogOpen(true);
+      });
       reader.readAsDataURL(e.target.files[0]);
-      setIsCropDialogOpen(true);
       // Clear the input value to allow re-selecting the same file
       e.target.value = '';
     }
