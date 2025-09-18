@@ -18,6 +18,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 
@@ -34,36 +35,45 @@ const navItems = [
 
 export function Nav() {
   const pathname = usePathname();
+  const { setOpenMobile, isMobile } = useSidebar();
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }
 
   return (
     <SidebarMenu>
       {navItems.map((item) => (
         <SidebarMenuItem key={item.href}>
-          <SidebarMenuButton
-            asChild
-            isActive={pathname.startsWith(item.href)}
-            className="font-headline"
-          >
-            <Link href={item.href}>
-              <item.icon
-                className={cn(
-                  'h-5 w-5',
-                  pathname.startsWith(item.href)
-                    ? 'text-primary-foreground'
-                    : 'text-muted-foreground'
-                )}
-              />
-              <span
-                className={cn(
-                  pathname.startsWith(item.href)
-                    ? 'text-primary-foreground'
-                    : 'text-foreground'
-                )}
-              >
-                {item.label}
-              </span>
-            </Link>
-          </SidebarMenuButton>
+          <Link href={item.href} onClick={handleLinkClick} legacyBehavior passHref>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname.startsWith(item.href)}
+              className="font-headline"
+            >
+              <div>
+                <item.icon
+                  className={cn(
+                    'h-5 w-5',
+                    pathname.startsWith(item.href)
+                      ? 'text-primary-foreground'
+                      : 'text-muted-foreground'
+                  )}
+                />
+                <span
+                  className={cn(
+                    pathname.startsWith(item.href)
+                      ? 'text-primary-foreground'
+                      : 'text-foreground'
+                  )}
+                >
+                  {item.label}
+                </span>
+              </div>
+            </SidebarMenuButton>
+          </Link>
         </SidebarMenuItem>
       ))}
     </SidebarMenu>
