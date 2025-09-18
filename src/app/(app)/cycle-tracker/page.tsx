@@ -64,7 +64,7 @@ export default function CycleTrackerPage() {
       setCycleInfo({
         currentDay: newCurrentDay > 0 ? newCurrentDay : 1,
         predictedDate: newPredictedDate,
-        nextPeriodIn: newNextPeriodIn > 0 ? newNextPeriodIn : 0,
+        nextPeriodIn: newNextPeriodIn >= 0 ? newNextPeriodIn : 0,
         lastPeriodDate: range.from,
       });
 
@@ -253,7 +253,7 @@ export default function CycleTrackerPage() {
             <DialogDescription>
               Here are the AI-predicted start dates for your next few cycles.
             </DialogDescription>
-          </DialogHeader>
+          </Header>
           <div className="py-4">
             {loadingPredictions ? (
               <div className="flex items-center justify-center">

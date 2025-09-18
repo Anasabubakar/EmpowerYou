@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A flow for predicting future menstrual cycle dates.
@@ -28,7 +29,7 @@ const cyclePredictionPrompt = ai.definePrompt({
   name: 'cyclePredictionPrompt',
   input: {schema: PredictNextCyclesInputSchema},
   output: {schema: PredictNextCyclesOutputSchema},
-  prompt: `Based on the user's last period start date of {{{lastPeriodDate}}}, predict the start dates for their next three menstrual cycles. Assume a standard 28-day cycle length. Format each predicted date as a readable string, like "MMMM d, yyyy".
+  prompt: `You are a helpful wellness assistant. Based on the user's last period start date of {{{lastPeriodDate}}}, predict the start dates for their next three menstrual cycles. Assume a standard 28-day cycle length. Format each predicted date as a readable string, like "MMMM d, yyyy".
 `,
 });
 
