@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -17,19 +16,33 @@ import Link from 'next/link';
 import { useTheme } from '@/context/theme-context';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
 
 export function ProfileButton() {
-  const { userName, setOnboarded, profilePicture } = useAppContext();
+  const { user } = useAppContext();
   const { theme, setTheme } = useTheme();
+  const { toast } = useToast();
 
-  const handleSignOut = () => {
-    localStorage.clear();
-    if (setOnboarded) {
-      setOnboarded(false);
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: 'Signed Out',
+        description: 'You have been successfully signed out.',
+      });
+    } catch (error) {
+      console.error('Sign out error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to sign out. Please try again.',
+        variant: 'destructive',
+      });
     }
   };
 
-  const getInitials = (name: string) => {
+  const getInitials = (name?: string | null) => {
     if (!name) return 'U';
     const names = name.split(' ');
     if (names.length > 1) {
@@ -37,6 +50,9 @@ export function ProfileButton() {
     }
     return name.substring(0, 2).toUpperCase();
   };
+  
+  const userName = user?.displayName || 'User';
+  const profilePicture = user?.photoURL || '';
 
   return (
     <DropdownMenu>
@@ -57,7 +73,7 @@ export function ProfileButton() {
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{userName}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              Welcome back, my love
+              {user?.email}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -86,7 +102,7 @@ export function ProfileButton() {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Reset & Sign out</span>
+          <span>Sign out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

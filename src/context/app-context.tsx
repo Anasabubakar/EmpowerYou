@@ -1,7 +1,9 @@
-
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import type { User } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import type { Task, Goal, HealthMetric, CycleInfo, DiaryEntry, AnasReflection, ChatMessage } from '@/lib/types';
 import { mockTasks, mockGoals, mockHealthMetrics, mockCycleInfo, mockAnasReflection } from '@/lib/data';
 
@@ -58,11 +60,11 @@ function getInitialState<T>(key: string, defaultValue: T): T {
   return defaultValue;
 }
 
-
 interface AppContextType {
+  user: User | null; // Firebase user object
   onboarded?: boolean;
   setOnboarded: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  userName: string;
+  userName: string; // Keep for display name
   setUserName: React.Dispatch<React.SetStateAction<string>>;
   companionName: string;
   setCompanionName: React.Dispatch<React.SetStateAction<string>>;
@@ -82,29 +84,40 @@ interface AppContextType {
   setAnasReflection: React.Dispatch<React.SetStateAction<AnasReflection>>;
   chatHistory: ChatMessage[];
   setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-  profilePicture: string;
-  setProfilePicture: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
   const [onboarded, setOnboarded] = useState<boolean | undefined>(undefined);
   const [userName, setUserName] = useState<string>('');
   const [companionName, setCompanionName] = useState<string>('Companion');
-  const [tasks, setTasks] = useState<Task[]>(mockTasks);
-  const [goals, setGoals] = useState<Goal[]>(mockGoals);
-  const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>(mockHealthMetrics);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>([]);
   const [cycleInfo, setCycleInfo] = useState<CycleInfo>(mockCycleInfo);
   const [loggedSymptoms, setLoggedSymptoms] = useState<string[]>([]);
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
   const [anasReflection, setAnasReflection] = useState<AnasReflection>(mockAnasReflection);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
-  const [profilePicture, setProfilePicture] = useState<string>('');
-
+  
+  // Firebase auth listener
   useEffect(() => {
-    setOnboarded(getInitialState('onboarded', false));
-    setUserName(getInitialState('userName', ''));
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        setOnboarded(true); // If there's a user, they are considered onboarded.
+        setUserName(currentUser.displayName || '');
+      } else {
+        setOnboarded(false);
+      }
+    });
+    return () => unsubscribe(); // Cleanup subscription on unmount
+  }, []);
+  
+  // Load data from localStorage on initial client render
+  useEffect(() => {
     setCompanionName(getInitialState('companionName', 'Companion'));
     setTasks(getInitialState('tasks', mockTasks));
     setGoals(getInitialState('goals', mockGoals));
@@ -114,15 +127,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setDiaryEntries(getInitialState('diaryEntries', []));
     setAnasReflection(getInitialState('anasReflection', mockAnasReflection));
     setChatHistory(getInitialState('chatHistory', []));
-    setProfilePicture(getInitialState('profilePicture', ''));
   }, []);
 
+  // Save data to localStorage whenever it changes
   useEffect(() => {
     try {
-      if (onboarded !== undefined) {
-        localStorage.setItem('onboarded', JSON.stringify(onboarded));
-      }
-      localStorage.setItem('userName', userName);
       localStorage.setItem('companionName', companionName);
       localStorage.setItem('tasks', JSON.stringify(tasks));
       localStorage.setItem('goals', JSON.stringify(goals));
@@ -132,14 +141,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('diaryEntries', JSON.stringify(diaryEntries));
       localStorage.setItem('anasReflection', JSON.stringify(anasReflection));
       localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-      localStorage.setItem('profilePicture', profilePicture);
     } catch (error) {
       console.warn('Error writing to localStorage:', error);
     }
-  }, [userName, onboarded, companionName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, anasReflection, chatHistory, profilePicture]);
+  }, [companionName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, anasReflection, chatHistory]);
+
 
   return (
     <AppContext.Provider value={{
+      user,
       onboarded, setOnboarded,
       userName, setUserName,
       companionName, setCompanionName,
@@ -151,7 +161,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       diaryEntries, setDiaryEntries,
       anasReflection, setAnasReflection,
       chatHistory, setChatHistory,
-      profilePicture, setProfilePicture,
     }}>
       {children}
     </AppContext.Provider>

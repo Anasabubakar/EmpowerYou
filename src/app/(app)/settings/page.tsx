@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -32,28 +31,29 @@ import { useState } from 'react';
 export default function SettingsPage() {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
-  const { userName, setUserName, companionName, setCompanionName } = useAppContext();
+  const { companionName, setCompanionName } = useAppContext();
   
-  const [uName, setUName] = useState(userName);
   const [cName, setCName] = useState(companionName);
 
   const handleClearData = () => {
-    localStorage.clear();
+    // We only clear non-auth related data. Auth is handled by signing out.
+    localStorage.removeItem('tasks');
+    localStorage.removeItem('goals');
+    localStorage.removeItem('healthMetrics');
+    localStorage.removeItem('cycleInfo');
+    localStorage.removeItem('loggedSymptoms');
+    localStorage.removeItem('diaryEntries');
+    localStorage.removeItem('anasReflection');
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('companionName');
+    
     toast({
-      title: 'Local Data Cleared',
-      description: 'All your personal data has been removed from this browser. The app will now reload.',
+      title: 'Local App Data Cleared',
+      description: 'All your personal tracking data has been removed from this browser. Your account is not affected.',
       variant: 'destructive',
     });
-    // Reload to trigger onboarding
+    // Reload to reflect cleared state
     setTimeout(() => window.location.reload(), 1500);
-  };
-  
-  const handleNameChange = () => {
-    setUserName(uName);
-    toast({
-      title: 'Name Updated',
-      description: `We'll now call you ${uName}.`,
-    });
   };
   
   const handleCompanionNameChange = () => {
@@ -109,17 +109,10 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Profile</CardTitle>
           <CardDescription>
-            Manage your personal information.
+            Manage your personal information. Your name is managed via your Google Account.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Your Name</Label>
-              <div className="flex gap-2">
-                <Input id="name" value={uName} onChange={(e) => setUName(e.target.value)} />
-                <Button onClick={handleNameChange}>Save</Button>
-              </div>
-            </div>
             <div className="space-y-2">
               <Label htmlFor="companion-name">Companion&apos;s Name</Label>
               <div className="flex gap-2">
@@ -134,7 +127,7 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Data Management</CardTitle>
           <CardDescription>
-           This will clear all data and restart the app.
+           This will clear all non-account related data stored in your browser.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -142,7 +135,7 @@ export default function SettingsPage() {
             <AlertDialogTrigger asChild>
               <Button variant="destructive">
                 <Trash2 className="mr-2 h-4 w-4" />
-                Clear All Data & Reset
+                Clear Local App Data
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -150,7 +143,7 @@ export default function SettingsPage() {
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This action cannot be undone. This will permanently delete all
-                  your data from this browser and reset the application to its initial state.
+                  your tasks, goals, entries, and other app data from this browser. Your account itself will not be deleted.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
