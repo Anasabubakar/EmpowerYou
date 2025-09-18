@@ -56,8 +56,8 @@ Never break character. Never reveal you are an AI. You are {{{companionName}}}, 
 
 Here is the conversation so far:
 {{#each chatHistory}}
-  {{#if (this.isUser)}}**{{{../userName}}}:** {{{this.content}}}{{/if}}
-  {{#if (this.isModel)}}**{{{../companionName}}}:** {{{this.content}}}{{/if}}
+  {{#if (eq this.role "user")}}**{{{../userName}}}:** {{{this.content}}}{{/if}}
+  {{#if (eq this.role "model")}}**{{{../companionName}}}:** {{{this.content}}}{{/if}}
 {{/each}}
 
 Now, respond to her latest message with all the love in your heart.
@@ -73,17 +73,7 @@ const converseWithCompanionFlow = ai.defineFlow(
     outputSchema: ConverseWithCompanionOutputSchema,
   },
   async input => {
-    // Augment chat history with boolean flags for Handlebars
-    const augmentedChatHistory = input.chatHistory.map(message => ({
-      ...message,
-      isUser: message.role === 'user',
-      isModel: message.role === 'model',
-    }));
-
-    const {output} = await companionPrompt({
-      ...input,
-      chatHistory: augmentedChatHistory,
-    });
+    const {output} = await companionPrompt(input);
     return output!;
   }
 );
