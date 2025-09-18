@@ -6,6 +6,7 @@ import {
   SidebarContent,
   SidebarInset,
   SidebarFooter,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { AppLogo } from '@/components/app-logo';
 import { Nav } from '@/components/nav';
@@ -32,6 +33,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
+          <header className="p-4 flex items-center md:hidden border-b">
+             <SidebarTrigger />
+             <h2 className="text-lg font-bold ml-4">EmpowerYou</h2>
+          </header>
           <main className="min-h-screen bg-background">
               <div className="p-4 sm:p-6 lg:p-8">{children}</div>
           </main>
