@@ -14,7 +14,7 @@ export const mockAnasReflection: AnasReflection = {
 };
 
 export const mockCycleInfo: CycleInfo = {
-  currentDay: 1,
-  nextPeriodIn: 28,
-  predictedDate: new Date(new Date().setDate(new Date().getDate() + 28)),
+  currentDay: 0,
+  nextPeriodIn: 0,
+  predictedDate: new Date(),
 };
