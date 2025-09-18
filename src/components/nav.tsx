@@ -23,23 +23,25 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
-
-const navItems = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/wants-needs', icon: HeartHandshake, label: 'Wants & Needs' },
-  { href: '/cycle-tracker', icon: Droplets, label: 'Cycle Tracker' },
-  { href: '/tasks', icon: ListTodo, label: 'Task Manager' },
-  { href: '/health-metrics', icon: HeartPulse, label: 'Health Metrics' },
-  { href: '/diary', icon: BookHeart, label: 'Daily Diary' },
-  { href: '/anas-reflection', icon: Users, label: 'Relationship Tracker' },
-  { href: '/companion', icon: MessageCircleHeart, label: 'My Companion' },
-  { href: '/insights', icon: Sparkles, label: 'Insights' },
-  { href: '/settings', icon: Settings, label: 'Settings' },
-];
+import { useAppContext } from '@/context/app-context';
 
 export function Nav() {
   const pathname = usePathname();
   const { setOpenMobile, isMobile } = useSidebar();
+  const { companionName } = useAppContext();
+
+  const navItems = [
+    { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { href: '/wants-needs', icon: HeartHandshake, label: 'Wants & Needs' },
+    { href: '/cycle-tracker', icon: Droplets, label: 'Cycle Tracker' },
+    { href: '/tasks', icon: ListTodo, label: 'Task Manager' },
+    { href: '/health-metrics', icon: HeartPulse, label: 'Health Metrics' },
+    { href: '/diary', icon: BookHeart, label: 'Daily Diary' },
+    { href: '/anas-reflection', icon: Users, label: 'Relationship Tracker' },
+    { href: '/companion', icon: MessageCircleHeart, label: companionName },
+    { href: '/insights', icon: Sparkles, label: 'Insights' },
+    { href: '/settings', icon: Settings, label: 'Settings' },
+  ];
 
   const handleLinkClick = () => {
     if (isMobile) {
