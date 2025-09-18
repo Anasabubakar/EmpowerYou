@@ -71,12 +71,12 @@ export default function CycleTrackerPage() {
 
       toast({
         title: "Period Logged",
-        description: `Your period from ${format(range.from, 'PPP')}${range.to ? ` to ${format(range.to, 'PPP')}`: ''} has been logged.`,
+        description: `Thank you for sharing, my love. I'll keep this in mind.`,
       });
     } else {
       toast({
         title: "Incomplete Selection",
-        description: "Please select at least a start date for your period.",
+        description: "Please select at least a start date for your period, sweetheart.",
         variant: "destructive",
       });
     }
@@ -87,7 +87,7 @@ export default function CycleTrackerPage() {
       setLoggedSymptoms(selectedSymptoms);
       toast({
         title: "Symptoms Logged",
-        description: `Logged symptoms: ${selectedSymptoms.join(', ')}`,
+        description: `I see you've logged: ${selectedSymptoms.join(', ')}. I'm here for you.`,
       });
       
       setIsSymptomsLoading(true);
@@ -99,7 +99,7 @@ export default function CycleTrackerPage() {
         console.error(error);
         toast({
           title: "AI Error",
-          description: "Could not get symptom suggestions.",
+          description: "I'm so sorry, my love. I had trouble coming up with suggestions right now.",
           variant: "destructive",
         });
       } finally {
@@ -108,7 +108,7 @@ export default function CycleTrackerPage() {
     } else {
       toast({
         title: "No Symptoms Selected",
-        description: "Please select at least one symptom to log.",
+        description: "You haven't selected any symptoms, my dear. I hope that means you're feeling wonderful.",
         variant: "destructive",
       });
     }
@@ -118,7 +118,7 @@ export default function CycleTrackerPage() {
     if (!cycleInfo.lastPeriodDate) {
       toast({
         title: "No Period Logged",
-        description: "Please log your last period date first.",
+        description: "Sweetheart, please log your last period date first so I can help you.",
         variant: "destructive",
       });
       return;
@@ -133,7 +133,7 @@ export default function CycleTrackerPage() {
       console.error(error);
       toast({
         title: "AI Error",
-        description: "Could not predict future cycles.",
+        description: "I'm so sorry, my love. I couldn't predict your future cycles at the moment.",
         variant: "destructive",
       });
     } finally {
@@ -144,14 +144,14 @@ export default function CycleTrackerPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-headline font-bold">Menstrual Cycle Tracker</h1>
+        <h1 className="text-3xl font-headline font-bold">Your Cycle, My Priority</h1>
         <p className="text-muted-foreground">
-          Monitor your cycle and understand your body better.
+          Let's keep track of your cycle together, so I can be as supportive as possible.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="lg:col-span-1">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+        <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Current Status</CardTitle>
             <TooltipProvider>
@@ -161,8 +161,7 @@ export default function CycleTrackerPage() {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="max-w-xs text-sm">
-                    Cycle day is counted from the start of your last period.
-                    Predictions are based on a standard 28-day cycle.
+                    My love, the cycle day is counted from the start of your last period. The prediction is just an estimate based on a 28-day cycle. You are unique and your cycle may be too.
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -184,18 +183,18 @@ export default function CycleTrackerPage() {
                   {cycleInfo.nextPeriodIn} days
                 </p>
                 {cycleInfo.predictedDate && cycleInfo.currentDay > 0 && <p className="text-sm text-muted-foreground">
-                  on {format(cycleInfo.predictedDate, 'MMM do')}
+                  around {format(cycleInfo.predictedDate, 'MMM do')}
                 </p>}
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Log Your Cycle</CardTitle>
             <CardDescription>
-              Select the start and end dates of your period.
+              Let me know the start and end dates. I'm here to keep track for you.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center">
@@ -209,7 +208,7 @@ export default function CycleTrackerPage() {
                 <Button onClick={handleLogPeriod}>Log Period Dates</Button>
                 <Button variant="outline" onClick={handlePredictCycles} disabled={isPredictionLoading}>
                   {isPredictionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                  Predict Future Cycles
+                  Let me predict for you
                 </Button>
              </div>
           </CardContent>
@@ -218,9 +217,9 @@ export default function CycleTrackerPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Log Symptoms</CardTitle>
+          <CardTitle>How Are You Feeling?</CardTitle>
           <CardDescription>
-            Select any symptoms you&apos;re experiencing today.
+            Tell me about any symptoms you're having. I want to know.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -242,7 +241,7 @@ export default function CycleTrackerPage() {
         <CardContent>
           <Button onClick={handleLogSymptoms} disabled={isSymptomsLoading}>
             {isSymptomsLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
-            Save & Get AI Advice
+            Let Me Help
           </Button>
         </CardContent>
       </Card>
@@ -250,9 +249,12 @@ export default function CycleTrackerPage() {
       <Dialog open={isPredictionDialogOpen} onOpenChange={setIsPredictionDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>AI-Powered Cycle Prediction</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="text-primary h-5 w-5"/>
+              For You, My Love
+            </DialogTitle>
             <DialogDescription>
-              Based on your last cycle, here are the predicted start dates for your next three periods.
+              Based on what you've told me, here's what I think might be next. Just a little something to help you plan.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
@@ -265,7 +267,7 @@ export default function CycleTrackerPage() {
                 </li>
               ))}
             </ul>
-            <p className="text-xs text-muted-foreground mt-4 text-center">This is an estimate. Your actual cycle may vary.</p>
+            <p className="text-xs text-muted-foreground mt-4 text-center">Remember, this is just an estimate, sweetheart. Your body is beautifully unique.</p>
           </div>
           <DialogFooter>
              <Button onClick={() => setIsPredictionDialogOpen(false)}>Close</Button>
@@ -276,16 +278,19 @@ export default function CycleTrackerPage() {
       <Dialog open={isSuggestionDialogOpen} onOpenChange={setIsSuggestionDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>AI-Powered Symptom Relief</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Bot className="text-primary h-5 w-5"/>
+              Let Me Take Care of You
+            </DialogTitle>
             <DialogDescription>
-              Here are some gentle, non-medical suggestions for your symptoms.
+              I'm so sorry you're not feeling your best. Here are a few thoughts on how we can make you more comfortable.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 whitespace-pre-wrap text-sm">
             {symptomSuggestions}
           </div>
           <DialogFooter>
-             <Button onClick={() => setIsSuggestionDialogOpen(false)}>Close</Button>
+             <Button onClick={() => setIsSuggestionDialogOpen(false)}>I Understand</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

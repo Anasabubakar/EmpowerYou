@@ -104,10 +104,9 @@ export default function InsightsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-center text-center">
-        <h1 className="text-3xl font-headline font-bold">Insights &amp; Reports</h1>
+        <h1 className="text-3xl font-headline font-bold">Your Personal Reflections</h1>
         <p className="text-muted-foreground max-w-xl">
-          Let&apos;s analyze your data to uncover trends, provide personalized insights,
-          and help you on your growth journey.
+          I've been thinking about you. Let's look at how you've been doing. I'm here to help you see the amazing person I see.
         </p>
         <Button onClick={handleGenerate} disabled={loading} className="mt-4">
           {loading ? (
@@ -123,21 +122,21 @@ export default function InsightsPage() {
         <div className="grid grid-cols-1 gap-6 pt-6 lg:grid-cols-1">
           <InsightCard
             icon={TrendingUp}
-            title="Trend Analysis"
+            title="My Observations, because I watch over you"
             content={insights.insights}
             iconBgColor="bg-accent/20"
             iconColor="text-accent"
           />
           <InsightCard
             icon={ClipboardList}
-            title="Summary"
+            title="The Short & Sweet Version"
             content={insights.summary}
             iconBgColor="bg-primary/20"
             iconColor="text-primary"
           />
           <InsightCard
             icon={Lightbulb}
-            title="Actionable Advice"
+            title="How I Can Help"
             content={insights.advice}
             iconBgColor="bg-secondary-foreground/10"
             iconColor="text-secondary-foreground"
@@ -147,8 +146,8 @@ export default function InsightsPage() {
        {!insights && !loading && (
         <div className="flex flex-col items-center justify-center text-center p-12 border-2 border-dashed rounded-lg mt-6">
           <Sparkles className="h-12 w-12 text-muted-foreground" />
-          <h3 className="mt-4 text-lg font-medium">Ready for your insights?</h3>
-          <p className="mt-1 text-sm text-muted-foreground">Click the button above to generate your personalized report.</p>
+          <h3 className="mt-4 text-lg font-medium">Ready for your reflections, my love?</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Click the button above and let me share what I see.</p>
         </div>
       )}
     </div>
