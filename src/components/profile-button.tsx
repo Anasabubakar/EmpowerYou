@@ -16,33 +16,12 @@ import Link from 'next/link';
 import { useTheme } from '@/context/theme-context';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
-import { useToast } from '@/hooks/use-toast';
 
 export function ProfileButton() {
-  const { user } = useAppContext();
+  const { userName } = useAppContext();
   const { theme, setTheme } = useTheme();
-  const { toast } = useToast();
 
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      toast({
-        title: 'Signed Out',
-        description: 'You have been successfully signed out.',
-      });
-    } catch (error) {
-      console.error('Sign out error:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to sign out. Please try again.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const getInitials = (name?: string | null) => {
+  const getInitials = (name: string) => {
     if (!name) return 'U';
     const names = name.split(' ');
     if (names.length > 1) {
@@ -50,9 +29,6 @@ export function ProfileButton() {
     }
     return name.substring(0, 2).toUpperCase();
   };
-  
-  const userName = user?.displayName || 'User';
-  const profilePicture = user?.photoURL || '';
 
   return (
     <DropdownMenu>
@@ -62,7 +38,8 @@ export function ProfileButton() {
           className="flex h-auto w-full items-center justify-start gap-3 p-2"
         >
           <Avatar className="h-8 w-8">
-            <AvatarImage src={profilePicture} alt={userName} />
+            {/* The user can add a profile picture in a future update. */}
+            {/* <AvatarImage src={profilePicture} alt={userName} /> */}
             <AvatarFallback>{getInitials(userName)}</AvatarFallback>
           </Avatar>
           <span className="truncate text-sm font-medium">{userName}</span>
@@ -72,9 +49,7 @@ export function ProfileButton() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{userName}</p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user?.email}
-            </p>
+            {/* User email can be added here in the future */}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -100,10 +75,7 @@ export function ProfileButton() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Sign out</span>
-        </DropdownMenuItem>
+        {/* Sign out functionality can be added here */}
       </DropdownMenuContent>
     </DropdownMenu>
   );

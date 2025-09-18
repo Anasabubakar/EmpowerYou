@@ -1,8 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider } from '@/lib/firebase';
+import { useAppContext } from '@/context/app-context';
 import { AppLogo } from '@/components/app-logo';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,28 +12,29 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowRight } from 'lucide-react';
-import { FcGoogle } from 'react-icons/fc';
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { setOnboarded, userName, setUserName } = useAppContext();
+  const [name, setName] = useState(userName);
   const { toast } = useToast();
 
-  const handleSignIn = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+  const handleContinue = () => {
+    if (name.trim()) {
+      setUserName(name.trim());
+      setOnboarded(true);
       toast({
-        title: `Welcome, ${user.displayName}!`,
+        title: `Welcome, ${name.trim()}!`,
         description: "You're all set up and ready to go.",
       });
       router.push('/dashboard');
-    } catch (error) {
-      console.error("Authentication error:", error);
+    } else {
       toast({
-        title: 'Authentication failed',
-        description: 'Could not sign you in with Google. Please try again.',
+        title: 'Please enter your name',
+        description: 'I would love to know what to call you.',
         variant: 'destructive',
       });
     }
@@ -41,7 +42,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-      <div className="mx-auto flex w-full max-w-md flex-col justify-center space-y-6">
+      <div className="mx-auto flex w-full max-w-sm flex-col justify-center space-y-6">
         <div className="flex flex-col space-y-2 text-center">
           <div className="flex justify-center">
             <AppLogo />
@@ -56,15 +57,23 @@ export default function OnboardingPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Create an Account</CardTitle>
+            <CardTitle>What should I call you?</CardTitle>
             <CardDescription>
-              Sign in with Google to securely save your data and get started.
+              This is the name I&apos;ll use to address you.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Button className="w-full" onClick={handleSignIn}>
-              <FcGoogle className="mr-2 h-5 w-5" />
-              Sign in with Google
+          <CardContent className="space-y-4">
+            <Input
+              id="name"
+              placeholder="Your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleContinue()}
+              autoFocus
+              className="text-base"
+            />
+            <Button className="w-full" onClick={handleContinue}>
+              Continue <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </CardContent>
         </Card>

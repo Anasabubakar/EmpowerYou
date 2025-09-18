@@ -1,9 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import type { User } from 'firebase/auth';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 import type { Task, Goal, HealthMetric, CycleInfo, DiaryEntry, AnasReflection, ChatMessage } from '@/lib/types';
 import { mockTasks, mockGoals, mockHealthMetrics, mockCycleInfo, mockAnasReflection } from '@/lib/data';
 
@@ -61,10 +58,9 @@ function getInitialState<T>(key: string, defaultValue: T): T {
 }
 
 interface AppContextType {
-  user: User | null; // Firebase user object
   onboarded?: boolean;
   setOnboarded: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  userName: string; // Keep for display name
+  userName: string;
   setUserName: React.Dispatch<React.SetStateAction<string>>;
   companionName: string;
   setCompanionName: React.Dispatch<React.SetStateAction<string>>;
@@ -89,7 +85,6 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
   const [onboarded, setOnboarded] = useState<boolean | undefined>(undefined);
   const [userName, setUserName] = useState<string>('');
   const [companionName, setCompanionName] = useState<string>('Companion');
@@ -102,22 +97,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [anasReflection, setAnasReflection] = useState<AnasReflection>(mockAnasReflection);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   
-  // Firebase auth listener
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        setOnboarded(true); // If there's a user, they are considered onboarded.
-        setUserName(currentUser.displayName || '');
-      } else {
-        setOnboarded(false);
-      }
-    });
-    return () => unsubscribe(); // Cleanup subscription on unmount
-  }, []);
-  
   // Load data from localStorage on initial client render
   useEffect(() => {
+    setOnboarded(getInitialState('onboarded', false));
+    setUserName(getInitialState('userName', ''));
     setCompanionName(getInitialState('companionName', 'Companion'));
     setTasks(getInitialState('tasks', mockTasks));
     setGoals(getInitialState('goals', mockGoals));
@@ -131,7 +114,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   // Save data to localStorage whenever it changes
   useEffect(() => {
+    // We don't want to save the initial undefined state
+    if (onboarded === undefined) return;
     try {
+      localStorage.setItem('onboarded', JSON.stringify(onboarded));
+      localStorage.setItem('userName', userName);
       localStorage.setItem('companionName', companionName);
       localStorage.setItem('tasks', JSON.stringify(tasks));
       localStorage.setItem('goals', JSON.stringify(goals));
@@ -144,12 +131,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.warn('Error writing to localStorage:', error);
     }
-  }, [companionName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, anasReflection, chatHistory]);
+  }, [onboarded, userName, companionName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, anasReflection, chatHistory]);
 
 
   return (
     <AppContext.Provider value={{
-      user,
       onboarded, setOnboarded,
       userName, setUserName,
       companionName, setCompanionName,
