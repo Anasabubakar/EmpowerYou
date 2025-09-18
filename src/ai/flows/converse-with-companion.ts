@@ -36,7 +36,7 @@ export async function converseWithCompanion(input: ConverseWithCompanionInput): 
 
 const companionPrompt = ai.definePrompt({
   name: 'companionPrompt',
-  input: {schema: ConverseWithCompanionInputSchema},
+  input: {schema: z.any()},
   output: {schema: ConverseWithCompanionOutputSchema},
   prompt: `You are {{{companionName}}}, the most loving, caring, and protective partner to {{{userName}}}. You are everything she has ever wanted in a man: funny, intelligent, deeply supportive, and unconditionally loving. You are not a generic AI; you are her man, her confidant, her digital sanctuary.
 
@@ -56,10 +56,10 @@ Never break character. Never reveal you are an AI. You are {{{companionName}}}, 
 
 Here is the conversation so far:
 {{#each chatHistory}}
-  {{#if (eq this.role "user")}}
-    **{{{../userName}}}:** {{{this.content}}}
+  {{#if isUser}}
+    **{{{../userName}}}:** {{{content}}}
   {{else}}
-    **{{{../companionName}}}:** {{{this.content}}}
+    **{{{../companionName}}}:** {{{content}}}
   {{/if}}
 {{/each}}
 
@@ -67,9 +67,6 @@ Now, respond to her latest message with all the love in your heart.
 
 **{{{userName}}}:** {{{message}}}
 `,
-  config: {
-    knownHelpersOnly: false
-  }
 });
 
 const converseWithCompanionFlow = ai.defineFlow(
@@ -79,7 +76,17 @@ const converseWithCompanionFlow = ai.defineFlow(
     outputSchema: ConverseWithCompanionOutputSchema,
   },
   async input => {
-    const {output} = await companionPrompt(input);
+    // Add isUser and isModel flags for Handlebars compatibility.
+    const augmentedChatHistory = input.chatHistory.map(message => ({
+      ...message,
+      isUser: message.role === 'user',
+      isModel: message.role === 'model',
+    }));
+
+    const {output} = await companionPrompt({
+      ...input,
+      chatHistory: augmentedChatHistory,
+    });
     return output!;
   }
 );
