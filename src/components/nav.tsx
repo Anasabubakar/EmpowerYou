@@ -37,7 +37,7 @@ export function Nav() {
     { href: '/tasks', icon: ListTodo, label: 'Task Manager' },
     { href: '/health-metrics', icon: HeartPulse, label: 'Health Metrics' },
     { href: '/diary', icon: BookHeart, label: 'Daily Diary' },
-    { href: '/anas-reflection', icon: Users, label: 'Relationship Tracker' },
+    { href: '/relationship-tracker', icon: Users, label: 'Relationship Tracker' },
     { href: '/companion', icon: MessageCircleHeart, label: companionName },
     { href: '/insights', icon: Sparkles, label: 'Insights' },
     { href: '/settings', icon: Settings, label: 'Settings' },
