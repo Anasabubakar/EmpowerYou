@@ -56,25 +56,14 @@ export function Nav() {
           <Link href={item.href} onClick={handleLinkClick}>
             <SidebarMenuButton
               isActive={pathname.startsWith(item.href)}
-              className="font-headline cursor-pointer"
+              className={cn(
+                'font-headline cursor-pointer',
+                pathname.startsWith(item.href) &&
+                  'bg-primary text-primary-foreground hover:bg-primary/90'
+              )}
             >
-              <item.icon
-                className={cn(
-                  'h-5 w-5',
-                  pathname.startsWith(item.href)
-                    ? 'text-primary-foreground'
-                    : 'text-muted-foreground'
-                )}
-              />
-              <span
-                className={cn(
-                  pathname.startsWith(item.href)
-                    ? 'text-primary-foreground'
-                    : 'text-foreground'
-                )}
-              >
-                {item.label}
-              </span>
+              <item.icon className="h-5 w-5" />
+              <span>{item.label}</span>
             </SidebarMenuButton>
           </Link>
         </SidebarMenuItem>
