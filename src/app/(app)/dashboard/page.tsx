@@ -135,7 +135,7 @@ export default function DashboardPage() {
             </p>
           )}
           <Link href="/diary">
-            <Button className="mt-4">View Today&apos;s Entry</Button>
+            <Button className="mt-4">{latestDiaryEntry ? "View Today's Entry" : "Add Today's Entry"}</Button>
           </Link>
         </CardContent>
       </Card>
@@ -159,7 +159,16 @@ export default function DashboardPage() {
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No metrics logged yet.</p>
+              <div className="flex items-baseline gap-4 text-muted-foreground">
+                 <div>
+                   <p className="text-xs">Mood</p>
+                   <p className="text-2xl font-bold">😶</p>
+                 </div>
+                 <div>
+                   <p className="text-xs">Energy</p>
+                   <p className="text-2xl font-bold">🪫</p>
+                 </div>
+               </div>
             )}
             <Link href="/health-metrics">
               <Button size="sm" variant="outline" className="mt-4">
@@ -175,7 +184,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-foreground">
-              You seem to have higher energy levels on days you complete more tasks.
+              Unlock trends and advice by generating your first AI-powered report.
             </p>
             <Link href="/insights">
               <Button size="sm" className="mt-4">
