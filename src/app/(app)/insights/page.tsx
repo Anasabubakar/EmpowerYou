@@ -9,11 +9,21 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { generatePersonalizedInsights } from '@/ai/flows/generate-personalized-insights';
-import { Loader2, Sparkles, Lightbulb, ClipboardList, TrendingUp } from 'lucide-react';
+import { generateShareableSummary } from '@/ai/flows/generate-shareable-summary';
+import { Loader2, Sparkles, Lightbulb, ClipboardList, TrendingUp, Share2, ClipboardCopy } from 'lucide-react';
 import type { GeneratePersonalizedInsightsOutput, GeneratePersonalizedInsightsInput } from '@/ai/flows/generate-personalized-insights';
+import type { GenerateShareableSummaryInput } from '@/ai/flows/generate-shareable-summary';
 import { useAppContext } from '@/context/app-context';
 
 function InsightCard({
@@ -48,8 +58,11 @@ function InsightCard({
 export default function InsightsPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [shareLoading, setShareLoading] = useState(false);
   const [insights, setInsights] =
     useState<GeneratePersonalizedInsightsOutput | null>(null);
+  const [shareableSummary, setShareableSummary] = useState<string>('');
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   
   const {
     userName,
@@ -60,7 +73,18 @@ export default function InsightsPage() {
     healthMetrics,
     diaryEntries,
     anasReflection,
+    chatHistory,
+    companionName,
   } = useAppContext();
+  
+  const getTodaysChat = () => {
+    const today = new Date().toISOString().split('T')[0];
+    return chatHistory.filter(message => {
+        // Assuming chat messages have a timestamp. If not, this logic needs to be adapted.
+        // For now, let's assume no timestamp and just take the last 10 messages for context.
+        return true; 
+    }).slice(-10);
+  }
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -100,6 +124,45 @@ export default function InsightsPage() {
     }
     setLoading(false);
   };
+  
+  const handleShare = async () => {
+    setShareLoading(true);
+    
+    const input: GenerateShareableSummaryInput = {
+      userName,
+      wantsNeedsData: goals,
+      menstrualCycleData: { ...cycleInfo, loggedSymptoms },
+      taskData: tasks,
+      healthMetricsData: healthMetrics,
+      diaryEntries: diaryEntries.slice(-1), // today's entry
+      partnerReflectionData: anasReflection,
+      companionChat: getTodaysChat(),
+      companionName,
+    }
+    
+    try {
+      const result = await generateShareableSummary(input);
+      setShareableSummary(result.summary);
+      setIsShareDialogOpen(true);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: 'Error creating summary',
+        description: 'I had trouble putting together the summary for you, my love. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setShareLoading(false);
+    }
+  }
+  
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(shareableSummary);
+    toast({
+      title: 'Copied to clipboard',
+      description: "You can now paste this into any app you'd like.",
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -108,14 +171,24 @@ export default function InsightsPage() {
         <p className="text-muted-foreground max-w-xl">
           I've been thinking about you. Let's look at how you've been doing. I'm here to help you see the amazing person I see.
         </p>
-        <Button onClick={handleGenerate} disabled={loading} className="mt-4">
-          {loading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Sparkles className="mr-2 h-4 w-4" />
-          )}
-          Generate My Report
-        </Button>
+        <div className="flex gap-2 mt-4">
+          <Button onClick={handleGenerate} disabled={loading} size="lg">
+            {loading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="mr-2 h-4 w-4" />
+            )}
+            Generate My Report
+          </Button>
+          <Button onClick={handleShare} disabled={shareLoading} size="lg" variant="outline">
+            {shareLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Share2 className="mr-2 h-4 w-4" />
+            )}
+            Share My Day
+          </Button>
+        </div>
       </div>
 
       {insights && (
@@ -150,6 +223,31 @@ export default function InsightsPage() {
           <p className="mt-1 text-sm text-muted-foreground">Click the button above and let me share what I see.</p>
         </div>
       )}
+      
+      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>A Little Glimpse Into Your Day</DialogTitle>
+            <DialogDescription>
+              Here is a summary of your day to share with the real me. You can copy it and send it in any app you'd like.
+            </DialogDescription>
+          </DialogHeader>
+          <Card className="max-h-[50vh] overflow-y-auto">
+            <CardContent className="p-6">
+              <p className="whitespace-pre-wrap text-sm">{shareableSummary}</p>
+            </CardContent>
+          </Card>
+          <DialogFooter>
+             <Button variant="outline" onClick={() => setIsShareDialogOpen(false)}>Close</Button>
+             <Button onClick={copyToClipboard}>
+                <ClipboardCopy className="mr-2 h-4 w-4" />
+                Copy Summary
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
+    

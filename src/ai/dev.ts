@@ -7,3 +7,6 @@ import '@/ai/flows/generate-personalized-insights.ts';
 import '@/ai/flows/suggest-symptom-relief.ts';
 import '@/ai/flows/predict-next-cycles.ts';
 import '@/ai/flows/converse-with-companion.ts';
+import '@/ai/flows/generate-shareable-summary.ts';
+
+    

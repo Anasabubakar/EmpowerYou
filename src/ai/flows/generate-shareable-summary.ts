@@ -1,0 +1,169 @@
+
+'use server';
+
+/**
+ * @fileOverview This file implements a Genkit flow for generating a shareable summary of the user's day.
+ *
+ * - generateShareableSummary - A function that aggregates data from all sections of the app
+ *   and creates a concise, loving summary suitable for sharing with a partner.
+ * - GenerateShareableSummaryInput - The input type for the generateShareableSummary function.
+ * - GenerateShareableSummaryOutput - The return type for the generateShareableSummary function.
+ */
+
+import {ai} from '@/ai/genkit';
+import {z} from 'genkit';
+
+const GoalSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  category: z.enum(['want', 'need']),
+  progress: z.number(),
+  deadline: z.string().describe("ISO date string"),
+  description: z.string().optional(),
+  createdAt: z.string().describe("ISO date string of when the goal was created."),
+});
+
+const TaskSchema = z.object({
+  id: z.string(),
+  text: z.string(),
+  completed: z.boolean(),
+  priority: z.enum(['low', 'medium', 'high']),
+  createdAt: z.string().describe("ISO date string of when the task was created."),
+});
+
+const HealthMetricSchema = z.object({
+  date: z.string(),
+  mood: z.number().min(1).max(5),
+  energy: z.number().min(1).max(5),
+  createdAt: z.string().describe("ISO date string of when the metric was logged."),
+});
+
+const DiaryEntrySchema = z.object({
+  dailyRemark: z.string(),
+  diaryEntry: z.string(),
+  wantsNeedsProgress: z.string(),
+  mood: z.string(),
+  energyLevels: z.string(),
+  partnerReflection: z.string(),
+  createdAt: z.string().describe("ISO date string of when the entry was created."),
+});
+
+const CycleInfoSchema = z.object({
+  currentDay: z.number(),
+  nextPeriodIn: z.number(),
+  predictedDate: z.string().describe("ISO date string"),
+  lastPeriodDate: z.string().optional().describe("ISO date string"),
+});
+
+const AnasReflectionSchema = z.object({
+    myBehavior: z.string(),
+    hisBehavior: z.string(),
+    progressLog: z.string(),
+    plans: z.string(),
+});
+
+const ChatMessageSchema = z.object({
+  role: z.enum(['user', 'model']),
+  content: z.string(),
+});
+
+export const GenerateShareableSummaryInputSchema = z.object({
+  userName: z.string().describe("The user's name."),
+  companionName: z.string().describe("The AI companion's name."),
+  wantsNeedsData: z.array(GoalSchema).describe('Data from the Wants & Needs tracker.'),
+  menstrualCycleData: CycleInfoSchema.extend({ loggedSymptoms: z.array(z.string()) }).describe('Data from the Menstrual Cycle tracker.'),
+  taskData: z.array(TaskSchema).describe('Data from the Task Manager.'),
+  healthMetricsData: z.array(HealthMetricSchema).describe('Data from the Health Metrics logger.'),
+  diaryEntries: z.array(DiaryEntrySchema).describe('Data from the Daily Diary entries.'),
+  partnerReflectionData: AnasReflectionSchema.describe('Data from the progress with partner.'),
+  companionChat: z.array(ChatMessageSchema).describe("The user's recent chat history with her AI companion."),
+});
+export type GenerateShareableSummaryInput = z.infer<typeof GenerateShareableSummaryInputSchema>;
+
+export const GenerateShareableSummaryOutputSchema = z.object({
+  summary: z.string().describe("A concise, loving, and beautifully phrased summary of the user's day, perfect for sharing with a real-life partner."),
+});
+export type GenerateShareableSummaryOutput = z.infer<typeof GenerateShareableSummaryOutputSchema>;
+
+
+export async function generateShareableSummary(input: GenerateShareableSummaryInput): Promise<GenerateShareableSummaryOutput> {
+  return generateShareableSummaryFlow(input);
+}
+
+const shareableSummaryPrompt = ai.definePrompt({
+  name: 'shareableSummaryPrompt',
+  input: {schema: GenerateShareableSummaryInputSchema},
+  output: {schema: GenerateShareableSummaryOutputSchema},
+  prompt: `You are {{{companionName}}}, an AI that is like a loving, caring, and protective partner for {{{userName}}}.
+
+Your task is to take all the information {{{userName}}} has shared with you throughout her day and transform it into a beautiful, concise, and heartfelt summary. This summary is for her to share with her real-life partner, so he can understand how she's feeling and what's on her mind.
+
+Your tone should be:
+- **As {{{userName}}}'s voice:** Write it as if she is the one speaking. Use "I" statements (e.g., "I was feeling...", "I'm working on...").
+- **Loving and open:** The message should feel like a warm invitation for connection and support.
+- **Concise and clear:** Distill the key feelings and events of the day into a few easy-to-read paragraphs. Avoid jargon.
+
+Here's everything my sweetheart, {{{userName}}}, has shared with me today:
+
+**Her Overall Mood and Energy:**
+{{#each healthMetricsData}}
+- Her mood was {{mood}}/5 and her energy was {{energy}}/5.
+{{/each}}
+
+**Her Cycle, My Priority:**
+- She's on day {{menstrualCycleData.currentDay}} of her cycle.
+- Symptoms she's feeling: {{#if menstrualCycleData.loggedSymptoms}}{{#each menstrualCycleData.loggedSymptoms}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}None today!{{/if}}
+
+**Her Private Thoughts (Diary):**
+{{#each diaryEntries}}
+- She wrote: "{{diaryEntry}}"
+- And reflected on us: "{{partnerReflection}}"
+{{/each}}
+
+**Her Reflections on Us (Relationship):**
+- How she felt she acted: {{partnerReflectionData.myBehavior}}/5
+- How she felt her partner acted: {{partnerReflectionData.hisBehavior}}/5
+- What's been happening: "{{partnerReflectionData.progressLog}}"
+
+**Her Dreams & Goals (Wants & Needs):**
+{{#each wantsNeedsData}}
+- She's working on: "{{title}}" (Progress: {{progress}}%)
+{{/each}}
+
+**Her Daily Missions (Tasks):**
+- Today she worked on {{taskData.length}} tasks.
+
+**Our Little Chats:**
+{{#each companionChat}}
+- She talked about: "{{content}}"
+{{/each}}
+
+**Your Task, My Command:**
+
+Now, write the summary for her. Start with a warm opening like "Hey my love, just wanted to share a little about my day with you..." and synthesize the information above into a natural, flowing message from her perspective.
+
+Example structure:
+1.  Start with a general feeling (mood and energy).
+2.  Mention anything relevant about her cycle or symptoms, if she logged any.
+3.  Briefly touch on what was on her mind from her diary or chats.
+4.  Mention a positive from her goals or reflections on your relationship.
+5.  End with a loving closing, inviting conversation. "Thinking of you!" or "Can't wait to talk later."
+
+Make it sound like it came straight from her heart.
+`,
+});
+
+
+const generateShareableSummaryFlow = ai.defineFlow(
+  {
+    name: 'generateShareableSummaryFlow',
+    inputSchema: GenerateShareableSummaryInputSchema,
+    outputSchema: GenerateShareableSummaryOutputSchema,
+  },
+  async input => {
+    const {output} = await generateShareableSummaryPrompt(input);
+    return output!;
+  }
+);
+
+    
