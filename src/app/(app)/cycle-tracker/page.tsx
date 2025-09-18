@@ -205,7 +205,7 @@ export default function CycleTrackerPage() {
               onSelect={setRange}
               className="rounded-md border"
             />
-             <div className="flex gap-2 mt-4">
+             <div className="flex flex-col sm:flex-row gap-2 mt-4">
                 <Button onClick={handleLogPeriod}>Log Period Dates</Button>
                 <Button variant="outline" onClick={handlePredictCycles} disabled={isPredictionLoading}>
                   {isPredictionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
