@@ -2,7 +2,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import type { Task, Goal, HealthMetric, CycleInfo, DiaryEntry, AnasReflection } from '@/lib/types';
+import type { Task, Goal, HealthMetric, CycleInfo, DiaryEntry, AnasReflection, ChatMessage } from '@/lib/types';
 
 // Helper function to get initial state from localStorage
 function getInitialState<T>(key: string, defaultValue: T): T {
@@ -59,6 +59,8 @@ interface AppContextType {
   setOnboarded: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   userName: string;
   setUserName: React.Dispatch<React.SetStateAction<string>>;
+  companionName: string;
+  setCompanionName: React.Dispatch<React.SetStateAction<string>>;
   tasks: Task[];
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
   goals: Goal[];
@@ -73,6 +75,8 @@ interface AppContextType {
   setDiaryEntries: React.Dispatch<React.SetStateAction<DiaryEntry[]>>;
   anasReflection: AnasReflection;
   setAnasReflection: React.Dispatch<React.SetStateAction<AnasReflection>>;
+  chatHistory: ChatMessage[];
+  setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -80,6 +84,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [onboarded, setOnboarded] = useState<boolean | undefined>(undefined);
   const [userName, setUserName] = useState<string>(() => getInitialState('empoweryou-userName', ''));
+  const [companionName, setCompanionName] = useState<string>(() => getInitialState('empoweryou-companionName', 'Alex'));
   const [tasks, setTasks] = useState<Task[]>(() => getInitialState('empoweryou-tasks', []));
   const [goals, setGoals] = useState<Goal[]>(() => getInitialState('empoweryou-goals', []));
   const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>(() => getInitialState('empoweryou-healthMetrics', []));
@@ -87,6 +92,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [loggedSymptoms, setLoggedSymptoms] = useState<string[]>(() => getInitialState('empoweryou-loggedSymptoms', []));
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>(() => getInitialState('empoweryou-diaryEntries', []));
   const [anasReflection, setAnasReflection] = useState<AnasReflection>(() => getInitialState('empoweryou-anasReflection', initialAnasReflection));
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>(() => getInitialState('empoweryou-chatHistory', []));
   
   useEffect(() => {
     const storedOnboarded = getInitialState('empoweryou-onboarded', false);
@@ -99,6 +105,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         window.localStorage.setItem('empoweryou-onboarded', JSON.stringify(onboarded));
       }
       window.localStorage.setItem('empoweryou-userName', JSON.stringify(userName));
+      window.localStorage.setItem('empoweryou-companionName', JSON.stringify(companionName));
       window.localStorage.setItem('empoweryou-tasks', JSON.stringify(tasks));
       window.localStorage.setItem('empoweryou-goals', JSON.stringify(goals));
       window.localStorage.setItem('empoweryou-healthMetrics', JSON.stringify(healthMetrics));
@@ -106,23 +113,26 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       window.localStorage.setItem('empoweryou-loggedSymptoms', JSON.stringify(loggedSymptoms));
       window.localStorage.setItem('empoweryou-diaryEntries', JSON.stringify(diaryEntries));
       window.localStorage.setItem('empoweryou-anasReflection', JSON.stringify(anasReflection));
+      window.localStorage.setItem('empoweryou-chatHistory', JSON.stringify(chatHistory));
     } catch (error) {
       console.warn('Error writing to localStorage:', error);
     }
-  }, [onboarded, userName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, anasReflection]);
+  }, [onboarded, userName, companionName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, anasReflection, chatHistory]);
 
 
   return (
     <AppContext.Provider value={{
       onboarded, setOnboarded,
       userName, setUserName,
+      companionName, setCompanionName,
       tasks, setTasks,
       goals, setGoals,
       healthMetrics, setHealthMetrics,
       cycleInfo, setCycleInfo,
       loggedSymptoms, setLoggedSymptoms,
       diaryEntries, setDiaryEntries,
-      anasReflection, setAnasReflection
+      anasReflection, setAnasReflection,
+      chatHistory, setChatHistory
     }}>
       {children}
     </AppContext.Provider>

@@ -1,3 +1,4 @@
+
 export type Task = {
   id: string;
   text: string;
@@ -55,4 +56,9 @@ export type DiaryEntry = {
   energyLevels: string;
   partnerReflection: string;
   createdAt: string;
+};
+
+export type ChatMessage = {
+  role: 'user' | 'model';
+  content: string;
 };

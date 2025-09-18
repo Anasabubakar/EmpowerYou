@@ -35,6 +35,8 @@ export default function SettingsPage() {
   const {
     userName,
     setUserName,
+    companionName,
+    setCompanionName,
     setTasks,
     setGoals,
     setHealthMetrics,
@@ -44,6 +46,7 @@ export default function SettingsPage() {
   
 
   const [name, setName] = useState(userName);
+  const [cName, setCName] = useState(companionName);
 
   const handleClearData = () => {
     localStorage.clear();
@@ -52,6 +55,7 @@ export default function SettingsPage() {
     setHealthMetrics([]);
     setDiaryEntries([]);
     setUserName('');
+    setCompanionName('Alex');
     if(setOnboarded) setOnboarded(false);
     toast({
       title: 'Local Data Cleared',
@@ -67,6 +71,14 @@ export default function SettingsPage() {
     toast({
       title: 'Name Updated',
       description: `Your name has been updated to ${name}.`,
+    });
+  };
+  
+  const handleCompanionNameChange = () => {
+    setCompanionName(cName);
+    toast({
+      title: 'Companion Name Updated',
+      description: `Your companion's name is now ${cName}.`,
     });
   };
 
@@ -120,10 +132,17 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">Your Name</Label>
               <div className="flex gap-2">
                 <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name"/>
                 <Button onClick={handleNameChange}>Save</Button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="companion-name">Companion&apos;s Name</Label>
+              <div className="flex gap-2">
+                <Input id="companion-name" value={cName} onChange={(e) => setCName(e.target.value)} placeholder="e.g., Alex"/>
+                <Button onClick={handleCompanionNameChange}>Save</Button>
               </div>
             </div>
         </CardContent>

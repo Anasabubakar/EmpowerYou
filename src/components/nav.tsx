@@ -8,6 +8,7 @@ import {
   HeartPulse,
   LayoutDashboard,
   ListTodo,
+  MessageCircleHeart,
   Settings,
   Sparkles,
   Users,
@@ -30,8 +31,9 @@ const navItems = [
   { href: '/tasks', icon: ListTodo, label: 'Task Manager' },
   { href: '/health-metrics', icon: HeartPulse, label: 'Health Metrics' },
   { href: '/diary', icon: BookHeart, label: 'Daily Diary' },
-  { href: '/insights', icon: Sparkles, label: 'Insights' },
   { href: '/anas-reflection', icon: Users, label: 'Relationship Tracker' },
+  { href: '/companion', icon: MessageCircleHeart, label: 'My Companion' },
+  { href: '/insights', icon: Sparkles, label: 'Insights' },
   { href: '/settings', icon: Settings, label: 'Settings' },
 ];
 
