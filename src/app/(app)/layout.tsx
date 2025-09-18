@@ -24,12 +24,15 @@ function AppContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
+    // Only redirect if onboarding is definitively false.
+    // `undefined` means it's still loading, so we wait.
     if (onboarded === false) {
       router.push('/onboarding');
     }
   }, [onboarded, router]);
 
-  if (onboarded === false || userName === '') {
+  // Show loading until we have the user's name and know they are onboarded.
+  if (onboarded !== true || !userName) {
     return <Loading />;
   }
   

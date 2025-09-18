@@ -11,8 +11,11 @@ function RootPageContent() {
     const { onboarded } = useAppContext();
 
     useEffect(() => {
-        // Simple check to see if onboarding is complete.
-        // If not, redirect to onboarding. Otherwise, go to dashboard.
+        // We wait until the onboarded status is definitively known from localStorage.
+        if (onboarded === undefined) {
+            return; // Still loading the state
+        }
+        
         if (onboarded) {
             router.replace('/dashboard');
         } else {
@@ -20,6 +23,7 @@ function RootPageContent() {
         }
     }, [onboarded, router]);
 
+    // Show a loading screen while we determine the onboarding status.
     return <Loading />;
 }
 
