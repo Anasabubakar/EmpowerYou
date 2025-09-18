@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
@@ -5,6 +6,8 @@ import type { Task, Goal, HealthMetric, CycleInfo, DiaryEntry, AnasReflection } 
 import { mockTasks, mockGoals, mockHealthMetrics, mockCycleInfo, mockAnasReflection } from '@/lib/data';
 
 interface AppContextType {
+  userName: string;
+  setUserName: React.Dispatch<React.SetStateAction<string>>;
   tasks: Task[];
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
   goals: Goal[];
@@ -24,6 +27,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
+  const [userName, setUserName] = useState<string>('Rodeeyah');
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [goals, setGoals] = useState<Goal[]>(mockGoals);
   const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>(mockHealthMetrics);
@@ -35,6 +39,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AppContext.Provider value={{
+      userName, setUserName,
       tasks, setTasks,
       goals, setGoals,
       healthMetrics, setHealthMetrics,

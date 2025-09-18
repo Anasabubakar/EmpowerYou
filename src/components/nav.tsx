@@ -8,6 +8,7 @@ import {
   HeartPulse,
   LayoutDashboard,
   ListTodo,
+  Settings,
   Sparkles,
   Users,
 } from 'lucide-react';
@@ -31,6 +32,7 @@ const navItems = [
   { href: '/diary', icon: BookHeart, label: 'Daily Diary' },
   { href: '/insights', icon: Sparkles, label: 'Insights' },
   { href: '/anas-reflection', icon: Users, label: 'Relationship Tracker' },
+  { href: '/settings', icon: Settings, label: 'Settings' },
 ];
 
 export function Nav() {
@@ -41,7 +43,7 @@ export function Nav() {
     if (isMobile) {
       setOpenMobile(false);
     }
-  }
+  };
 
   return (
     <SidebarMenu>

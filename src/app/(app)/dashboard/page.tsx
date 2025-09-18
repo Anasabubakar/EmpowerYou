@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -24,7 +25,7 @@ import { HealthMetric } from '@/lib/types';
 import { useEffect, useState } from 'react';
 
 export default function DashboardPage() {
-  const { goals, tasks, cycleInfo, healthMetrics } = useAppContext();
+  const { userName, goals, tasks, cycleInfo, healthMetrics } = useAppContext();
   const [latestMetric, setLatestMetric] = useState<HealthMetric | null>(null);
 
   useEffect(() => {
@@ -43,7 +44,7 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-headline font-bold">Welcome back, Rodeeyah!</h1>
+        <h1 className="text-3xl font-headline font-bold">Welcome back, {userName}!</h1>
         <p className="text-muted-foreground">Here&apos;s a snapshot of your day.</p>
       </div>
 
