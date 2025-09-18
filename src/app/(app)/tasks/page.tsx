@@ -131,7 +131,7 @@ function TaskItem({
         <label
           htmlFor={`task-${task.id}`}
           className={cn(
-            'flex-grow text-sm font-medium cursor-pointer',
+            'flex-grow text-sm font-medium cursor-pointer break-words',
             task.completed && 'text-muted-foreground line-through'
           )}
         >
@@ -271,14 +271,15 @@ export default function TaskManagerPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Input
               placeholder="What's next on your mind, sweetheart?"
               value={newTask}
               onChange={(e) => setNewTask(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
+              className="flex-grow"
             />
-            <Button onClick={handleAddTask}>
+            <Button onClick={handleAddTask} className="w-full sm:w-auto">
               <PlusCircle className="mr-2 h-4 w-4" /> Add Task
             </Button>
           </div>

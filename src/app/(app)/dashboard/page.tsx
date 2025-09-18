@@ -49,7 +49,7 @@ function CompanionGreeting() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-muted-foreground italic">
+        <p className="text-muted-foreground italic break-words">
             &quot;{greeting}&quot;
         </p>
          <Link href="/companion">
