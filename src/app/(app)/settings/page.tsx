@@ -28,7 +28,6 @@ import {
 import { useAppContext } from '@/context/app-context';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import { useAuth } from '@/context/auth-context';
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -40,23 +39,27 @@ export default function SettingsPage() {
     setGoals,
     setHealthMetrics,
     setDiaryEntries,
+    setOnboarded,
   } = useAppContext();
   
-  const { user } = useAuth();
 
   const [name, setName] = useState(userName);
 
   const handleClearData = () => {
-    // This will be replaced with Firestore data deletion in the future
+    localStorage.clear();
     setTasks([]);
     setGoals([]);
     setHealthMetrics([]);
     setDiaryEntries([]);
+    setUserName('');
+    if(setOnboarded) setOnboarded(false);
     toast({
       title: 'Local Data Cleared',
-      description: 'All local application data has been removed.',
+      description: 'All application data has been removed. The app will now reload.',
       variant: 'destructive',
     });
+    // Reload to trigger onboarding
+    setTimeout(() => window.location.reload(), 1500);
   };
   
   const handleNameChange = () => {
@@ -123,10 +126,6 @@ export default function SettingsPage() {
                 <Button onClick={handleNameChange}>Save</Button>
               </div>
             </div>
-             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" value={user?.email ?? 'No email associated'} disabled />
-            </div>
         </CardContent>
       </Card>
 
@@ -134,7 +133,7 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Data Management</CardTitle>
           <CardDescription>
-            Manage your application data. Note: this currently only clears local data.
+           This will clear all data and restart the app.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -142,7 +141,7 @@ export default function SettingsPage() {
             <AlertDialogTrigger asChild>
               <Button variant="destructive">
                 <Trash2 className="mr-2 h-4 w-4" />
-                Clear Local Data
+                Clear All Data & Reset
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -150,7 +149,7 @@ export default function SettingsPage() {
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This action cannot be undone. This will permanently delete all
-                  your data from the application's local storage. Cloud-synced data will not be affected.
+                  your data and reset the application to its initial state.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

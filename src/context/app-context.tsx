@@ -13,6 +13,9 @@ function getInitialState<T>(key: string, defaultValue: T): T {
   try {
     const item = window.localStorage.getItem(key);
     if (item) {
+      if (key === 'empoweryou-onboarded') {
+        return JSON.parse(item) as T;
+      }
       // Special handling for dates inside Goal objects
       if (key === 'empoweryou-goals') {
         const parsed = JSON.parse(item);
@@ -39,6 +42,8 @@ function getInitialState<T>(key: string, defaultValue: T): T {
 
 
 interface AppContextType {
+  onboarded?: boolean;
+  setOnboarded: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   userName: string;
   setUserName: React.Dispatch<React.SetStateAction<string>>;
   tasks: Task[];
@@ -60,7 +65,8 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [userName, setUserName] = useState<string>(() => getInitialState('empoweryou-userName', 'Rodeeyah'));
+  const [onboarded, setOnboarded] = useState<boolean | undefined>(undefined);
+  const [userName, setUserName] = useState<string>(() => getInitialState('empoweryou-userName', ''));
   const [tasks, setTasks] = useState<Task[]>(() => getInitialState('empoweryou-tasks', mockTasks));
   const [goals, setGoals] = useState<Goal[]>(() => getInitialState('empoweryou-goals', mockGoals));
   const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>(() => getInitialState('empoweryou-healthMetrics', mockHealthMetrics));
@@ -70,7 +76,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [anasReflection, setAnasReflection] = useState<AnasReflection>(() => getInitialState('empoweryou-anasReflection', mockAnasReflection));
   
   useEffect(() => {
+    const storedOnboarded = getInitialState('empoweryou-onboarded', false);
+    setOnboarded(storedOnboarded);
+  }, []);
+
+  useEffect(() => {
     try {
+      if (onboarded !== undefined) {
+        window.localStorage.setItem('empoweryou-onboarded', JSON.stringify(onboarded));
+      }
       window.localStorage.setItem('empoweryou-userName', JSON.stringify(userName));
       window.localStorage.setItem('empoweryou-tasks', JSON.stringify(tasks));
       window.localStorage.setItem('empoweryou-goals', JSON.stringify(goals));
@@ -82,11 +96,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.warn('Error writing to localStorage:', error);
     }
-  }, [userName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, anasReflection]);
+  }, [onboarded, userName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, anasReflection]);
 
 
   return (
     <AppContext.Provider value={{
+      onboarded, setOnboarded,
       userName, setUserName,
       tasks, setTasks,
       goals, setGoals,
