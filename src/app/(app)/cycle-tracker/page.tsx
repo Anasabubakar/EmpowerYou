@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -11,6 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,13 +25,23 @@ import { useAppContext } from '@/context/app-context';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info } from 'lucide-react';
+import { Info, Loader2, Sparkles, Bot } from 'lucide-react';
+import { predictNextCycles } from '@/ai/flows/predict-next-cycles';
+import { suggestSymptomRelief } from '@/ai/flows/suggest-symptom-relief';
 
 export default function CycleTrackerPage() {
   const { cycleInfo, setCycleInfo, loggedSymptoms, setLoggedSymptoms } = useAppContext();
   const { toast } = useToast();
   const [range, setRange] = useState<DateRange | undefined>();
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>(loggedSymptoms);
+  
+  const [isPredictionLoading, setIsPredictionLoading] = useState(false);
+  const [isSymptomsLoading, setIsSymptomsLoading] = useState(false);
+  const [predictedDates, setPredictedDates] = useState<string[]>([]);
+  const [symptomSuggestions, setSymptomSuggestions] = useState('');
+  
+  const [isPredictionDialogOpen, setIsPredictionDialogOpen] = useState(false);
+  const [isSuggestionDialogOpen, setIsSuggestionDialogOpen] = useState(false);
 
   const symptoms = ["Cramps", "Bloating", "Headache", "Mood Swings", "Fatigue", "Acne"];
 
@@ -38,19 +55,17 @@ export default function CycleTrackerPage() {
   
   const handleLogPeriod = () => {
     if (range?.from) {
-      setCycleInfo(prev => {
-          const cycleLength = 28; // Assuming an average cycle length
-          const today = new Date();
-          const newCurrentDay = differenceInDays(today, range.from!) + 1;
-          const newPredictedDate = addDays(range.from!, cycleLength);
-          const newNextPeriodIn = differenceInDays(newPredictedDate, today);
+      const cycleLength = 28; // Assuming an average cycle length
+      const today = new Date();
+      const newCurrentDay = differenceInDays(today, range.from) + 1;
+      const newPredictedDate = addDays(range.from, cycleLength);
+      const newNextPeriodIn = differenceInDays(newPredictedDate, today);
 
-          return {
-            currentDay: newCurrentDay > 0 ? newCurrentDay : 1,
-            predictedDate: newPredictedDate,
-            nextPeriodIn: newNextPeriodIn >= 0 ? newNextPeriodIn : 0,
-            lastPeriodDate: range.from,
-          }
+      setCycleInfo({
+        currentDay: newCurrentDay > 0 ? newCurrentDay : 1,
+        predictedDate: newPredictedDate,
+        nextPeriodIn: newNextPeriodIn >= 0 ? newNextPeriodIn : 0,
+        lastPeriodDate: range.from,
       });
 
       toast({
@@ -66,21 +81,64 @@ export default function CycleTrackerPage() {
     }
   }
   
-  const handleLogSymptoms = () => {
-    if(selectedSymptoms.length > 0) {
-        setLoggedSymptoms(selectedSymptoms);
+  const handleLogSymptoms = async () => {
+    if (selectedSymptoms.length > 0) {
+      setLoggedSymptoms(selectedSymptoms);
+      toast({
+        title: "Symptoms Logged",
+        description: `Logged symptoms: ${selectedSymptoms.join(', ')}`,
+      });
+      
+      setIsSymptomsLoading(true);
+      try {
+        const result = await suggestSymptomRelief(selectedSymptoms);
+        setSymptomSuggestions(result.suggestions);
+        setIsSuggestionDialogOpen(true);
+      } catch (error) {
+        console.error(error);
         toast({
-            title: "Symptoms Logged",
-            description: `Logged symptoms: ${selectedSymptoms.join(', ')}`,
+          title: "AI Error",
+          description: "Could not get symptom suggestions.",
+          variant: "destructive",
         });
+      } finally {
+        setIsSymptomsLoading(false);
+      }
     } else {
-        toast({
-            title: "No Symptoms Selected",
-            description: "Please select at least one symptom to log.",
-            variant: "destructive",
-        });
+      toast({
+        title: "No Symptoms Selected",
+        description: "Please select at least one symptom to log.",
+        variant: "destructive",
+      });
     }
   }
+
+  const handlePredictCycles = async () => {
+    if (!cycleInfo.lastPeriodDate) {
+      toast({
+        title: "No Period Logged",
+        description: "Please log your last period date first.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsPredictionLoading(true);
+    try {
+      const result = await predictNextCycles({ lastPeriodDate: cycleInfo.lastPeriodDate.toISOString() });
+      setPredictedDates(result.predictedDates);
+      setIsPredictionDialogOpen(true);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "AI Error",
+        description: "Could not predict future cycles.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsPredictionLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -146,7 +204,13 @@ export default function CycleTrackerPage() {
               onSelect={setRange}
               className="rounded-md border"
             />
-             <Button className="mt-4" onClick={handleLogPeriod}>Log Period Dates</Button>
+             <div className="flex gap-2 mt-4">
+                <Button onClick={handleLogPeriod}>Log Period Dates</Button>
+                <Button variant="outline" onClick={handlePredictCycles} disabled={isPredictionLoading}>
+                  {isPredictionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                  Predict Future Cycles
+                </Button>
+             </div>
           </CardContent>
         </Card>
       </div>
@@ -175,9 +239,55 @@ export default function CycleTrackerPage() {
           </div>
         </CardContent>
         <CardContent>
-          <Button onClick={handleLogSymptoms}>Save Symptoms</Button>
+          <Button onClick={handleLogSymptoms} disabled={isSymptomsLoading}>
+            {isSymptomsLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
+            Save & Get AI Advice
+          </Button>
         </CardContent>
       </Card>
+      
+      <Dialog open={isPredictionDialogOpen} onOpenChange={setIsPredictionDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>AI-Powered Cycle Prediction</DialogTitle>
+            <DialogDescription>
+              Based on your last cycle, here are the predicted start dates for your next three periods.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <ul className="space-y-2">
+              {predictedDates.map((date, index) => (
+                <li key={index} className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <span className="font-medium">Prediction {index + 1}:</span>
+                  <span>{date}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs text-muted-foreground mt-4 text-center">This is an estimate. Your actual cycle may vary.</p>
+          </div>
+          <DialogFooter>
+             <Button onClick={() => setIsPredictionDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      <Dialog open={isSuggestionDialogOpen} onOpenChange={setIsSuggestionDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>AI-Powered Symptom Relief</DialogTitle>
+            <DialogDescription>
+              Here are some gentle, non-medical suggestions for your symptoms.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 whitespace-pre-wrap text-sm">
+            {symptomSuggestions}
+          </div>
+          <DialogFooter>
+             <Button onClick={() => setIsSuggestionDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

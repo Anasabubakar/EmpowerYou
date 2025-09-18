@@ -17,7 +17,7 @@ export type SuggestSymptomReliefInput = z.infer<typeof SuggestSymptomReliefInput
 const SuggestSymptomReliefOutputSchema = z.object({
   suggestions: z.string().describe('A paragraph of helpful, non-medical suggestions for the given symptoms.'),
 });
-export type SuggestSymptomReliefOutput = z.infer<typeof SuggestSymptonReliefOutputSchema>;
+export type SuggestSymptomReliefOutput = z.infer<typeof SuggestSymptomReliefOutputSchema>;
 
 export async function suggestSymptomRelief(input: SuggestSymptomReliefInput): Promise<SuggestSymptomReliefOutput> {
   return suggestSymptomReliefFlow(input);
