@@ -72,7 +72,7 @@ export default function InsightsPage() {
     loggedSymptoms,
     healthMetrics,
     diaryEntries,
-    relationshipTracker,
+    anasReflection,
     chatHistory,
     companionName,
   } = useAppContext();
@@ -103,7 +103,7 @@ export default function InsightsPage() {
       taskData: tasks.map(t => ({ ...t, createdAt: t.createdAt })),
       healthMetricsData: healthMetrics.map(m => ({ ...m, createdAt: m.createdAt })),
       diaryEntries: diaryEntries.slice(-7), // a few recent entries
-      partnerReflectionData: relationshipTracker,
+      partnerReflectionData: anasReflection,
     };
 
 
@@ -146,7 +146,7 @@ export default function InsightsPage() {
         createdAt: m.createdAt,
       })),
       diaryEntries: diaryEntries.slice(-1),
-      partnerReflectionData: relationshipTracker,
+      partnerReflectionData: anasReflection,
       companionChat: getTodaysChat(),
       companionName: companionName,
     };

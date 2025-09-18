@@ -26,7 +26,7 @@ const HealthMetricSchema = z.object({
   date: z.string(),
   mood: z.number().min(1).max(5),
   energy: z.number().min(1).max(5),
-  createdAt: z_string().describe("ISO date string of when the metric was logged."),
+  createdAt: z.string().describe("ISO date string of when the metric was logged."),
 });
 
 const DiaryEntrySchema = z.object({
@@ -67,14 +67,16 @@ const GenerateShareableSummaryInputSchema = z.object({
   diaryEntries: z.array(DiaryEntrySchema).describe('Data from the Daily Diary entries.'),
   partnerReflectionData: AnasReflectionSchema.describe('Data from the progress with partner.'),
   companionChat: z.array(ChatMessageSchema).describe("The user's recent chat history with their AI companion."),
+  companionName: z.string().describe("The AI companion's name."),
 });
 export type GenerateShareableSummaryInput = z.infer<typeof GenerateShareableSummaryInputSchema>;
 
 const GenerateShareableSummaryOutputSchema = z.object({
   summary: z.string().describe("A concise, warm, and beautifully phrased summary of the user's day, from their perspective, perfect for sharing with a real-life partner."),
 });
+export type GenerateShareableSummaryOutput = z.infer<typeof GenerateShareableSummaryOutputSchema>;
 
-export async function generateShareableSummary(input: GenerateShareableSummaryInput): Promise<z.infer<typeof GenerateShareableSummaryOutputSchema>> {
+export async function generateShareableSummary(input: GenerateShareableSummaryInput): Promise<GenerateShareableSummaryOutput> {
   return generateShareableSummaryFlow(input);
 }
 
@@ -149,9 +151,7 @@ const generateShareableSummaryFlow = ai.defineFlow(
     outputSchema: GenerateShareableSummaryOutputSchema,
   },
   async input => {
-    // We need to remove the companionName before sending it to the prompt, as it's not in the schema.
-    const { companionName, ...promptInput } = input as any;
-    const {output} = await shareableSummaryPrompt(promptInput);
+    const {output} = await shareableSummaryPrompt(input);
     return output!;
   }
 );
