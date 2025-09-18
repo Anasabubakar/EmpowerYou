@@ -5,14 +5,21 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppLogo } from '@/components/app-logo';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { useAppContext } from '@/context/app-context';
+import { AppProvider, useAppContext } from '@/context/app-context';
 import { ArrowRight } from 'lucide-react';
 
-export default function OnboardingPage() {
+function OnboardingContent() {
   const router = useRouter();
   const { toast } = useToast();
   const { setUserName, setOnboarded } = useAppContext();
@@ -21,15 +28,15 @@ export default function OnboardingPage() {
   const handleContinue = () => {
     if (name.trim().length < 2) {
       toast({
-        title: "Invalid Name",
-        description: "Please enter a name with at least 2 characters.",
-        variant: "destructive",
+        title: 'Invalid Name',
+        description: 'Please enter a name with at least 2 characters.',
+        variant: 'destructive',
       });
       return;
     }
 
-    setUserName(name);
-    setOnboarded(true);
+    if (setUserName) setUserName(name);
+    if (setOnboarded) setOnboarded(true);
 
     toast({
       title: `Welcome, ${name}!`,
@@ -53,32 +60,43 @@ export default function OnboardingPage() {
             Let's get you started. What should we call you?
           </p>
         </div>
-        
-        <Card>
-            <CardHeader>
-                <CardTitle>Your Name</CardTitle>
-                <CardDescription>This is how we'll greet you in the app.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-2">
-                    <Label htmlFor="name" className="sr-only">Name</Label>
-                    <Input 
-                        id="name" 
-                        placeholder="e.g., Jane Doe" 
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)} 
-                        onKeyDown={(e) => e.key === 'Enter' && handleContinue()}
-                    />
-                </div>
-            </CardContent>
-            <CardFooter>
-                 <Button className="w-full" onClick={handleContinue}>
-                    Continue <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-            </CardFooter>
-        </Card>
 
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Name</CardTitle>
+            <CardDescription>
+              This is how we'll greet you in the app.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label htmlFor="name" className="sr-only">
+                Name
+              </Label>
+              <Input
+                id="name"
+                placeholder="e.g., Jane Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleContinue()}
+              />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button className="w-full" onClick={handleContinue}>
+              Continue <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     </div>
+  );
+}
+
+export default function OnboardingPage() {
+  return (
+    <AppProvider>
+      <OnboardingContent />
+    </AppProvider>
   );
 }
