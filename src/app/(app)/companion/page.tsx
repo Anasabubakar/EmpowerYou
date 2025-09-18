@@ -78,7 +78,9 @@ export default function CompanionPage() {
   return (
     <div className="flex h-[calc(100vh-8rem)] flex-col">
        <div className="mb-4 text-center">
-        <h1 className="text-3xl font-headline font-bold">Your Companion, {companionName}</h1>
+        <h1 className="text-3xl font-headline font-bold">
+          {companionName === 'Companion' ? 'Your Companion' : `Your Companion, ${companionName}`}
+        </h1>
         <p className="text-muted-foreground">
           She's here to listen. Tell her anything.
         </p>
