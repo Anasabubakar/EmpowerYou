@@ -42,6 +42,10 @@ export default function SettingsPage() {
     setHealthMetrics,
     setDiaryEntries,
     setOnboarded,
+    setCycleInfo,
+    setLoggedSymptoms,
+    setRelationshipTracker,
+    setChatHistory,
   } = useAppContext();
   
 
@@ -56,6 +60,10 @@ export default function SettingsPage() {
     setDiaryEntries([]);
     setUserName('');
     setCompanionName('Companion');
+    setCycleInfo({ currentDay: 0, nextPeriodIn: 0, predictedDate: new Date(), lastPeriodDate: undefined });
+    setLoggedSymptoms([]);
+    setRelationshipTracker({ myBehavior: '3', hisBehavior: '3', progressLog: '', plans: '' });
+    setChatHistory([]);
     if(setOnboarded) setOnboarded(false);
     toast({
       title: 'Local Data Cleared',
