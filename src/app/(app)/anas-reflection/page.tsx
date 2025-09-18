@@ -117,7 +117,7 @@ export default function RelationshipTrackerPage() {
       </div>
 
       <Tabs defaultValue="daily">
-        <TabsList className="grid w-full grid-cols-2 md:w-1/3">
+        <TabsList className="grid w-full grid-cols-2 md:max-w-sm">
           <TabsTrigger value="daily">Daily Reflection</TabsTrigger>
           <TabsTrigger value="summary">Summary</TabsTrigger>
         </TabsList>
