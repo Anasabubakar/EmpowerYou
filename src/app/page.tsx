@@ -1,5 +1,11 @@
 import { redirect } from 'next/navigation';
 
-export default function RootPage() {
+// Artificial delay to ensure loading.tsx is shown
+async function wait(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export default async function RootPage() {
+  await wait(1000); // Wait for 1 second
   redirect('/dashboard');
 }
