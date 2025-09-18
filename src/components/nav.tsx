@@ -49,7 +49,6 @@ export function Nav() {
         <SidebarMenuItem key={item.href}>
           <Link href={item.href} onClick={handleLinkClick}>
             <SidebarMenuButton
-              as="a"
               isActive={pathname.startsWith(item.href)}
               className="font-headline cursor-pointer"
             >
