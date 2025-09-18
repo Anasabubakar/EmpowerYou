@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -85,7 +86,7 @@ function EditGoalDialog({
             </Label>
             <Textarea
               id="description"
-              value={editableGoal.description}
+              value={editableGoal.description || ''}
               onChange={(e) =>
                 setEditableGoal({
                   ...editableGoal,

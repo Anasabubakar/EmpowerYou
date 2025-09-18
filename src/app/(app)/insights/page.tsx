@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -68,15 +69,19 @@ export default function InsightsPage() {
     const input: GeneratePersonalizedInsightsInput = {
       userName,
       currentDate: new Date().toISOString(),
-      wantsNeedsData: goals.map(g => ({...g, deadline: g.deadline.toISOString()})),
+      wantsNeedsData: goals.map(g => ({
+        ...g, 
+        deadline: g.deadline.toISOString(), 
+        createdAt: g.createdAt || new Date(0).toISOString() 
+      })),
       menstrualCycleData: { 
         ...cycleInfo, 
         predictedDate: cycleInfo.predictedDate.toISOString(),
         lastPeriodDate: cycleInfo.lastPeriodDate?.toISOString(),
         loggedSymptoms 
       },
-      taskData: tasks,
-      healthMetricsData: healthMetrics,
+      taskData: tasks.map(t => ({ ...t, createdAt: t.createdAt || new Date(0).toISOString() })),
+      healthMetricsData: healthMetrics.map(m => ({ ...m, createdAt: m.createdAt || new Date(0).toISOString() })),
       diaryEntries: diaryEntries.slice(-7), // a few recent entries
       partnerReflectionData: anasReflection,
     };
