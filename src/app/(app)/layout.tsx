@@ -15,37 +15,49 @@ import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { AppProvider } from '@/context/app-context';
 import { ThemeProvider } from '@/context/theme-context';
+import { AuthProvider, useAuth } from '@/context/auth-context';
+
+
+function LogoutButton() {
+  const { logout } = useAuth();
+  return (
+    <Button variant="ghost" className="justify-start gap-2" onClick={logout}>
+      <LogOut className="h-5 w-5 text-muted-foreground" />
+      <span className="text-foreground">Logout</span>
+    </Button>
+  );
+}
+
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
-      <AppProvider>
-        <SidebarProvider>
-          <Sidebar className="bg-background border-r">
-            <SidebarHeader className="p-4">
-              <AppLogo />
-            </SidebarHeader>
-            <SidebarContent>
-              <Nav />
-            </SidebarContent>
-            <SidebarFooter className="p-4">
-              <Button variant="ghost" className="justify-start gap-2">
-                <LogOut className="h-5 w-5 text-muted-foreground" />
-                <span className="text-foreground">Logout</span>
-              </Button>
-            </SidebarFooter>
-          </Sidebar>
-          <SidebarInset>
-            <header className="p-4 flex items-center md:hidden border-b fixed top-0 left-0 right-0 bg-background z-10 h-16">
-               <SidebarTrigger />
-               <h2 className="text-lg font-bold ml-4">EmpowerYou</h2>
-            </header>
-            <main className="min-h-screen bg-background pt-16 md:pt-0">
-                <div className="p-4 sm:p-6 lg:p-8">{children}</div>
-            </main>
-          </SidebarInset>
-        </SidebarProvider>
-      </AppProvider>
+      <AuthProvider>
+        <AppProvider>
+          <SidebarProvider>
+            <Sidebar className="bg-background border-r">
+              <SidebarHeader className="p-4">
+                <AppLogo />
+              </SidebarHeader>
+              <SidebarContent>
+                <Nav />
+              </SidebarContent>
+              <SidebarFooter className="p-4">
+                <LogoutButton />
+              </SidebarFooter>
+            </Sidebar>
+            <SidebarInset>
+              <header className="p-4 flex items-center md:hidden border-b fixed top-0 left-0 right-0 bg-background z-10 h-16">
+                 <SidebarTrigger />
+                 <h2 className="text-lg font-bold ml-4">EmpowerYou</h2>
+              </header>
+              <main className="min-h-screen bg-background pt-16 md:pt-0">
+                  <div className="p-4 sm:p-6 lg:p-8">{children}</div>
+              </main>
+            </SidebarInset>
+          </SidebarProvider>
+        </AppProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

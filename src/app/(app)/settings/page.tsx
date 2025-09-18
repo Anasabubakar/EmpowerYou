@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from '@/context/theme-context';
-import { Moon, Sun, Trash2, Bell } from 'lucide-react';
+import { Moon, Sun, Trash2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import {
@@ -28,6 +28,7 @@ import {
 import { useAppContext } from '@/context/app-context';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import { useAuth } from '@/context/auth-context';
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -39,22 +40,21 @@ export default function SettingsPage() {
     setGoals,
     setHealthMetrics,
     setDiaryEntries,
-    setAnasReflection,
-    setCycleInfo,
-    setLoggedSymptoms,
   } = useAppContext();
+  
+  const { user } = useAuth();
 
   const [name, setName] = useState(userName);
 
   const handleClearData = () => {
+    // This will be replaced with Firestore data deletion in the future
     setTasks([]);
     setGoals([]);
     setHealthMetrics([]);
     setDiaryEntries([]);
-    // Reset other data, careful with what 'default' is
     toast({
-      title: 'Application Data Cleared',
-      description: 'All your personal data has been removed.',
+      title: 'Local Data Cleared',
+      description: 'All local application data has been removed.',
       variant: 'destructive',
     });
   };
@@ -123,6 +123,10 @@ export default function SettingsPage() {
                 <Button onClick={handleNameChange}>Save</Button>
               </div>
             </div>
+             <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" value={user?.email ?? 'No email associated'} disabled />
+            </div>
         </CardContent>
       </Card>
 
@@ -130,7 +134,7 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Data Management</CardTitle>
           <CardDescription>
-            Manage your application data.
+            Manage your application data. Note: this currently only clears local data.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -138,7 +142,7 @@ export default function SettingsPage() {
             <AlertDialogTrigger asChild>
               <Button variant="destructive">
                 <Trash2 className="mr-2 h-4 w-4" />
-                Clear All Data
+                Clear Local Data
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -146,8 +150,7 @@ export default function SettingsPage() {
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This action cannot be undone. This will permanently delete all
-                  your data from the application, including goals, tasks, and
-                  health metrics.
+                  your data from the application's local storage. Cloud-synced data will not be affected.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -163,4 +166,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
