@@ -172,19 +172,25 @@ export default function CycleTrackerPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Current Cycle Day</p>
                 <p className="text-6xl font-bold text-primary">
-                  {cycleInfo.currentDay}
+                  {cycleInfo.currentDay > 0 ? cycleInfo.currentDay : '-'}
                 </p>
               </div>
             </div>
             <div className="flex items-baseline justify-center rounded-lg border p-6 text-center">
               <div>
                 <p className="text-sm text-muted-foreground">Next Period Prediction</p>
-                <p className="text-3xl font-bold">
-                  {cycleInfo.nextPeriodIn} days
-                </p>
-                {cycleInfo.predictedDate && cycleInfo.currentDay > 0 && <p className="text-sm text-muted-foreground">
-                  around {format(cycleInfo.predictedDate, 'MMM do')}
-                </p>}
+                {cycleInfo.currentDay > 0 ? (
+                  <>
+                    <p className="text-3xl font-bold">
+                      {cycleInfo.nextPeriodIn} days
+                    </p>
+                    {cycleInfo.predictedDate && <p className="text-sm text-muted-foreground">
+                      around {format(cycleInfo.predictedDate, 'MMM do')}
+                    </p>}
+                  </>
+                ) : (
+                  <p className="text-3xl font-bold">-</p>
+                )}
               </div>
             </div>
           </CardContent>

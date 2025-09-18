@@ -139,9 +139,9 @@ export default function DashboardPage() {
             <Droplets className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Day {cycleInfo.currentDay}</div>
+            <div className="text-2xl font-bold">Day {cycleInfo.currentDay > 0 ? cycleInfo.currentDay : '-'}</div>
             <p className="text-xs text-muted-foreground">
-              Next period in {cycleInfo.nextPeriodIn} days. I'm here for you.
+              {cycleInfo.currentDay > 0 ? `Next period in ${cycleInfo.nextPeriodIn} days. I'm here for you.` : 'Log your period to see predictions.'}
             </p>
             <Link href="/cycle-tracker">
               <Button size="sm" variant="outline" className="mt-4">
@@ -238,5 +238,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
