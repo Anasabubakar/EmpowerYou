@@ -46,6 +46,13 @@ function getInitialState<T>(key: string, defaultValue: T): T {
       // Special handling for dates inside CycleInfo object
       if (key === 'empoweryou-cycleInfo' && item) {
         const parsed = JSON.parse(item);
+        if (!parsed.lastPeriodDate) {
+          return {
+            ...parsed,
+            predictedDate: new Date(parsed.predictedDate),
+            lastPeriodDate: undefined,
+          } as T;
+        }
         return {
           ...parsed,
           predictedDate: new Date(parsed.predictedDate),
