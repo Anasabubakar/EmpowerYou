@@ -25,7 +25,7 @@ import { HealthMetric } from '@/lib/types';
 import { useEffect, useState } from 'react';
 
 export default function DashboardPage() {
-  const { userName, goals, tasks, cycleInfo, healthMetrics } = useAppContext();
+  const { userName, goals, tasks, cycleInfo, healthMetrics, diaryEntries } = useAppContext();
   const [latestMetric, setLatestMetric] = useState<HealthMetric | null>(null);
 
   useEffect(() => {
@@ -39,6 +39,8 @@ export default function DashboardPage() {
   
   const moodEmojis = ['😭', '😟', '😐', '😊', '😁'];
   const energyEmojis = ['😴', '☕', '⚡️', '⚡️⚡️', '🚀'];
+  
+  const latestDiaryEntry = diaryEntries.length > 0 ? diaryEntries[diaryEntries.length - 1] : null;
 
 
   return (
@@ -117,14 +119,21 @@ export default function DashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground italic">
-            &quot;I took the time to plan my week, which helped me feel more in
-            control and less stressed.&quot;
-          </p>
-          <div className="mt-4 flex items-center gap-2 text-sm text-green-600">
-            <CheckCircle2 className="h-4 w-4" />
-            <span>Daily diary and reflection completed.</span>
-          </div>
+          {latestDiaryEntry ? (
+            <>
+              <p className="text-muted-foreground italic">
+                &quot;{latestDiaryEntry.diaryEntry}&quot;
+              </p>
+              <div className="mt-4 flex items-center gap-2 text-sm text-green-600">
+                <CheckCircle2 className="h-4 w-4" />
+                <span>Daily diary and reflection completed.</span>
+              </div>
+            </>
+          ) : (
+            <p className="text-muted-foreground italic">
+              You have not submitted anything here yet.
+            </p>
+          )}
           <Link href="/diary">
             <Button className="mt-4">View Today&apos;s Entry</Button>
           </Link>
