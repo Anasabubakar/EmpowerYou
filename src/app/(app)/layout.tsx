@@ -6,9 +6,9 @@ import {
   Sidebar,
   SidebarHeader,
   SidebarContent,
-  SidebarInset,
   SidebarFooter,
   SidebarTrigger,
+  SidebarInset,
 } from '@/components/ui/sidebar';
 import { AppLogo } from '@/components/app-logo';
 import { Nav } from '@/components/nav';
