@@ -15,6 +15,9 @@ function getInitialState<T>(key: string, defaultValue: T): T {
       if (key === 'empoweryou-onboarded') {
         return JSON.parse(item) as T;
       }
+      if (key === 'empoweryou-profilePicture') {
+        return item as T; // Return raw string for data URI
+      }
       // Special handling for dates inside Goal objects
       if (key === 'empoweryou-goals' && item) {
         const parsed = JSON.parse(item);
@@ -136,7 +139,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       window.localStorage.setItem('empoweryou-userName', JSON.stringify(userName));
       window.localStorage.setItem('empoweryou-companionName', JSON.stringify(companionName));
       if (profilePicture) {
-        window.localStorage.setItem('empoweryou-profilePicture', JSON.stringify(profilePicture));
+        window.localStorage.setItem('empoweryou-profilePicture', profilePicture);
       } else {
         window.localStorage.removeItem('empoweryou-profilePicture');
       }
