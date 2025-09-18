@@ -87,6 +87,8 @@ interface AppContextType {
   setUserName: React.Dispatch<React.SetStateAction<string>>;
   companionName: string;
   setCompanionName: React.Dispatch<React.SetStateAction<string>>;
+  profilePicture: string | null;
+  setProfilePicture: React.Dispatch<React.SetStateAction<string | null>>;
   tasks: Task[];
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
   goals: Goal[];
@@ -111,6 +113,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [onboarded, setOnboarded] = useState<boolean | undefined>(undefined);
   const [userName, setUserName] = useState<string>(() => getInitialState('empoweryou-userName', ''));
   const [companionName, setCompanionName] = useState<string>(() => getInitialState('empoweryou-companionName', 'Companion'));
+  const [profilePicture, setProfilePicture] = useState<string | null>(() => getInitialState('empoweryou-profilePicture', null));
   const [tasks, setTasks] = useState<Task[]>(() => getInitialState('empoweryou-tasks', []));
   const [goals, setGoals] = useState<Goal[]>(() => getInitialState('empoweryou-goals', []));
   const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>(() => getInitialState('empoweryou-healthMetrics', []));
@@ -132,6 +135,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       }
       window.localStorage.setItem('empoweryou-userName', JSON.stringify(userName));
       window.localStorage.setItem('empoweryou-companionName', JSON.stringify(companionName));
+      if (profilePicture) {
+        window.localStorage.setItem('empoweryou-profilePicture', JSON.stringify(profilePicture));
+      } else {
+        window.localStorage.removeItem('empoweryou-profilePicture');
+      }
       window.localStorage.setItem('empoweryou-tasks', JSON.stringify(tasks));
       window.localStorage.setItem('empoweryou-goals', JSON.stringify(goals));
       window.localStorage.setItem('empoweryou-healthMetrics', JSON.stringify(healthMetrics));
@@ -143,7 +151,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.warn('Error writing to localStorage:', error);
     }
-  }, [onboarded, userName, companionName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, relationshipTracker, chatHistory]);
+  }, [onboarded, userName, companionName, profilePicture, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, relationshipTracker, chatHistory]);
 
 
   return (
@@ -151,6 +159,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       onboarded, setOnboarded,
       userName, setUserName,
       companionName, setCompanionName,
+      profilePicture, setProfilePicture,
       tasks, setTasks,
       goals, setGoals,
       healthMetrics, setHealthMetrics,

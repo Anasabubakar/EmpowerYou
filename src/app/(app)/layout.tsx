@@ -16,6 +16,7 @@ import { AppProvider, useAppContext } from '@/context/app-context';
 import { ThemeProvider } from '@/context/theme-context';
 import { useRouter } from 'next/navigation';
 import Loading from './loading';
+import { ProfileButton } from '@/components/profile-button';
 
 
 function AppContent({ children }: { children: React.ReactNode }) {
@@ -42,7 +43,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
           <Nav />
         </SidebarContent>
         <SidebarFooter className="p-4">
-          {/* Logout button removed */}
+          <ProfileButton />
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>

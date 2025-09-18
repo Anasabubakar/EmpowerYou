@@ -37,6 +37,7 @@ export default function SettingsPage() {
     setUserName,
     companionName,
     setCompanionName,
+    setProfilePicture,
     setTasks,
     setGoals,
     setHealthMetrics,
@@ -60,6 +61,7 @@ export default function SettingsPage() {
     setDiaryEntries([]);
     setUserName('');
     setCompanionName('Companion');
+    setProfilePicture(null);
     setCycleInfo({ currentDay: 0, nextPeriodIn: 0, predictedDate: new Date(), lastPeriodDate: undefined });
     setLoggedSymptoms([]);
     setRelationshipTracker({ myBehavior: '3', hisBehavior: '3', progressLog: '', plans: '' });
@@ -93,7 +95,7 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-headline font-bold">Settings</h1>
+        <h1 className="text-3xl font-headline font-bold">Preferences</h1>
         <p className="text-muted-foreground">
           Manage your application settings and preferences.
         </p>

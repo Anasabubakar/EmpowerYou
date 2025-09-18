@@ -40,7 +40,6 @@ export function Nav() {
     { href: '/relationship-tracker', icon: Users, label: 'Relationship Tracker' },
     { href: '/companion', icon: MessageCircleHeart, label: companionName },
     { href: '/insights', icon: Sparkles, label: 'Insights' },
-    { href: '/settings', icon: Settings, label: 'Settings' },
   ];
 
   const handleLinkClick = () => {
