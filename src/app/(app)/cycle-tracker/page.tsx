@@ -10,7 +10,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +17,8 @@ import { Button } from '@/components/ui/button';
 import { useAppContext } from '@/context/app-context';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Info } from 'lucide-react';
 
 export default function CycleTrackerPage() {
   const { cycleInfo, setCycleInfo, loggedSymptoms, setLoggedSymptoms } = useAppContext();
@@ -92,8 +93,21 @@ export default function CycleTrackerPage() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card className="lg:col-span-1">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Current Status</CardTitle>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="max-w-xs text-sm">
+                    Cycle day is counted from the start of your last period.
+                    Predictions are based on a standard 28-day cycle.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-baseline justify-center rounded-lg border bg-secondary p-6 text-center">
@@ -159,7 +173,9 @@ export default function CycleTrackerPage() {
               </Badge>
             ))}
           </div>
-          <Button className="mt-4" onClick={handleLogSymptoms}>Save Symptoms</Button>
+        </CardContent>
+        <CardContent>
+          <Button onClick={handleLogSymptoms}>Save Symptoms</Button>
         </CardContent>
       </Card>
     </div>
