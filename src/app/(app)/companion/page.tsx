@@ -115,7 +115,7 @@ export default function CompanionPage() {
                 )}
                 <div
                   className={cn(
-                    'max-w-md rounded-xl px-4 py-3 text-sm md:text-base whitespace-pre-wrap',
+                    'max-w-md rounded-xl px-4 py-3 text-sm whitespace-pre-wrap',
                     message.role === 'user'
                       ? 'bg-primary text-primary-foreground rounded-br-none'
                       : 'bg-muted text-muted-foreground rounded-bl-none'

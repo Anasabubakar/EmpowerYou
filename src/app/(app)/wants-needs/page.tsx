@@ -158,7 +158,7 @@ function GoalCard({ goal, onGoalUpdate }: { goal: Goal; onGoalUpdate: (updatedGo
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground mb-4 h-10">{goal.description}</p>
+        <p className="text-sm text-muted-foreground mb-4 h-10 overflow-hidden">{goal.description}</p>
         <div className="flex items-center gap-2">
           <Progress value={goal.progress} />
           <span className="text-sm font-medium text-foreground">
