@@ -37,7 +37,6 @@ export default function SettingsPage() {
     setUserName,
     companionName,
     setCompanionName,
-    setProfilePicture,
     setTasks,
     setGoals,
     setHealthMetrics,
@@ -61,7 +60,6 @@ export default function SettingsPage() {
     setDiaryEntries([]);
     setUserName('');
     setCompanionName('Companion');
-    setProfilePicture(null);
     setCycleInfo({ currentDay: 0, nextPeriodIn: 0, predictedDate: new Date(), lastPeriodDate: undefined });
     setLoggedSymptoms([]);
     setAnasReflection({ myBehavior: '3', hisBehavior: '3', progressLog: '', plans: '' });
