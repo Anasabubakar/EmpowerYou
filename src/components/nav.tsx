@@ -47,12 +47,11 @@ export function Nav() {
     <SidebarMenu>
       {navItems.map((item) => (
         <SidebarMenuItem key={item.href}>
-          <Link href={item.href} legacyBehavior passHref>
+          <Link href={item.href} onClick={handleLinkClick}>
             <SidebarMenuButton
               as="a"
               isActive={pathname.startsWith(item.href)}
               className="font-headline cursor-pointer"
-              onClick={handleLinkClick}
             >
               <item.icon
                 className={cn(
