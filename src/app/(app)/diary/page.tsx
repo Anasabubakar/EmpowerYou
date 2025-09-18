@@ -114,11 +114,11 @@ export default function DiaryPage() {
                 />
                 </div>
                 <div className="space-y-2">
-                <Label htmlFor="anasReflection">Anas Reflection</Label>
+                <Label htmlFor="partnerReflection">Partner Reflection</Label>
                 <Input
-                    id="anasReflection"
+                    id="partnerReflection"
                     placeholder="e.g., Had a productive conversation"
-                    {...register('anasReflection')}
+                    {...register('partnerReflection')}
                 />
                 </div>
             </div>

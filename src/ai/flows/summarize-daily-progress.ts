@@ -18,7 +18,7 @@ const SummarizeDailyProgressInputSchema = z.object({
   wantsNeedsProgress: z.string().describe('Progress on wants and needs.'),
   mood: z.string().describe('The mood for the day.'),
   energyLevels: z.string().describe('The energy levels for the day.'),
-  anasReflection: z.string().describe('Reflection on interactions with Anas.'),
+  partnerReflection: z.string().describe('Reflection on interactions with partner.'),
 });
 export type SummarizeDailyProgressInput = z.infer<typeof SummarizeDailyProgressInputSchema>;
 
@@ -42,7 +42,7 @@ Diary Entry: {{{diaryEntry}}}
 Wants & Needs Progress: {{{wantsNeedsProgress}}}
 Mood: {{{mood}}}
 Energy Levels: {{{energyLevels}}}
-Anas Reflection: {{{anasReflection}}}
+Partner Reflection: {{{partnerReflection}}}
 
 Provide a summary of the day's events and offer personalized insights and advice based on the trends and patterns observed in the provided data. Focus on actionable recommendations for personal growth and well-being.`,
 });

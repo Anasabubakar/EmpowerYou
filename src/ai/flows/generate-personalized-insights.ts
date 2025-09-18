@@ -18,7 +18,7 @@ const GeneratePersonalizedInsightsInputSchema = z.object({
   taskData: z.string().describe('Data from the Task Manager.'),
   healthMetricsData: z.string().describe('Data from the Health Metrics logger.'),
   diaryEntries: z.string().describe('Data from the Daily Diary entries.'),
-  anasProgressData: z.string().describe('Data from the progress with Anas.'),
+  partnerReflectionData: z.string().describe('Data from the progress with partner.'),
 });
 export type GeneratePersonalizedInsightsInput = z.infer<typeof GeneratePersonalizedInsightsInputSchema>;
 
@@ -46,7 +46,7 @@ const trendSpottingPrompt = ai.definePrompt({
   Task Data: {{{taskData}}}
   Health Metrics Data: {{{healthMetricsData}}}
   Diary Entries: {{{diaryEntries}}}
-  Anas Progress Data: {{{anasProgressData}}}
+  Partner Reflection Data: {{{partnerReflectionData}}}
 
   Based on this data, provide personalized insights, trend analysis, visual summaries, and actionable advice to the user.
   Be specific and offer practical suggestions for improvement.

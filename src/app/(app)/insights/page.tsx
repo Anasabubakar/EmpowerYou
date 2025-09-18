@@ -70,7 +70,7 @@ export default function InsightsPage() {
       taskData: JSON.stringify(tasks),
       healthMetricsData: JSON.stringify(healthMetrics),
       diaryEntries: JSON.stringify(diaryEntries.slice(-5)), // a few recent entries
-      anasProgressData: JSON.stringify(anasReflection),
+      partnerReflectionData: JSON.stringify(anasReflection),
     };
 
 

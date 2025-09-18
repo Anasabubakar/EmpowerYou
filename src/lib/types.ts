@@ -50,5 +50,5 @@ export type DiaryEntry = {
   wantsNeedsProgress: string;
   mood: string;
   energyLevels: string;
-  anasReflection: string;
+  partnerReflection: string;
 };
