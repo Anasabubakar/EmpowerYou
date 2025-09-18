@@ -82,7 +82,7 @@ export default function CompanionPage() {
           {companionName === 'Companion' ? 'Your Companion' : `Your Companion, ${companionName}`}
         </h1>
         <p className="text-muted-foreground">
-          She's here to listen. Tell her anything.
+          A friend to listen. Tell them anything.
         </p>
       </div>
       
@@ -97,7 +97,7 @@ export default function CompanionPage() {
                         </AvatarFallback>
                     </Avatar>
                     <p className="font-medium">This is the beginning of your conversation with {companionName}.</p>
-                    <p className="text-sm">You can change her name in the <Link href="/settings" className="underline">settings</Link>.</p>
+                    <p className="text-sm">You can change their name in the <Link href="/settings" className="underline">settings</Link>.</p>
                 </div>
             )}
             {chatHistory.map((message, index) => (

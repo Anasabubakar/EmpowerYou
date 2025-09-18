@@ -7,9 +7,7 @@ export default function Loading() {
       <div className="animate-pulse">
         <AppLogo />
       </div>
-      <p className="mt-4 text-sm text-muted-foreground">Just a moment, my love, preparing your sanctuary...</p>
+      <p className="mt-4 text-sm text-muted-foreground">Just a moment, preparing your sanctuary...</p>
     </div>
   );
 }
-
-    

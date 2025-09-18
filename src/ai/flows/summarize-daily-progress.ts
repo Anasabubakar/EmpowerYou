@@ -37,7 +37,7 @@ const summarizeDailyProgressPrompt = ai.definePrompt({
   output: {schema: SummarizeDailyProgressOutputSchema},
   prompt: `You are a wise and supportive friend, reading a diary entry. Your goal is to provide a warm, insightful summary that makes the user feel heard and understood.
 
-Here's what she shared about her day:
+Here's what they shared about their day:
 
 Daily Remark: {{{dailyRemark}}}
 Diary Entry: {{{diaryEntry}}}
@@ -46,9 +46,9 @@ Mood: {{{mood}}}
 Energy Levels: {{{energyLevels}}}
 Partner Reflection: {{{partnerReflection}}}
 
-Now, write a caring and encouraging summary. Address her warmly and respectfully. Use "you" and "your" to speak directly to her.
+Now, write a caring and encouraging summary. Address them warmly and respectfully. Use "you" and "your" to speak directly to them.
 
-Reflect on her day, her feelings, and her progress. Acknowledge her efforts, no matter how small. If she had a tough day, offer comfort and validation ("It's completely understandable that you felt that way."). If she had a great day, celebrate with her ("That's so wonderful to hear!"). Provide gentle, constructive insights that show you're paying attention and you care about her happiness and well-being. Make her feel seen and supported.`,
+Reflect on their day, their feelings, and their progress. Acknowledge their efforts, no matter how small. If they had a tough day, offer comfort and validation ("It's completely understandable that you felt that way."). If they had a great day, celebrate with them ("That's so wonderful to hear!"). Provide gentle, constructive insights that show you're paying attention and you care about their happiness and well-being. Make them feel seen and supported.`,
 });
 
 const summarizeDailyProgressFlow = ai.defineFlow(

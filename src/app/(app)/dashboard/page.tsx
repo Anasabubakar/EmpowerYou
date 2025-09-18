@@ -54,7 +54,7 @@ function CompanionGreeting() {
         </p>
          <Link href="/companion">
               <Button size="sm" variant="link" className="mt-2 px-0">
-                Talk to her
+                Chat with your Companion
               </Button>
             </Link>
       </CardContent>
@@ -85,7 +85,7 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-headline font-bold">Welcome back!</h1>
+        <h1 className="text-3xl font-headline font-bold">Welcome back, {userName}!</h1>
         <p className="text-muted-foreground">Here&apos;s a snapshot of your day.</p>
       </div>
       
@@ -167,7 +167,7 @@ export default function DashboardPage() {
               </p>
               <div className="mt-4 flex items-center gap-2 text-sm text-green-600">
                 <CheckCircle2 className="h-4 w-4" />
-                <span>You've shared your heart today. Thank you.</span>
+                <span>You've shared your thoughts today. Thank you.</span>
               </div>
             </>
           ) : (
