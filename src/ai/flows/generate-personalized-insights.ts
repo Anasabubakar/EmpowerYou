@@ -121,7 +121,7 @@ Analyze the following data, paying close attention to the connections between di
 **Menstrual Cycle:**
 - Currently on day {{menstrualCycleData.currentDay}} of their cycle.
 - Next period predicted in {{menstrualCycleData.nextPeriodIn}} days.
-- Logged Symptoms: {{#if menstrualCycleData.loggedSymptoms}}{{join menstrualCycleData.loggedSymptoms ", "}}{{else}}None{{/if}}
+- Logged Symptoms: {{#if menstrualCycleData.loggedSymptoms}}{{#each menstrualCycleData.loggedSymptoms}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}None{{/if}}
 
 **Recent Diary Entries:**
 {{#each diaryEntries}}
