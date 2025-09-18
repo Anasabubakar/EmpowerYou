@@ -103,7 +103,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [onboarded, setOnboarded] = useState<boolean | undefined>(undefined);
   const [userName, setUserName] = useState<string>(() => getInitialState('empoweryou-userName', ''));
-  const [companionName, setCompanionName] = useState<string>(() => getInitialState('empoweryou-companionName', 'Alex'));
+  const [companionName, setCompanionName] = useState<string>(() => getInitialState('empoweryou-companionName', 'Companion'));
   const [tasks, setTasks] = useState<Task[]>(() => getInitialState('empoweryou-tasks', []));
   const [goals, setGoals] = useState<Goal[]>(() => getInitialState('empoweryou-goals', []));
   const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>(() => getInitialState('empoweryou-healthMetrics', []));

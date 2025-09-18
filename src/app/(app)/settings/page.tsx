@@ -55,7 +55,7 @@ export default function SettingsPage() {
     setHealthMetrics([]);
     setDiaryEntries([]);
     setUserName('');
-    setCompanionName('Alex');
+    setCompanionName('Companion');
     if(setOnboarded) setOnboarded(false);
     toast({
       title: 'Local Data Cleared',
@@ -141,7 +141,7 @@ export default function SettingsPage() {
             <div className="space-y-2">
               <Label htmlFor="companion-name">Companion&apos;s Name</Label>
               <div className="flex gap-2">
-                <Input id="companion-name" value={cName} onChange={(e) => setCName(e.target.value)} placeholder="e.g., Alex"/>
+                <Input id="companion-name" value={cName} onChange={(e) => setCName(e.target.value)} placeholder="e.g., Sage"/>
                 <Button onClick={handleCompanionNameChange}>Save</Button>
               </div>
             </div>
