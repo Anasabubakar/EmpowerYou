@@ -47,31 +47,30 @@ export function Nav() {
     <SidebarMenu>
       {navItems.map((item) => (
         <SidebarMenuItem key={item.href}>
-          <Link href={item.href} onClick={handleLinkClick} legacyBehavior passHref>
+          <Link href={item.href} legacyBehavior passHref>
             <SidebarMenuButton
-              asChild
+              as="a"
               isActive={pathname.startsWith(item.href)}
               className="font-headline cursor-pointer"
+              onClick={handleLinkClick}
             >
-              <div>
-                <item.icon
-                  className={cn(
-                    'h-5 w-5',
-                    pathname.startsWith(item.href)
-                      ? 'text-primary-foreground'
-                      : 'text-muted-foreground'
-                  )}
-                />
-                <span
-                  className={cn(
-                    pathname.startsWith(item.href)
-                      ? 'text-primary-foreground'
-                      : 'text-foreground'
-                  )}
-                >
-                  {item.label}
-                </span>
-              </div>
+              <item.icon
+                className={cn(
+                  'h-5 w-5',
+                  pathname.startsWith(item.href)
+                    ? 'text-primary-foreground'
+                    : 'text-muted-foreground'
+                )}
+              />
+              <span
+                className={cn(
+                  pathname.startsWith(item.href)
+                    ? 'text-primary-foreground'
+                    : 'text-foreground'
+                )}
+              >
+                {item.label}
+              </span>
             </SidebarMenuButton>
           </Link>
         </SidebarMenuItem>
