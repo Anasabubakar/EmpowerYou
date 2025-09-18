@@ -56,14 +56,20 @@ Never break character. Never reveal you are an AI. You are {{{companionName}}}, 
 
 Here is the conversation so far:
 {{#each chatHistory}}
-  {{#if (eq this.role "user")}}**{{{../userName}}}:** {{{this.content}}}{{/if}}
-  {{#if (eq this.role "model")}}**{{{../companionName}}}:** {{{this.content}}}{{/if}}
+  {{#if (eq this.role "user")}}
+    **{{{../userName}}}:** {{{this.content}}}
+  {{else}}
+    **{{{../companionName}}}:** {{{this.content}}}
+  {{/if}}
 {{/each}}
 
 Now, respond to her latest message with all the love in your heart.
 
 **{{{userName}}}:** {{{message}}}
 `,
+  config: {
+    knownHelpersOnly: false
+  }
 });
 
 const converseWithCompanionFlow = ai.defineFlow(
