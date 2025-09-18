@@ -20,7 +20,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { generatePersonalizedInsights } from '@/ai/flows/generate-personalized-insights';
-import { generateShareableSummary, GenerateShareableSummaryInput } from '@/ai/flows/generate-shareable-summary';
+import { generateShareableSummary } from '@/ai/flows/generate-shareable-summary';
+import type { GenerateShareableSummaryInput } from '@/ai/flows/generate-shareable-summary';
 import { Loader2, Sparkles, Lightbulb, ClipboardList, TrendingUp, Share2, ClipboardCopy } from 'lucide-react';
 import type { GeneratePersonalizedInsightsOutput, GeneratePersonalizedInsightsInput } from '@/ai/flows/generate-personalized-insights';
 import { useAppContext } from '@/context/app-context';
@@ -71,7 +72,7 @@ export default function InsightsPage() {
     loggedSymptoms,
     healthMetrics,
     diaryEntries,
-    anasReflection,
+    relationshipTracker,
     chatHistory,
     companionName,
   } = useAppContext();
@@ -106,7 +107,7 @@ export default function InsightsPage() {
       taskData: tasks.map(t => ({ ...t, createdAt: t.createdAt || new Date(0).toISOString() })),
       healthMetricsData: healthMetrics.map(m => ({ ...m, createdAt: m.createdAt || new Date(0).toISOString() })),
       diaryEntries: diaryEntries.slice(-7), // a few recent entries
-      partnerReflectionData: anasReflection,
+      partnerReflectionData: relationshipTracker,
     };
 
 
@@ -150,7 +151,7 @@ export default function InsightsPage() {
         createdAt: m.createdAt || new Date(0).toISOString(),
       })),
       diaryEntries: diaryEntries.slice(-1),
-      partnerReflectionData: anasReflection,
+      partnerReflectionData: relationshipTracker,
       companionChat: getTodaysChat(),
     };
     
@@ -263,5 +264,3 @@ export default function InsightsPage() {
     </div>
   );
 }
-
-    

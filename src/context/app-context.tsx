@@ -92,8 +92,8 @@ interface AppContextType {
   setLoggedSymptoms: React.Dispatch<React.SetStateAction<string[]>>;
   diaryEntries: DiaryEntry[];
   setDiaryEntries: React.Dispatch<React.SetStateAction<DiaryEntry[]>>;
-  anasReflection: AnasReflection;
-  setAnasReflection: React.Dispatch<React.SetStateAction<AnasReflection>>;
+  relationshipTracker: AnasReflection;
+  setRelationshipTracker: React.Dispatch<React.SetStateAction<AnasReflection>>;
   chatHistory: ChatMessage[];
   setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 }
@@ -110,7 +110,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [cycleInfo, setCycleInfo] = useState<CycleInfo>(() => getInitialState('empoweryou-cycleInfo', initialCycleInfo));
   const [loggedSymptoms, setLoggedSymptoms] = useState<string[]>(() => getInitialState('empoweryou-loggedSymptoms', []));
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>(() => getInitialState('empoweryou-diaryEntries', []));
-  const [anasReflection, setAnasReflection] = useState<AnasReflection>(() => getInitialState('empoweryou-anasReflection', initialAnasReflection));
+  const [relationshipTracker, setRelationshipTracker] = useState<AnasReflection>(() => getInitialState('empoweryou-relationshipTracker', initialAnasReflection));
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>(() => getInitialState('empoweryou-chatHistory', []));
   
   useEffect(() => {
@@ -131,12 +131,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       window.localStorage.setItem('empoweryou-cycleInfo', JSON.stringify(cycleInfo));
       window.localStorage.setItem('empoweryou-loggedSymptoms', JSON.stringify(loggedSymptoms));
       window.localStorage.setItem('empoweryou-diaryEntries', JSON.stringify(diaryEntries));
-      window.localStorage.setItem('empoweryou-anasReflection', JSON.stringify(anasReflection));
+      window.localStorage.setItem('empoweryou-relationshipTracker', JSON.stringify(relationshipTracker));
       window.localStorage.setItem('empoweryou-chatHistory', JSON.stringify(chatHistory));
     } catch (error) {
       console.warn('Error writing to localStorage:', error);
     }
-  }, [onboarded, userName, companionName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, anasReflection, chatHistory]);
+  }, [onboarded, userName, companionName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, relationshipTracker, chatHistory]);
 
 
   return (
@@ -150,7 +150,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       cycleInfo, setCycleInfo,
       loggedSymptoms, setLoggedSymptoms,
       diaryEntries, setDiaryEntries,
-      anasReflection, setAnasReflection,
+      relationshipTracker, setRelationshipTracker,
       chatHistory, setChatHistory
     }}>
       {children}
