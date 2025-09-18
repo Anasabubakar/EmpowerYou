@@ -28,7 +28,7 @@ export default function RootLayout({
         />
         
       </head>
-      <body className="font-body antialiased">
+      <body className="font-body antialiased transition-colors duration-300">
         <ThemeProvider>
           <AppProvider>
             <AppGate>{children}</AppGate>
