@@ -7,6 +7,15 @@ import { auth } from '@/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import Loading from '@/app/(app)/loading';
 
+// Helper function to get a dynamic storage key
+const getStorageKey = (baseKey: string, user: User | null): string => {
+  if (user) {
+    return `empoweryou-${user.uid}-${baseKey}`;
+  }
+  return `empoweryou-anonymous-${baseKey}`;
+};
+
+
 // Helper function to get initial state from localStorage
 function getInitialState<T>(key: string, defaultValue: T): T {
   if (typeof window === 'undefined') {
@@ -16,7 +25,7 @@ function getInitialState<T>(key: string, defaultValue: T): T {
     const item = window.localStorage.getItem(key);
     if (item) {
         // Special handling for dates inside Goal objects
-      if (key.endsWith('-goals') && item) {
+      if (key.includes('-goals') && item) {
         const parsed = JSON.parse(item);
         if (!Array.isArray(parsed)) return defaultValue;
         return parsed.map((goal: any) => ({
@@ -26,7 +35,7 @@ function getInitialState<T>(key: string, defaultValue: T): T {
         })) as T;
       }
        // Special handling for dates inside Task objects
-      if (key.endsWith('-tasks') && item) {
+      if (key.includes('-tasks') && item) {
         const parsed = JSON.parse(item);
         if (!Array.isArray(parsed)) return defaultValue;
         return parsed.map((task: any) => ({
@@ -35,7 +44,7 @@ function getInitialState<T>(key: string, defaultValue: T): T {
         })) as T;
       }
        // Special handling for dates inside HealthMetric objects
-      if (key.endsWith('-healthMetrics') && item) {
+      if (key.includes('-healthMetrics') && item) {
         const parsed = JSON.parse(item);
         if (!Array.isArray(parsed)) return defaultValue;
         return parsed.map((metric: any) => ({
@@ -44,7 +53,7 @@ function getInitialState<T>(key: string, defaultValue: T): T {
         })) as T;
       }
       // Special handling for dates inside CycleInfo object
-      if (key.endsWith('-cycleInfo') && item) {
+      if (key.includes('-cycleInfo') && item) {
         const parsed = JSON.parse(item);
         if (!parsed.lastPeriodDate) {
           return {
@@ -114,7 +123,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const [onboarded, setOnboarded] = useState<boolean | undefined>(undefined);
   const [userName, setUserName] = useState<string>('');
-  const [companionName, setCompanionName] = useState<string>(() => getInitialState('empoweryou-companionName', 'Companion'));
+  const [companionName, setCompanionName] = useState<string>('Companion');
   const [tasks, setTasks] = useState<Task[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>([]);
@@ -124,62 +133,54 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [anasReflection, setAnasReflection] = useState<AnasReflection>(initialAnasReflection);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
 
+  // Effect for auth state change
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
       setAuthLoading(false);
-      if (firebaseUser) {
-        const baseKey = `empoweryou-${firebaseUser.uid}`;
-        setOnboarded(getInitialState(`${baseKey}-onboarded`, false));
-        setUserName(firebaseUser.displayName || '');
-        setCompanionName(getInitialState(`${baseKey}-companionName`, 'Companion'));
-        setTasks(getInitialState(`${baseKey}-tasks`, []));
-        setGoals(getInitialState(`${baseKey}-goals`, []));
-        setHealthMetrics(getInitialState(`${baseKey}-healthMetrics`, []));
-        setCycleInfo(getInitialState(`${baseKey}-cycleInfo`, initialCycleInfo));
-        setLoggedSymptoms(getInitialState(`${baseKey}-loggedSymptoms`, []));
-        setDiaryEntries(getInitialState(`${baseKey}-diaryEntries`, []));
-        setAnasReflection(getInitialState(`${baseKey}-anasReflection`, initialAnasReflection));
-        setChatHistory(getInitialState(`${baseKey}-chatHistory`, []));
-      } else {
-        // Reset state when user logs out
-        setOnboarded(false);
-        setUserName('');
-        setCompanionName('Companion');
-        setTasks([]);
-        setGoals([]);
-        setHealthMetrics([]);
-        setCycleInfo(initialCycleInfo);
-        setLoggedSymptoms([]);
-        setDiaryEntries([]);
-        setAnasReflection(initialAnasReflection);
-        setChatHistory([]);
-      }
     });
     return () => unsubscribe();
   }, []);
   
+  // Effect to load data from localStorage when user or authLoading state changes
   useEffect(() => {
-    if (user) {
-      const baseKey = `empoweryou-${user.uid}`;
-      try {
-        if (onboarded !== undefined) {
-          window.localStorage.setItem(`${baseKey}-onboarded`, JSON.stringify(onboarded));
-        }
-        window.localStorage.setItem(`${baseKey}-companionName`, companionName);
-        window.localStorage.setItem(`${baseKey}-tasks`, JSON.stringify(tasks));
-        window.localStorage.setItem(`${baseKey}-goals`, JSON.stringify(goals));
-        window.localStorage.setItem(`${baseKey}-healthMetrics`, JSON.stringify(healthMetrics));
-        window.localStorage.setItem(`${baseKey}-cycleInfo`, JSON.stringify(cycleInfo));
-        window.localStorage.setItem(`${baseKey}-loggedSymptoms`, JSON.stringify(loggedSymptoms));
-        window.localStorage.setItem(`${baseKey}-diaryEntries`, JSON.stringify(diaryEntries));
-        window.localStorage.setItem(`${baseKey}-anasReflection`, JSON.stringify(anasReflection));
-        window.localStorage.setItem(`${baseKey}-chatHistory`, JSON.stringify(chatHistory));
-      } catch (error) {
-        console.warn('Error writing to localStorage:', error);
+    if (authLoading) return;
+
+    const onboardedKey = getStorageKey('onboarded', user);
+    setOnboarded(getInitialState(onboardedKey, false));
+    setUserName(user?.displayName || '');
+    setCompanionName(getInitialState(getStorageKey('companionName', user), 'Companion'));
+    setTasks(getInitialState(getStorageKey('tasks', user), []));
+    setGoals(getInitialState(getStorageKey('goals', user), []));
+    setHealthMetrics(getInitialState(getStorageKey('healthMetrics', user), []));
+    setCycleInfo(getInitialState(getStorageKey('cycleInfo', user), initialCycleInfo));
+    setLoggedSymptoms(getInitialState(getStorageKey('loggedSymptoms', user), []));
+    setDiaryEntries(getInitialState(getStorageKey('diaryEntries', user), []));
+    setAnasReflection(getInitialState(getStorageKey('anasReflection', user), initialAnasReflection));
+    setChatHistory(getInitialState(getStorageKey('chatHistory', user), []));
+  }, [user, authLoading]);
+  
+  // Effect to save data to localStorage whenever it changes
+  useEffect(() => {
+    if (authLoading) return;
+
+    try {
+      if (onboarded !== undefined) {
+        window.localStorage.setItem(getStorageKey('onboarded', user), JSON.stringify(onboarded));
       }
+      window.localStorage.setItem(getStorageKey('companionName', user), companionName);
+      window.localStorage.setItem(getStorageKey('tasks', user), JSON.stringify(tasks));
+      window.localStorage.setItem(getStorageKey('goals', user), JSON.stringify(goals));
+      window.localStorage.setItem(getStorageKey('healthMetrics', user), JSON.stringify(healthMetrics));
+      window.localStorage.setItem(getStorageKey('cycleInfo', user), JSON.stringify(cycleInfo));
+      window.localStorage.setItem(getStorageKey('loggedSymptoms', user), JSON.stringify(loggedSymptoms));
+      window.localStorage.setItem(getStorageKey('diaryEntries', user), JSON.stringify(diaryEntries));
+      window.localStorage.setItem(getStorageKey('anasReflection', user), JSON.stringify(anasReflection));
+      window.localStorage.setItem(getStorageKey('chatHistory', user), JSON.stringify(chatHistory));
+    } catch (error) {
+      console.warn('Error writing to localStorage:', error);
     }
-  }, [user, onboarded, companionName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, anasReflection, chatHistory]);
+  }, [user, authLoading, onboarded, companionName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, anasReflection, chatHistory]);
 
   if (authLoading) {
     return <Loading />;

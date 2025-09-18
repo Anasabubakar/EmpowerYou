@@ -43,7 +43,11 @@ function OnboardingContent() {
 
   const handleSignIn = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+       toast({
+        title: `Welcome, ${result.user.displayName}!`,
+        description: "You've successfully signed in.",
+      });
     } catch (error) {
       console.error('Error signing in with Google:', error);
       toast({
@@ -55,15 +59,7 @@ function OnboardingContent() {
   };
 
   const handleContinue = () => {
-    if (!user) {
-      toast({
-        title: 'Not Signed In',
-        description: 'Please sign in with Google to continue.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
+    // This function will now save data for either an anonymous or authenticated user
     const wantsArray: Goal[] = wants.split('\n').filter(t => t.trim() !== '').map((text, i) => ({
         id: `g_want_${Date.now()}_${i}`,
         title: text.trim(),
@@ -114,7 +110,7 @@ function OnboardingContent() {
     if (setOnboarded) setOnboarded(true);
 
     toast({
-      title: `Welcome, ${user.displayName}!`,
+      title: `Welcome!`,
       description: "You're all set up and ready to go.",
     });
 
@@ -136,81 +132,79 @@ function OnboardingContent() {
           </p>
         </div>
 
-        {!user ? (
-            <Card className="text-center">
-                <CardHeader>
-                    <CardTitle>Let's Get Started</CardTitle>
-                    <CardDescription>Sign in with your Google account to create your secure and personal space.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                     <Button onClick={handleSignIn} size="lg">
+        <Card>
+          <CardHeader>
+              <div className="flex flex-col sm:flex-row justify-between items-center">
+                 <div>
+                    <CardTitle>Let's get you set up</CardTitle>
+                    <CardDescription>
+                    This information will help personalize your experience.
+                    </CardDescription>
+                </div>
+                {!user && (
+                    <Button onClick={handleSignIn} variant="outline" className="mt-4 sm:mt-0">
                         <LogIn className="mr-2 h-4 w-4" />
-                        Sign in with Google
+                        Sign in with Google (Optional)
                     </Button>
-                </CardContent>
-            </Card>
-        ) : (
-            <Card>
-            <CardHeader>
-                <CardTitle>Welcome, {user.displayName}!</CardTitle>
-                <CardDescription>
-                This information will help personalize your experience. You can skip any step.
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label htmlFor="wants">What are some things you want to achieve?</Label>
-                    <Textarea
-                        id="wants"
-                        placeholder="e.g., Learn a new skill (one per line)"
-                        value={wants}
-                        onChange={(e) => setWants(e.target.value)}
-                        rows={3}
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="needs">What are your essential needs or goals?</Label>
-                    <Textarea
-                        id="needs"
-                        placeholder="e.g., Improve sleep quality (one per line)"
-                        value={needs}
-                        onChange={(e) => setNeeds(e.target.value)}
-                        rows={3}
-                    />
-                </div>
-                </div>
+                )}
+              </div>
+               {user && (
+                  <p className="text-sm text-green-600 pt-4">Signed in as {user.displayName}. Your data will be synced to this account.</p>
+               )}
+          </CardHeader>
+          <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                  <Label htmlFor="wants">What are some things you want to achieve?</Label>
+                  <Textarea
+                      id="wants"
+                      placeholder="e.g., Learn a new skill (one per line)"
+                      value={wants}
+                      onChange={(e) => setWants(e.target.value)}
+                      rows={3}
+                  />
+              </div>
+              <div className="space-y-2">
+                  <Label htmlFor="needs">What are your essential needs or goals?</Label>
+                  <Textarea
+                      id="needs"
+                      placeholder="e.g., Improve sleep quality (one per line)"
+                      value={needs}
+                      onChange={(e) => setNeeds(e.target.value)}
+                      rows={3}
+                  />
+              </div>
+              </div>
 
-                <div className="space-y-2">
-                <Label htmlFor="tasks">What are some tasks you need to do?</Label>
-                <Textarea
-                    id="tasks"
-                    placeholder="e.g., Finish project proposal (one per line)"
-                    value={tasks}
-                    onChange={(e) => setTasksState(e.target.value)}
-                    rows={3}
-                />
-                </div>
-                
-                <div className="space-y-4 flex flex-col items-center">
-                    <Label>When did your last menstrual cycle start? (Optional)</Label>
-                    <Calendar
-                        mode="single"
-                        selected={cycleDate}
-                        onSelect={setCycleDate}
-                        className="rounded-md border"
-                        disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                    />
-                </div>
+              <div className="space-y-2">
+              <Label htmlFor="tasks">What are some tasks you need to do?</Label>
+              <Textarea
+                  id="tasks"
+                  placeholder="e.g., Finish project proposal (one per line)"
+                  value={tasks}
+                  onChange={(e) => setTasksState(e.target.value)}
+                  rows={3}
+              />
+              </div>
+              
+              <div className="space-y-4 flex flex-col items-center">
+                  <Label>When did your last menstrual cycle start? (Optional)</Label>
+                  <Calendar
+                      mode="single"
+                      selected={cycleDate}
+                      onSelect={setCycleDate}
+                      className="rounded-md border"
+                      disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                  />
+              </div>
 
-            </CardContent>
-            <CardFooter>
-                <Button className="w-full" onClick={handleContinue}>
-                Continue to Dashboard <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-            </CardFooter>
-            </Card>
-        )}
+          </CardContent>
+          <CardFooter>
+              <Button className="w-full" onClick={handleContinue}>
+              Continue to Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+          </CardFooter>
+        </Card>
       </div>
     </div>
   );
