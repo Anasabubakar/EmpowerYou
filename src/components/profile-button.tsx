@@ -34,6 +34,12 @@ function getCroppedImg(image: HTMLImageElement, crop: Crop): string | null {
   const canvas = document.createElement('canvas');
   const scaleX = image.naturalWidth / image.width;
   const scaleY = image.naturalHeight / image.height;
+  
+  // Ensure crop dimensions are valid
+  if (!crop.width || !crop.height) {
+    return null;
+  }
+  
   canvas.width = crop.width;
   canvas.height = crop.height;
   const ctx = canvas.getContext('2d');
@@ -92,12 +98,13 @@ export function ProfileButton() {
     setGoals([]);
     setHealthMetrics([]);
     setDiaryEntries([]);
+    if(setOnboarded) setOnboarded(false); // Make sure setOnboarded is called
     setProfilePicture(null);
     setCycleInfo({ currentDay: 0, nextPeriodIn: 0, predictedDate: new Date(), lastPeriodDate: undefined });
     setLoggedSymptoms([]);
     setAnasReflection({ myBehavior: '3', hisBehavior: '3', progressLog: '', plans: '' });
     setChatHistory([]);
-    if(setOnboarded) setOnboarded(false);
+    
 
     toast({
       title: 'Signed Out',
