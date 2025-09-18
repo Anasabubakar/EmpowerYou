@@ -59,6 +59,7 @@ function OnboardingContent() {
         progress: 0,
         deadline: new Date(new Date().setDate(new Date().getDate() + 30)),
         description: '',
+        createdAt: new Date().toISOString(),
     }));
 
     const needsArray: Goal[] = needs.split('\n').filter(t => t.trim() !== '').map((text, i) => ({
@@ -68,6 +69,7 @@ function OnboardingContent() {
         progress: 0,
         deadline: new Date(new Date().setDate(new Date().getDate() + 30)),
         description: '',
+        createdAt: new Date().toISOString(),
     }));
 
     setGoals([...wantsArray, ...needsArray]);
@@ -77,6 +79,7 @@ function OnboardingContent() {
         text: text.trim(),
         completed: false,
         priority: 'medium',
+        createdAt: new Date().toISOString(),
     }));
 
     setTasks(tasksArray);

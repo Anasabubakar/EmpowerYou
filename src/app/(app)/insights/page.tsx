@@ -51,6 +51,7 @@ export default function InsightsPage() {
     useState<GeneratePersonalizedInsightsOutput | null>(null);
   
   const {
+    userName,
     goals,
     tasks,
     cycleInfo,
@@ -65,12 +66,19 @@ export default function InsightsPage() {
     setInsights(null);
 
     const input: GeneratePersonalizedInsightsInput = {
-      wantsNeedsData: JSON.stringify(goals),
-      menstrualCycleData: JSON.stringify({ ...cycleInfo, loggedSymptoms }),
-      taskData: JSON.stringify(tasks),
-      healthMetricsData: JSON.stringify(healthMetrics),
-      diaryEntries: JSON.stringify(diaryEntries.slice(-5)), // a few recent entries
-      partnerReflectionData: JSON.stringify(anasReflection),
+      userName,
+      currentDate: new Date().toISOString(),
+      wantsNeedsData: goals.map(g => ({...g, deadline: g.deadline.toISOString()})),
+      menstrualCycleData: { 
+        ...cycleInfo, 
+        predictedDate: cycleInfo.predictedDate.toISOString(),
+        lastPeriodDate: cycleInfo.lastPeriodDate?.toISOString(),
+        loggedSymptoms 
+      },
+      taskData: tasks,
+      healthMetricsData: healthMetrics,
+      diaryEntries: diaryEntries.slice(-7), // a few recent entries
+      partnerReflectionData: anasReflection,
     };
 
 

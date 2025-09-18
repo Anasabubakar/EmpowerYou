@@ -53,6 +53,7 @@ export default function HealthMetricsPage() {
       date: format(new Date(), 'MMM d'),
       mood,
       energy,
+      createdAt: new Date().toISOString(),
     };
     
     const todayStr = format(new Date(), 'MMM d');

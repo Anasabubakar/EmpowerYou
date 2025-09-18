@@ -199,6 +199,7 @@ export default function TaskManagerPage() {
         text: newTask.trim(),
         completed: false,
         priority: 'medium',
+        createdAt: new Date().toISOString(),
       };
       setTasks([newTaskItem, ...tasks]);
       setNewTask('');

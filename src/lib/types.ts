@@ -3,6 +3,7 @@ export type Task = {
   text: string;
   completed: boolean;
   priority: 'low' | 'medium' | 'high';
+  createdAt: string;
 };
 
 export type Goal = {
@@ -12,6 +13,7 @@ export type Goal = {
   progress: number;
   deadline: Date;
   description?: string;
+  createdAt: string;
 };
 
 export type CycleInfo = {
@@ -29,6 +31,7 @@ export type HealthMetric = {
     systolic: number;
     diastolic: number;
   };
+  createdAt: string;
 };
 
 export type CycleLog = {
@@ -51,4 +54,5 @@ export type DiaryEntry = {
   mood: string;
   energyLevels: string;
   partnerReflection: string;
+  createdAt: string;
 };

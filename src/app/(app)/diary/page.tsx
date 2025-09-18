@@ -20,18 +20,27 @@ import { Loader2, Sparkles } from 'lucide-react';
 import type { DiaryEntry } from '@/lib/types';
 import { useAppContext } from '@/context/app-context';
 
+type FormValues = Omit<DiaryEntry, 'createdAt'>;
+
 export default function DiaryPage() {
   const { setDiaryEntries } = useAppContext();
-  const { register, handleSubmit, reset } = useForm<DiaryEntry>();
+  const { register, handleSubmit, reset } = useForm<FormValues>();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
 
-  const onSubmit: SubmitHandler<DiaryEntry> = async (data) => {
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setLoading(true);
     setSummary(null);
+    
+    const diaryEntryWithTimestamp: DiaryEntry = {
+      ...data,
+      createdAt: new Date().toISOString(),
+    };
+    
     try {
-      setDiaryEntries((prevEntries) => [...prevEntries, data]);
+      setDiaryEntries((prevEntries) => [...prevEntries, diaryEntryWithTimestamp]);
+      // The summarizeDailyProgress flow might need to be updated if its input schema changes
       const result = await summarizeDailyProgress(data);
       setSummary(result.summary);
       toast({

@@ -189,6 +189,7 @@ function AddGoalDialog({ onAddGoal }: { onAddGoal: (newGoal: Goal) => void }) {
         category,
         progress: 0,
         deadline: new Date(new Date().setDate(new Date().getDate() + 30)), // Default 30 days deadline
+        createdAt: new Date().toISOString(),
       });
       setOpen(false);
       setTitle('');
