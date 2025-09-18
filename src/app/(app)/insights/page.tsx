@@ -65,7 +65,7 @@ export default function InsightsPage() {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   
   const {
-    userName,
+    user,
     goals,
     tasks,
     cycleInfo,
@@ -83,11 +83,12 @@ export default function InsightsPage() {
   }
 
   const handleGenerate = async () => {
+    if (!user) return;
     setLoading(true);
     setInsights(null);
 
     const input: GeneratePersonalizedInsightsInput = {
-      userName,
+      userName: user.displayName || 'friend',
       currentDate: new Date().toISOString(),
       wantsNeedsData: goals.map(g => ({
         ...g, 
@@ -122,10 +123,11 @@ export default function InsightsPage() {
   };
   
   const handleShare = async () => {
+    if (!user) return;
     setShareLoading(true);
     
     const input: GenerateShareableSummaryInput = {
-      userName,
+      userName: user.displayName || 'friend',
       wantsNeedsData: goals.map(g => ({
         ...g,
         deadline: g.deadline.toISOString(),
@@ -183,7 +185,7 @@ export default function InsightsPage() {
           Let's take a look at how you've been doing and uncover some insights to support your journey.
         </p>
         <div className="flex gap-2 mt-4">
-          <Button onClick={handleGenerate} disabled={loading} size="lg">
+          <Button onClick={handleGenerate} disabled={loading || !user} size="lg">
             {loading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
@@ -191,7 +193,7 @@ export default function InsightsPage() {
             )}
             Generate My Report
           </Button>
-          <Button onClick={handleShare} disabled={shareLoading} size="lg" variant="outline">
+          <Button onClick={handleShare} disabled={shareLoading || !user} size="lg" variant="outline">
             {shareLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (

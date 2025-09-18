@@ -6,7 +6,7 @@ import { useAppContext } from '@/context/app-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Loader2, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { converseWithCompanion } from '@/ai/flows/converse-with-companion';
@@ -25,7 +25,7 @@ function TypingIndicator() {
 }
 
 export default function CompanionPage() {
-  const { userName, companionName, chatHistory, setChatHistory } = useAppContext();
+  const { user, companionName, chatHistory, setChatHistory } = useAppContext();
   const { toast } = useToast();
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -45,7 +45,7 @@ export default function CompanionPage() {
   }, [chatHistory]);
 
   const handleSendMessage = async () => {
-    if (input.trim() === '') return;
+    if (input.trim() === '' || !user) return;
 
     const userMessage: ChatMessage = { role: 'user', content: input };
     const newChatHistory = [...chatHistory, userMessage];
@@ -55,7 +55,7 @@ export default function CompanionPage() {
 
     try {
       const result = await converseWithCompanion({
-        userName,
+        userName: user.displayName || 'friend',
         companionName,
         chatHistory: newChatHistory,
         message: input,
@@ -125,10 +125,11 @@ export default function CompanionPage() {
                 >
                   {message.content}
                 </div>
-                 {message.role === 'user' && (
+                 {message.role === 'user' && user && (
                   <Avatar>
+                    <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
                     <AvatarFallback>
-                      {getInitials(userName)}
+                      {getInitials(user.displayName || '')}
                     </AvatarFallback>
                   </Avatar>
                 )}
@@ -155,10 +156,10 @@ export default function CompanionPage() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
           placeholder={`Message ${companionName}...`}
-          disabled={isLoading}
+          disabled={isLoading || !user}
           className="text-base"
         />
-        <Button onClick={handleSendMessage} disabled={isLoading} size="icon">
+        <Button onClick={handleSendMessage} disabled={isLoading || !user} size="icon">
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (

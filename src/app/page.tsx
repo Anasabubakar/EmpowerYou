@@ -8,15 +8,21 @@ import { AppProvider, useAppContext } from '@/context/app-context';
 
 function RootPageContent() {
     const router = useRouter();
-    const { onboarded } = useAppContext();
+    const { user, onboarded } = useAppContext();
 
     useEffect(() => {
-        if (onboarded === true) {
-            router.replace('/dashboard');
-        } else if (onboarded === false) {
+        if (user) {
+            if (onboarded) {
+                router.replace('/dashboard');
+            } else {
+                router.replace('/onboarding');
+            }
+        } else if (user === null) {
+            // If user is not logged in, you might want to show a landing page
+            // or redirect to a login page. For now, we go to onboarding which handles sign in.
             router.replace('/onboarding');
         }
-    }, [onboarded, router]);
+    }, [user, onboarded, router]);
 
     return <Loading />;
 }

@@ -26,7 +26,7 @@ import { HealthMetric } from '@/lib/types';
 import { useEffect, useState } from 'react';
 
 function CompanionGreeting() {
-  const { companionName, userName } = useAppContext();
+  const { companionName } = useAppContext();
   const [greeting, setGreeting] = useState('');
 
   useEffect(() => {
@@ -53,7 +53,7 @@ function CompanionGreeting() {
             &quot;{greeting}&quot;
         </p>
          <Link href="/companion">
-              <Button size="sm" variant="link" className="mt-2 px-0">
+              <Button size="sm" variant="link" className="mt-2 px-0 text-primary">
                 Chat with your Companion
               </Button>
             </Link>
@@ -64,7 +64,7 @@ function CompanionGreeting() {
 
 
 export default function DashboardPage() {
-  const { userName, goals, tasks, cycleInfo, healthMetrics, diaryEntries } = useAppContext();
+  const { user, goals, tasks, cycleInfo, healthMetrics, diaryEntries } = useAppContext();
   const [latestMetric, setLatestMetric] = useState<HealthMetric | null>(null);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-headline font-bold">Welcome back, {userName}!</h1>
+        <h1 className="text-3xl font-headline font-bold">Welcome back, {user?.displayName || 'friend'}!</h1>
         <p className="text-muted-foreground">Here&apos;s a snapshot of your day.</p>
       </div>
       

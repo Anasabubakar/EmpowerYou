@@ -56,9 +56,7 @@ export function Nav() {
             <SidebarMenuButton
               isActive={pathname.startsWith(item.href)}
               className={cn(
-                'font-headline cursor-pointer',
-                pathname.startsWith(item.href) &&
-                  'bg-primary text-primary-foreground hover:bg-primary/90'
+                'font-headline cursor-pointer'
               )}
             >
               <item.icon className="h-5 w-5" />

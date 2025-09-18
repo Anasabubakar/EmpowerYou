@@ -28,58 +28,28 @@ import {
 import { useAppContext } from '@/context/app-context';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import { auth } from '@/lib/firebase';
 
 export default function SettingsPage() {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
-  const {
-    userName,
-    setUserName,
-    companionName,
-    setCompanionName,
-    setTasks,
-    setGoals,
-    setHealthMetrics,
-    setDiaryEntries,
-    setOnboarded,
-    setCycleInfo,
-    setLoggedSymptoms,
-    setAnasReflection,
-    setChatHistory,
-  } = useAppContext();
+  const { user, companionName, setCompanionName } = useAppContext();
   
-
-  const [name, setName] = useState(userName);
   const [cName, setCName] = useState(companionName);
 
   const handleClearData = () => {
-    localStorage.clear();
-    setTasks([]);
-    setGoals([]);
-    setHealthMetrics([]);
-    setDiaryEntries([]);
-    setUserName('');
-    setCompanionName('Companion');
-    setCycleInfo({ currentDay: 0, nextPeriodIn: 0, predictedDate: new Date(), lastPeriodDate: undefined });
-    setLoggedSymptoms([]);
-    setAnasReflection({ myBehavior: '3', hisBehavior: '3', progressLog: '', plans: '' });
-    setChatHistory([]);
-    if(setOnboarded) setOnboarded(false);
+    if (user) {
+        const keysToRemove = Object.keys(localStorage).filter(key => key.startsWith(`empoweryou-${user.uid}`));
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+    }
+    
     toast({
       title: 'Local Data Cleared',
-      description: 'All application data has been removed. The app will now reload.',
+      description: 'All your personal data for this account has been removed. The app will now reload.',
       variant: 'destructive',
     });
     // Reload to trigger onboarding
     setTimeout(() => window.location.reload(), 1500);
-  };
-  
-  const handleNameChange = () => {
-    setUserName(name);
-    toast({
-      title: 'Name Updated',
-      description: `Your name has been updated to ${name}.`,
-    });
   };
   
   const handleCompanionNameChange = () => {
@@ -142,9 +112,9 @@ export default function SettingsPage() {
             <div className="space-y-2">
               <Label htmlFor="name">Your Name</Label>
               <div className="flex gap-2">
-                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name"/>
-                <Button onClick={handleNameChange}>Save</Button>
+                <Input id="name" value={user?.displayName || ''} disabled/>
               </div>
+               <p className="text-xs text-muted-foreground">Your name is managed through your Google Account.</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="companion-name">Companion&apos;s Name</Label>
@@ -160,7 +130,7 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Data Management</CardTitle>
           <CardDescription>
-           This will clear all data and restart the app.
+           This will clear all data for your account and restart the app.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -176,7 +146,7 @@ export default function SettingsPage() {
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This action cannot be undone. This will permanently delete all
-                  your data and reset the application to its initial state.
+                  your data for this account and reset the application to its initial state.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
