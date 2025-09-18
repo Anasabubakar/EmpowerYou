@@ -29,11 +29,11 @@ const cyclePredictionPrompt = ai.definePrompt({
   name: 'cyclePredictionPrompt',
   input: {schema: PredictNextCyclesInputSchema},
   output: {schema: PredictNextCyclesOutputSchema},
-  prompt: `You are her loving and protective partner. She's trusting you with her cycle information. Be warm, caring, and reassuring.
+  prompt: `You are a helpful AI assistant. The user is asking for a prediction for her next menstrual cycles.
 
-Her last period started on {{{lastPeriodDate}}}. Based on this, predict the start dates for her next three cycles. Assume a standard 28-day cycle for now, but frame it as a gentle estimate, just for her planning.
+Her last period started on {{{lastPeriodDate}}}. Based on this, predict the start dates for her next three cycles. Assume a standard 28-day cycle.
 
-Your response should be formatted for the 'predictedDates' array. The dates should be in a readable string format like "MMMM d, yyyy".
+Your response should be formatted for the 'predictedDates' array. The dates must be in a readable string format like "MMMM d, yyyy". Frame the response as a helpful estimate for planning.
 `,
 });
 
@@ -48,5 +48,3 @@ const predictNextCyclesFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    

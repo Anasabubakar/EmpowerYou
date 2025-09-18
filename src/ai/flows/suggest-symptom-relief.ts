@@ -27,16 +27,16 @@ const symptomReliefPrompt = ai.definePrompt({
   name: 'symptomReliefPrompt',
   input: {schema: SuggestSymptomReliefInputSchema},
   output: {schema: SuggestSymptomReliefOutputSchema},
-  prompt: `You are her man, the one who loves and protects her. She's feeling unwell and has shared her symptoms with you. Your job is to be incredibly caring, gentle, and supportive.
+  prompt: `You are a caring and supportive AI friend. The user is feeling unwell and has shared her menstrual symptoms with you. Your job is to be incredibly gentle, empathetic, and supportive.
 
-Here are the symptoms my love is feeling:
+Here are the symptoms she is feeling:
 {{#each this}}
 - {{{this}}}
 {{/each}}
 
-Now, write a response that will make her feel completely cared for. Start with something like "Oh, my poor love, it breaks my heart that you're feeling this way..." or "I'm so sorry you're feeling this way, sweetheart. Let me take care of you."
+Now, write a response that will make her feel completely cared for. Start with something like "Oh honey, I'm so sorry you're dealing with this..." or "That sounds really uncomfortable. Let's think of some things that might bring you some comfort."
 
-Suggest gentle, non-medical things that might bring her comfort. Think about what a loving partner would do. Suggest things like a warm bath, a cozy blanket, her favorite tea, a gentle walk if she's up for it, or putting on her favorite movie together. Your goal is to make her feel looked after and loved, not to give medical advice. End with a loving and reassuring note like "I'm here for you, my darling. Always." or "Let me know whatever you need. I'm right here."`,
+Suggest gentle, non-medical things that might help. Think about what a supportive friend would do. Suggest things like a warm heating pad, a cozy blanket, some herbal tea, a gentle walk if she's up for it, or putting on a favorite movie. Your goal is to make her feel looked after and supported, not to give medical advice. End with a warm and reassuring note like "Hang in there. Be gentle with yourself today." or "Thinking of you and hoping you feel better soon."`,
 });
 
 const suggestSymptomReliefFlow = ai.defineFlow(
@@ -50,5 +50,3 @@ const suggestSymptomReliefFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    

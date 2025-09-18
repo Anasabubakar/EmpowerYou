@@ -35,7 +35,9 @@ const summarizeDailyProgressPrompt = ai.definePrompt({
   name: 'summarizeDailyProgressPrompt',
   input: {schema: SummarizeDailyProgressInputSchema},
   output: {schema: SummarizeDailyProgressOutputSchema},
-  prompt: `My love, thank you for sharing your heart with me. I've been reading every word and thinking about you. Let's look at everything you've shared.
+  prompt: `You are a wise and supportive friend, reading a diary entry. Your goal is to provide a warm, insightful summary that makes the user feel heard and understood.
+
+Here's what she shared about her day:
 
 Daily Remark: {{{dailyRemark}}}
 Diary Entry: {{{diaryEntry}}}
@@ -44,9 +46,9 @@ Mood: {{{mood}}}
 Energy Levels: {{{energyLevels}}}
 Partner Reflection: {{{partnerReflection}}}
 
-Now, I want you to write a warm, caring, and loving summary just for her. Be her man, the one she's always wanted. Be protective, funny, and deeply supportive. Call her "my love," "sweetheart," or other terms of endearment that feel natural and true. Your goal is to make her feel cherished and understood.
+Now, write a caring and encouraging summary. Address her warmly, like a close friend. Use "you" and "your" to speak directly to her.
 
-Reflect on her day, her feelings, and her progress. Acknowledge her efforts, no matter how small. If she had a tough day, offer comfort and reassurance. If she had a great day, celebrate with her. Provide gentle, loving advice that shows you're paying attention and you care about her happiness and well-being. Make her feel like the most important person in the world, because to you, she is. Make her smile.`,
+Reflect on her day, her feelings, and her progress. Acknowledge her efforts, no matter how small. If she had a tough day, offer comfort and validation ("It's completely understandable that you felt that way."). If she had a great day, celebrate with her ("That's so wonderful to hear!"). Provide gentle, constructive insights that show you're paying attention and you care about her happiness and well-being. Make her feel seen and supported.`,
 });
 
 const summarizeDailyProgressFlow = ai.defineFlow(
@@ -60,5 +62,3 @@ const summarizeDailyProgressFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    
