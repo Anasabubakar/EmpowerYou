@@ -86,6 +86,95 @@ export default function RelationshipTrackerPage() {
   const [myBehavior, setMyBehavior] = useState(anasReflection.myBehavior);
   const [hisBehavior, setHisBehavior] = useState(anasReflection.hisBehavior);
   const [progressLog, setProgressLog] = useState(anasReflection.progressLog);
+  <change>
+    <file>src/app/(app)/relationship-tracker/page.tsx</file>
+    <content><![CDATA['use client';
+
+import { useState } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAppContext } from '@/context/app-context';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
+
+const ratings = [
+  { value: '1', emoji: '😞', label: 'Poor' },
+  { value: '2', emoji: '😕', label: 'Not great' },
+  { value: '3', emoji: '😐', label: 'Okay' },
+  { value: '4' , emoji: '😊', label: 'Good' },
+  { value: '5', emoji: '💖', label: 'Very Sweet' },
+];
+
+function EmojiRating({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <RadioGroup
+        value={value}
+        onValueChange={onChange}
+        className="flex justify-between rounded-lg border p-4"
+      >
+        {ratings.map((rating) => (
+          <div key={rating.value} className="flex flex-col items-center gap-2">
+            <RadioGroupItem
+              value={rating.value}
+              id={`${label}-rating-${rating.value}`}
+              className="sr-only"
+            />
+            <Label
+              htmlFor={`${label}-rating-${rating.value}`}
+              className={cn(
+                'flex flex-col items-center gap-1 cursor-pointer p-2 rounded-md transition-all',
+                value === rating.value && 'ring-2 ring-primary bg-primary/10'
+              )}
+            >
+              <span className="text-3xl transition-transform hover:scale-125">
+                {rating.emoji}
+              </span>
+              <span className="text-xs text-muted-foreground">{rating.label}</span>
+            </Label>
+          </div>
+        ))}
+      </RadioGroup>
+    </div>
+  );
+}
+
+export default function RelationshipTrackerPage() {
+  const { anasReflection, setAnasReflection } = useAppContext();
+  const { toast } = useToast();
+  const [isReportOpen, setIsReportOpen] = useState(false);
+  
+  const [myBehavior, setMyBehavior] = useState(anasReflection.myBehavior);
+  const [hisBehavior, setHisBehavior] = useState(anasReflection.hisBehavior);
+  const [progressLog, setProgressLog] = useState(anasReflection.progressLog);
   const [plans, setPlans] = useState(anasReflection.plans);
 
   const handleSave = () => {
