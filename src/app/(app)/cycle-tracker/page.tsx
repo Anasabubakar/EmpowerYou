@@ -71,12 +71,12 @@ export default function CycleTrackerPage() {
 
       toast({
         title: "Period Logged",
-        description: `Thank you for sharing, my love. I'll keep this in mind.`,
+        description: `Thank you for sharing. I'll keep this in mind.`,
       });
     } else {
       toast({
         title: "Incomplete Selection",
-        description: "Please select at least a start date for your period, sweetheart.",
+        description: "Please select at least a start date for your period.",
         variant: "destructive",
       });
     }
@@ -87,7 +87,7 @@ export default function CycleTrackerPage() {
       setLoggedSymptoms(selectedSymptoms);
       toast({
         title: "Symptoms Logged",
-        description: `I see you've logged: ${selectedSymptoms.join(', ')}. I'm here for you.`,
+        description: `Logged: ${selectedSymptoms.join(', ')}. I'm here for you.`,
       });
       
       setIsSymptomsLoading(true);
@@ -99,7 +99,7 @@ export default function CycleTrackerPage() {
         console.error(error);
         toast({
           title: "AI Error",
-          description: "I'm so sorry, my love. I had trouble coming up with suggestions right now.",
+          description: "Sorry, I had trouble coming up with suggestions right now.",
           variant: "destructive",
         });
       } finally {
@@ -108,7 +108,7 @@ export default function CycleTrackerPage() {
     } else {
       toast({
         title: "No Symptoms Selected",
-        description: "You haven't selected any symptoms, my dear. I hope that means you're feeling wonderful.",
+        description: "You haven't selected any symptoms. I hope that means you're feeling wonderful.",
         variant: "destructive",
       });
     }
@@ -118,7 +118,7 @@ export default function CycleTrackerPage() {
     if (!cycleInfo.lastPeriodDate) {
       toast({
         title: "No Period Logged",
-        description: "Sweetheart, please log your last period date first so I can help you.",
+        description: "Please log your last period date first so I can help you.",
         variant: "destructive",
       });
       return;
@@ -133,7 +133,7 @@ export default function CycleTrackerPage() {
       console.error(error);
       toast({
         title: "AI Error",
-        description: "I'm so sorry, my love. I couldn't predict your future cycles at the moment.",
+        description: "Sorry, I couldn't predict your future cycles at the moment.",
         variant: "destructive",
       });
     } finally {
@@ -144,9 +144,9 @@ export default function CycleTrackerPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-headline font-bold">Your Cycle, My Priority</h1>
+        <h1 className="text-3xl font-headline font-bold">Cycle Tracker</h1>
         <p className="text-muted-foreground">
-          Let's keep track of your cycle together, so I can be as supportive as possible.
+          Keep track of your cycle to better understand your body.
         </p>
       </div>
 
@@ -161,7 +161,7 @@ export default function CycleTrackerPage() {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="max-w-xs text-sm">
-                    My love, the cycle day is counted from the start of your last period. The prediction is just an estimate based on a 28-day cycle. You are unique and your cycle may be too.
+                    The cycle day is counted from the start of your last period. The prediction is an estimate based on a 28-day cycle. Your own cycle may be unique.
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -200,7 +200,7 @@ export default function CycleTrackerPage() {
           <CardHeader>
             <CardTitle>Log Your Cycle</CardTitle>
             <CardDescription>
-              Let me know the start and end dates. I'm here to keep track for you.
+              Select the start and end dates of your last period.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center">
@@ -214,7 +214,7 @@ export default function CycleTrackerPage() {
                 <Button onClick={handleLogPeriod}>Log Period Dates</Button>
                 <Button variant="outline" onClick={handlePredictCycles} disabled={isPredictionLoading}>
                   {isPredictionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                  Let me predict for you
+                  Predict Next Cycles
                 </Button>
              </div>
           </CardContent>
@@ -225,7 +225,7 @@ export default function CycleTrackerPage() {
         <CardHeader>
           <CardTitle>How Are You Feeling?</CardTitle>
           <CardDescription>
-            Tell me about any symptoms you're having. I want to know.
+            Log any symptoms you're experiencing.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -235,7 +235,7 @@ export default function CycleTrackerPage() {
                 key={symptom} 
                 variant={selectedSymptoms.includes(symptom) ? 'default' : 'outline'}
                 onClick={() => handleSymptomToggle(symptom)}
-                className={cn("text-lg p-2 cursor-pointer transition-colors", {
+                className={cn("text-base p-2 cursor-pointer transition-colors", {
                   "bg-primary text-primary-foreground": selectedSymptoms.includes(symptom),
                   "hover:bg-accent": !selectedSymptoms.includes(symptom)
                 })}>
@@ -247,7 +247,7 @@ export default function CycleTrackerPage() {
         <CardContent>
           <Button onClick={handleLogSymptoms} disabled={isSymptomsLoading}>
             {isSymptomsLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
-            Let Me Help
+            Get Suggestions
           </Button>
         </CardContent>
       </Card>
@@ -257,10 +257,10 @@ export default function CycleTrackerPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Sparkles className="text-primary h-5 w-5"/>
-              For You, My Love
+              Future Predictions
             </DialogTitle>
             <DialogDescription>
-              Based on what you've told me, here's what I think might be next. Just a little something to help you plan.
+              Based on what you've shared, here are some predictions. This is just an estimate to help you plan.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
@@ -273,7 +273,7 @@ export default function CycleTrackerPage() {
                 </li>
               ))}
             </ul>
-            <p className="text-xs text-muted-foreground mt-4 text-center">Remember, this is just an estimate, sweetheart. Your body is beautifully unique.</p>
+            <p className="text-xs text-muted-foreground mt-4 text-center">Remember, this is just an estimate. Your body is beautifully unique.</p>
           </div>
           <DialogFooter>
              <Button onClick={() => setIsPredictionDialogOpen(false)}>Close</Button>
@@ -286,10 +286,10 @@ export default function CycleTrackerPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Bot className="text-primary h-5 w-5"/>
-              Let Me Take Care of You
+              Suggestions for Relief
             </DialogTitle>
             <DialogDescription>
-              I'm so sorry you're not feeling your best. Here are a few thoughts on how we can make you more comfortable.
+              I'm sorry you're not feeling your best. Here are a few thoughts on what might bring some comfort.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 whitespace-pre-wrap text-sm">

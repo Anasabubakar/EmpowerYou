@@ -63,7 +63,7 @@ function EditGoalDialog({
         <DialogHeader>
           <DialogTitle>Edit Goal</DialogTitle>
           <DialogDescription>
-            Let's refine this dream of yours, my love.
+            Let's refine this dream of yours.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4">
@@ -77,7 +77,7 @@ function EditGoalDialog({
               onChange={(e) =>
                 setEditableGoal({ ...editableGoal, title: e.target.value })
               }
-              className="col-span-3"
+              className="col-span-3 text-base"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -93,7 +93,7 @@ function EditGoalDialog({
                   description: e.target.value,
                 })
               }
-              className="col-span-3"
+              className="col-span-3 text-base"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -158,7 +158,7 @@ function GoalCard({ goal, onGoalUpdate }: { goal: Goal; onGoalUpdate: (updatedGo
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground mb-4 h-10 overflow-hidden">{goal.description}</p>
+        <p className="text-sm text-muted-foreground mb-4 min-h-[40px]">{goal.description}</p>
         <div className="flex items-center gap-2">
           <Progress value={goal.progress} />
           <span className="text-sm font-medium text-foreground">
@@ -211,7 +211,7 @@ function AddGoalDialog({ onAddGoal }: { onAddGoal: (newGoal: Goal) => void }) {
         <DialogHeader>
           <DialogTitle>What's in Your Heart?</DialogTitle>
           <DialogDescription>
-            Let's turn your desires and needs into beautiful goals, my love.
+            Let's turn your desires and needs into beautiful goals.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -219,13 +219,13 @@ function AddGoalDialog({ onAddGoal }: { onAddGoal: (newGoal: Goal) => void }) {
             <Label htmlFor="add-title" className="text-right">
               Goal
             </Label>
-            <Input id="add-title" placeholder="e.g., Learn to paint" value={title} onChange={(e) => setTitle(e.target.value)} className="col-span-3" />
+            <Input id="add-title" placeholder="e.g., Learn to paint" value={title} onChange={(e) => setTitle(e.target.value)} className="col-span-3 text-base" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="add-description" className="text-right">
               A little detail
             </Label>
-            <Textarea id="add-description" placeholder="e.g., To express my creative side" value={description} onChange={(e) => setDescription(e.target.value)} className="col-span-3" />
+            <Textarea id="add-description" placeholder="e.g., To express my creative side" value={description} onChange={(e) => setDescription(e.target.value)} className="col-span-3 text-base" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label className="text-right">Is this a...</Label>
@@ -262,9 +262,9 @@ function EmptyState({ isWant, onAddGoal }: { isWant: boolean, onAddGoal: (newGoa
             <Heart className="mx-auto h-12 w-12" />
             <h3 className="mt-4 text-lg font-medium">This space is full of potential</h3>
             {isWant ? (
-                <p>What desires are you dreaming of, my love? Let's add your first 'Want'.</p>
+                <p>What are you dreaming of? Let's add your first 'Want'.</p>
             ) : (
-                <p>What's essential for your well-being, sweetheart? Let's add your first 'Need'.</p>
+                <p>What's essential for your well-being? Let's add your first 'Need'.</p>
             )}
              <AddGoalDialog onAddGoal={onAddGoal} />
         </div>
@@ -291,7 +291,7 @@ export default function WantsNeedsPage() {
         <div>
           <h1 className="text-3xl font-headline font-bold">Your Dreams &amp; Needs</h1>
           <p className="text-muted-foreground">
-            A place for your heart's desires and essential needs. I'm here to support them all.
+            A place for your heart's desires and essential needs.
           </p>
         </div>
         <AddGoalDialog onAddGoal={handleAddGoal} />

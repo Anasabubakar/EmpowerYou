@@ -32,11 +32,11 @@ function CompanionGreeting() {
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) {
-      setGreeting(`Good morning, my love. I hope you have a beautiful day. I'm here if you need anything at all.`);
+      setGreeting(`Good morning. I hope you have a beautiful day. I'm here if you need anything at all.`);
     } else if (hour < 18) {
-      setGreeting(`Hope you're having a wonderful afternoon, sweetheart. Thinking of you.`);
+      setGreeting(`Hope you're having a wonderful afternoon. Thinking of you.`);
     } else {
-      setGreeting(`Good evening, my darling. I hope you're winding down peacefully. Let's chat for a bit.`);
+      setGreeting(`Good evening. I hope you're winding down peacefully. Let's chat for a bit.`);
     }
   }, []);
 
@@ -54,7 +54,7 @@ function CompanionGreeting() {
         </p>
          <Link href="/companion">
               <Button size="sm" variant="ghost" className="mt-2 text-primary hover:text-primary">
-                Talk to him
+                Talk to her
               </Button>
             </Link>
       </CardContent>
@@ -85,8 +85,8 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-headline font-bold">Welcome back, my love!</h1>
-        <p className="text-muted-foreground">Here&apos;s a snapshot of your day, just for you.</p>
+        <h1 className="text-3xl font-headline font-bold">Welcome back!</h1>
+        <p className="text-muted-foreground">Here&apos;s a snapshot of your day.</p>
       </div>
       
       <CompanionGreeting />
@@ -102,7 +102,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{goals.length} Active Goals</div>
             <p className="text-xs text-muted-foreground">
-              You are making such wonderful progress!
+              You are making wonderful progress!
             </p>
             <Link href="/wants-needs">
               <Button size="sm" variant="outline" className="mt-4">
@@ -114,7 +114,7 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Your Missions</CardTitle>
+            <CardTitle className="text-sm font-medium">Your Daily Tasks</CardTitle>
             <ListTodo className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -141,7 +141,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">Day {cycleInfo.currentDay > 0 ? cycleInfo.currentDay : '-'}</div>
             <p className="text-xs text-muted-foreground">
-              {cycleInfo.currentDay > 0 ? `Next period in ${cycleInfo.nextPeriodIn} days. I'm here for you.` : 'Log your period to see predictions.'}
+              {cycleInfo.currentDay > 0 ? `Next period in ${cycleInfo.nextPeriodIn} days.` : 'Log your period to see predictions.'}
             </p>
             <Link href="/cycle-tracker">
               <Button size="sm" variant="outline" className="mt-4">
@@ -154,9 +154,9 @@ export default function DashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Your Heart's Reflections</CardTitle>
+          <CardTitle>Your Reflections</CardTitle>
           <CardDescription>
-            What have you done today that your future self will thank you for, my love?
+            What have you done today that your future self will thank you for?
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -172,7 +172,7 @@ export default function DashboardPage() {
             </>
           ) : (
              <p className="text-muted-foreground italic">
-              You haven't shared your thoughts with me yet today, sweetheart.
+              You haven't shared your thoughts yet today.
             </p>
           )}
           <Link href="/diary">
@@ -220,12 +220,12 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">My Loving Insights</CardTitle>
+            <CardTitle className="text-sm font-medium">Personalized Insights</CardTitle>
             <TrendingUp className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <p className="text-sm text-foreground">
-              Let me look at your day and share my loving thoughts with you.
+              Let the AI analyze your day and share helpful thoughts.
             </p>
             <Link href="/insights">
               <Button size="sm" className="mt-4">

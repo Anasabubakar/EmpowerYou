@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { generatePersonalizedInsights } from '@/ai/flows/generate-personalized-insights';
 import { generateShareableSummary } from '@/ai/flows/generate-shareable-summary';
-import type { GenerateShareableSummaryInput } from '@/ai/flows/generate-shareable-summary';
+import type { GenerateShareableSummaryInput, GenerateShareableSummaryOutput } from '@/ai/flows/generate-shareable-summary';
 import { Loader2, Sparkles, Lightbulb, ClipboardList, TrendingUp, Share2, ClipboardCopy } from 'lucide-react';
 import type { GeneratePersonalizedInsightsOutput, GeneratePersonalizedInsightsInput } from '@/ai/flows/generate-personalized-insights';
 import { useAppContext } from '@/context/app-context';
@@ -78,12 +78,8 @@ export default function InsightsPage() {
   } = useAppContext();
   
   const getTodaysChat = () => {
-    const today = new Date().toISOString().split('T')[0];
-    return chatHistory.filter(message => {
-        // Assuming chat messages have a timestamp. If not, this logic needs to be adapted.
-        // For now, let's assume no timestamp and just take the last 10 messages for context.
-        return true; 
-    }).slice(-10);
+    // Assuming chat messages don't have timestamps, just take the last 10 messages for context.
+    return chatHistory.slice(-10);
   }
 
   const handleGenerate = async () => {
@@ -96,7 +92,7 @@ export default function InsightsPage() {
       wantsNeedsData: goals.map(g => ({
         ...g, 
         deadline: g.deadline.toISOString(), 
-        createdAt: g.createdAt || new Date(0).toISOString() 
+        createdAt: g.createdAt
       })),
       menstrualCycleData: { 
         ...cycleInfo, 
@@ -104,8 +100,8 @@ export default function InsightsPage() {
         lastPeriodDate: cycleInfo.lastPeriodDate?.toISOString(),
         loggedSymptoms 
       },
-      taskData: tasks.map(t => ({ ...t, createdAt: t.createdAt || new Date(0).toISOString() })),
-      healthMetricsData: healthMetrics.map(m => ({ ...m, createdAt: m.createdAt || new Date(0).toISOString() })),
+      taskData: tasks.map(t => ({ ...t, createdAt: t.createdAt })),
+      healthMetricsData: healthMetrics.map(m => ({ ...m, createdAt: m.createdAt })),
       diaryEntries: diaryEntries.slice(-7), // a few recent entries
       partnerReflectionData: relationshipTracker,
     };
@@ -130,11 +126,10 @@ export default function InsightsPage() {
     
     const input: GenerateShareableSummaryInput = {
       userName,
-      companionName,
       wantsNeedsData: goals.map(g => ({
         ...g,
         deadline: g.deadline.toISOString(),
-        createdAt: g.createdAt || new Date(0).toISOString(),
+        createdAt: g.createdAt,
       })),
       menstrualCycleData: {
         ...cycleInfo,
@@ -144,15 +139,16 @@ export default function InsightsPage() {
       },
       taskData: tasks.map(t => ({
         ...t,
-        createdAt: t.createdAt || new Date(0).toISOString(),
+        createdAt: t.createdAt,
       })),
       healthMetricsData: healthMetrics.map(m => ({
         ...m,
-        createdAt: m.createdAt || new Date(0).toISOString(),
+        createdAt: m.createdAt,
       })),
       diaryEntries: diaryEntries.slice(-1),
       partnerReflectionData: relationshipTracker,
       companionChat: getTodaysChat(),
+      companionName: companionName,
     };
     
     try {
@@ -163,7 +159,7 @@ export default function InsightsPage() {
       console.error(error);
       toast({
         title: 'Error creating summary',
-        description: 'I had trouble putting together the summary for you, my love. Please try again.',
+        description: 'I had trouble putting together the summary for you. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -184,7 +180,7 @@ export default function InsightsPage() {
       <div className="flex flex-col items-center text-center">
         <h1 className="text-3xl font-headline font-bold">Your Personal Reflections</h1>
         <p className="text-muted-foreground max-w-xl">
-          I've been thinking about you. Let's look at how you've been doing. I'm here to help you see the amazing person I see.
+          Let's take a look at how you've been doing and uncover some insights to support your journey.
         </p>
         <div className="flex gap-2 mt-4">
           <Button onClick={handleGenerate} disabled={loading} size="lg">
@@ -210,21 +206,21 @@ export default function InsightsPage() {
         <div className="grid grid-cols-1 gap-6 pt-6 lg:grid-cols-1">
           <InsightCard
             icon={TrendingUp}
-            title="My Observations, because I watch over you"
+            title="Observations & Trends"
             content={insights.insights}
             iconBgColor="bg-accent/20"
             iconColor="text-accent"
           />
           <InsightCard
             icon={ClipboardList}
-            title="The Short & Sweet Version"
+            title="High-Level Summary"
             content={insights.summary}
             iconBgColor="bg-primary/20"
             iconColor="text-primary"
           />
           <InsightCard
             icon={Lightbulb}
-            title="How I Can Help"
+            title="Actionable Advice"
             content={insights.advice}
             iconBgColor="bg-secondary-foreground/10"
             iconColor="text-secondary-foreground"
@@ -234,17 +230,17 @@ export default function InsightsPage() {
        {!insights && !loading && (
         <div className="flex flex-col items-center justify-center text-center p-12 border-2 border-dashed rounded-lg mt-6">
           <Sparkles className="h-12 w-12 text-muted-foreground" />
-          <h3 className="mt-4 text-lg font-medium">Ready for your reflections, my love?</h3>
-          <p className="mt-1 text-sm text-muted-foreground">Click the button above and let me share what I see.</p>
+          <h3 className="mt-4 text-lg font-medium">Ready for your reflections?</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Click the button above and let the AI share what it sees.</p>
         </div>
       )}
       
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>A Little Glimpse Into Your Day</DialogTitle>
+            <DialogTitle>A Glimpse Into Your Day</DialogTitle>
             <DialogDescription>
-              Here is a summary of your day to share with the real me. You can copy it and send it in any app you'd like.
+              Here is a summary of your day to share. You can copy it and send it in any app you'd like.
             </DialogDescription>
           </DialogHeader>
           <Card className="max-h-[50vh] overflow-y-auto">

@@ -46,7 +46,7 @@ Mood: {{{mood}}}
 Energy Levels: {{{energyLevels}}}
 Partner Reflection: {{{partnerReflection}}}
 
-Now, write a caring and encouraging summary. Address her warmly, like a close friend. Use "you" and "your" to speak directly to her.
+Now, write a caring and encouraging summary. Address her warmly and respectfully. Use "you" and "your" to speak directly to her.
 
 Reflect on her day, her feelings, and her progress. Acknowledge her efforts, no matter how small. If she had a tough day, offer comfort and validation ("It's completely understandable that you felt that way."). If she had a great day, celebrate with her ("That's so wonderful to hear!"). Provide gentle, constructive insights that show you're paying attention and you care about her happiness and well-being. Make her feel seen and supported.`,
 });

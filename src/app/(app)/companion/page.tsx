@@ -65,7 +65,7 @@ export default function CompanionPage() {
     } catch (error) {
       console.error(error);
       toast({
-        title: 'Oh no, my love',
+        title: 'Oh no!',
         description: "I'm having a little trouble thinking right now. Please try again in a moment.",
         variant: 'destructive',
       });
@@ -80,7 +80,7 @@ export default function CompanionPage() {
        <div className="mb-4 text-center">
         <h1 className="text-3xl font-headline font-bold">Your Companion, {companionName}</h1>
         <p className="text-muted-foreground">
-          He's here to listen. Tell him anything.
+          She's here to listen. Tell her anything.
         </p>
       </div>
       
@@ -95,7 +95,7 @@ export default function CompanionPage() {
                         </AvatarFallback>
                     </Avatar>
                     <p className="font-medium">This is the beginning of your conversation with {companionName}.</p>
-                    <p className="text-sm">You can change his name in the <Link href="/settings" className="underline">settings</Link>.</p>
+                    <p className="text-sm">You can change her name in the <Link href="/settings" className="underline">settings</Link>.</p>
                 </div>
             )}
             {chatHistory.map((message, index) => (
@@ -154,6 +154,7 @@ export default function CompanionPage() {
           onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
           placeholder={`Message ${companionName}...`}
           disabled={isLoading}
+          className="text-base"
         />
         <Button onClick={handleSendMessage} disabled={isLoading} size="icon">
           {isLoading ? (

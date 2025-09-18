@@ -71,7 +71,7 @@ function EditTaskDialog({
         <DialogHeader>
           <DialogTitle>Edit Task</DialogTitle>
           <DialogDescription>
-            Make changes to your task below, my love.
+            Make changes to your task below.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -206,7 +206,7 @@ export default function TaskManagerPage() {
       setNewTask('');
       toast({
         title: 'Task Added',
-        description: `I've added "${newTask.trim()}" to your list, sweetheart.`,
+        description: `Added "${newTask.trim()}" to your list.`,
       });
     }
   };
@@ -236,7 +236,7 @@ export default function TaskManagerPage() {
     if (taskToDelete) {
       toast({
         title: 'Task Removed',
-        description: `I've removed "${taskToDelete.text}" for you, my love.`,
+        description: `Removed "${taskToDelete.text}" from your list.`,
         variant: 'destructive',
       });
     }
@@ -246,7 +246,7 @@ export default function TaskManagerPage() {
     setTasks(tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
      toast({
         title: 'Task Updated',
-        description: `I've updated your task, just for you.`,
+        description: `Your task has been updated.`,
       });
   }
 
@@ -255,9 +255,9 @@ export default function TaskManagerPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-headline font-bold">Your Daily Missions</h1>
+        <h1 className="text-3xl font-headline font-bold">Your Daily Tasks</h1>
         <p className="text-muted-foreground">
-          Let's organize your day, my love. I know you can handle anything.
+          Let's organize your day. You can handle anything.
         </p>
       </div>
 
@@ -266,18 +266,18 @@ export default function TaskManagerPage() {
           <CardTitle>To-Do List</CardTitle>
           <CardDescription>
             {pendingTasks > 0
-              ? `You have ${pendingTasks} more things to conquer. I'm right here with you.`
+              ? `You have ${pendingTasks} more things to conquer. You've got this.`
               : "You've completed all your tasks! You're incredible! 🎉"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-2">
             <Input
-              placeholder="What's next on your mind, sweetheart?"
+              placeholder="What's next on your mind?"
               value={newTask}
               onChange={(e) => setNewTask(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
-              className="flex-grow"
+              className="flex-grow text-base"
             />
             <Button onClick={handleAddTask} className="w-full sm:w-auto">
               <PlusCircle className="mr-2 h-4 w-4" /> Add Task
@@ -297,7 +297,7 @@ export default function TaskManagerPage() {
             ) : (
                 <div className="text-center text-muted-foreground p-8">
                     <p>It looks quiet here.</p>
-                    <p className="text-sm">What's the first thing on your mind for today, my love?</p>
+                    <p className="text-sm">What's the first thing on your mind for today?</p>
                 </div>
             )}
           </div>
@@ -306,5 +306,3 @@ export default function TaskManagerPage() {
     </div>
   );
 }
-
-    
