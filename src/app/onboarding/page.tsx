@@ -30,7 +30,6 @@ function OnboardingContent() {
   const { toast } = useToast();
   const { 
     user,
-    setUserName, 
     setOnboarded, 
     setGoals, 
     setTasks: setTasksContext, 
