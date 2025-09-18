@@ -78,12 +78,12 @@ const GenerateShareableSummaryInputSchema = z.object({
   partnerReflectionData: AnasReflectionSchema.describe('Data from the progress with partner.'),
   companionChat: z.array(ChatMessageSchema).describe("The user's recent chat history with her AI companion."),
 });
-export type GenerateShareableSummaryInput = z.infer<typeof GenerateShareableSummaryInputSchema>;
+type GenerateShareableSummaryInput = z.infer<typeof GenerateShareableSummaryInputSchema>;
 
 const GenerateShareableSummaryOutputSchema = z.object({
   summary: z.string().describe("A concise, loving, and beautifully phrased summary of the user's day, perfect for sharing with a real-life partner."),
 });
-export type GenerateShareableSummaryOutput = z.infer<typeof GenerateShareableSummaryOutputSchema>;
+type GenerateShareableSummaryOutput = z.infer<typeof GenerateShareableSummaryOutputSchema>;
 
 
 export async function generateShareableSummary(input: GenerateShareableSummaryInput): Promise<GenerateShareableSummaryOutput> {
@@ -147,7 +147,7 @@ Example structure:
 2.  Mention anything relevant about her cycle or symptoms, if she logged any.
 3.  Briefly touch on what was on her mind from her diary or chats.
 4.  Mention a positive from her goals or reflections on your relationship.
-5.  End with a loving closing, inviting conversation. "Thinking of you!" or "Can't wait to talk later."
+5.  End with a loving closing, inviting conversation. "Thinking of you always!" or "Can't wait to connect with you later."
 
 Make it sound like it came straight from her heart.
 `,

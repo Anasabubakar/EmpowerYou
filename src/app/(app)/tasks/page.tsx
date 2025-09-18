@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -70,7 +71,7 @@ function EditTaskDialog({
         <DialogHeader>
           <DialogTitle>Edit Task</DialogTitle>
           <DialogDescription>
-            Make changes to your task below.
+            Make changes to your task below, my love.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -205,17 +206,28 @@ export default function TaskManagerPage() {
       setNewTask('');
       toast({
         title: 'Task Added',
-        description: `"${newTask.trim()}" has been added to your list.`,
+        description: `I've added "${newTask.trim()}" to your list, sweetheart.`,
       });
     }
   };
 
   const handleToggleTask = (id: string) => {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+
+    const completed = !task.completed;
     setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
+      tasks.map((t) =>
+        t.id === id ? { ...t, completed } : t
       )
     );
+    
+    if (completed) {
+      toast({
+        title: 'One less thing to do!',
+        description: `You are amazing for finishing that.`,
+      });
+    }
   };
 
   const handleDeleteTask = (id: string) => {
@@ -223,8 +235,8 @@ export default function TaskManagerPage() {
     setTasks(tasks.filter((task) => task.id !== id));
     if (taskToDelete) {
       toast({
-        title: 'Task Deleted',
-        description: `"${taskToDelete.text}" has been removed.`,
+        title: 'Task Removed',
+        description: `I've removed "${taskToDelete.text}" for you, my love.`,
         variant: 'destructive',
       });
     }
@@ -234,7 +246,7 @@ export default function TaskManagerPage() {
     setTasks(tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
      toast({
         title: 'Task Updated',
-        description: `Your task has been updated.`,
+        description: `I've updated your task, just for you.`,
       });
   }
 
@@ -243,9 +255,9 @@ export default function TaskManagerPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-headline font-bold">Task Manager</h1>
+        <h1 className="text-3xl font-headline font-bold">Your Daily Missions</h1>
         <p className="text-muted-foreground">
-          Organize your day and stay on top of your responsibilities.
+          Let's organize your day, my love. I know you can handle anything.
         </p>
       </div>
 
@@ -254,14 +266,14 @@ export default function TaskManagerPage() {
           <CardTitle>To-Do List</CardTitle>
           <CardDescription>
             {pendingTasks > 0
-              ? `You have ${pendingTasks} pending tasks.`
-              : "You've completed all your tasks! 🎉"}
+              ? `You have ${pendingTasks} more things to conquer. I'm right here with you.`
+              : "You've completed all your tasks! You're incredible! 🎉"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-2">
             <Input
-              placeholder="Add a new task..."
+              placeholder="What's next on your mind, sweetheart?"
               value={newTask}
               onChange={(e) => setNewTask(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
@@ -271,18 +283,27 @@ export default function TaskManagerPage() {
             </Button>
           </div>
           <div className="space-y-2">
-            {tasks.map((task) => (
-              <TaskItem
-                key={task.id}
-                task={task}
-                onToggle={handleToggleTask}
-                onDelete={handleDeleteTask}
-                onUpdate={handleUpdateTask}
-              />
-            ))}
+             {tasks.length > 0 ? (
+                tasks.map((task) => (
+                  <TaskItem
+                    key={task.id}
+                    task={task}
+                    onToggle={handleToggleTask}
+                    onDelete={handleDeleteTask}
+                    onUpdate={handleUpdateTask}
+                  />
+                ))
+            ) : (
+                <div className="text-center text-muted-foreground p-8">
+                    <p>It looks quiet here.</p>
+                    <p className="text-sm">What's the first thing on your mind for today, my love?</p>
+                </div>
+            )}
           </div>
         </CardContent>
       </Card>
     </div>
   );
 }
+
+    

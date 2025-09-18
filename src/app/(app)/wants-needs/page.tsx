@@ -28,7 +28,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useAppContext } from '@/context/app-context';
 import type { Goal } from '@/lib/types';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Heart } from 'lucide-react';
 import { format } from 'date-fns';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
@@ -63,7 +63,7 @@ function EditGoalDialog({
         <DialogHeader>
           <DialogTitle>Edit Goal</DialogTitle>
           <DialogDescription>
-            Make changes to your goal. Click save when you're done.
+            Let's refine this dream of yours, my love.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4">
@@ -154,11 +154,11 @@ function GoalCard({ goal, onGoalUpdate }: { goal: Goal; onGoalUpdate: (updatedGo
       <CardHeader>
         <CardTitle>{goal.title}</CardTitle>
         <CardDescription>
-          Deadline: {format(goal.deadline, 'PPP')}
+          By {format(goal.deadline, 'PPP')}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground mb-4">{goal.description}</p>
+        <p className="text-sm text-muted-foreground mb-4 h-10">{goal.description}</p>
         <div className="flex items-center gap-2">
           <Progress value={goal.progress} />
           <span className="text-sm font-medium text-foreground">
@@ -168,7 +168,7 @@ function GoalCard({ goal, onGoalUpdate }: { goal: Goal; onGoalUpdate: (updatedGo
       </CardContent>
       <CardFooter>
         <EditGoalDialog goal={goal} onSave={onGoalUpdate}>
-          <Button variant="outline">Edit Goal</Button>
+          <Button variant="outline">Update Progress</Button>
         </EditGoalDialog>
       </CardFooter>
     </Card>
@@ -209,26 +209,26 @@ function AddGoalDialog({ onAddGoal }: { onAddGoal: (newGoal: Goal) => void }) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add a New Goal</DialogTitle>
+          <DialogTitle>What's in Your Heart?</DialogTitle>
           <DialogDescription>
-            Turn your desires and needs into actionable goals.
+            Let's turn your desires and needs into beautiful goals, my love.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="add-title" className="text-right">
-              Title
+              Goal
             </Label>
-            <Input id="add-title" value={title} onChange={(e) => setTitle(e.target.value)} className="col-span-3" />
+            <Input id="add-title" placeholder="e.g., Learn to paint" value={title} onChange={(e) => setTitle(e.target.value)} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="add-description" className="text-right">
-              Description
+              A little detail
             </Label>
-            <Textarea id="add-description" value={description} onChange={(e) => setDescription(e.target.value)} className="col-span-3" />
+            <Textarea id="add-description" placeholder="e.g., To express my creative side" value={description} onChange={(e) => setDescription(e.target.value)} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Category</Label>
+            <Label className="text-right">Is this a...</Label>
             <RadioGroup
               value={category}
               onValueChange={(value) => setCategory(value as 'want' | 'need')}
@@ -256,6 +256,20 @@ function AddGoalDialog({ onAddGoal }: { onAddGoal: (newGoal: Goal) => void }) {
   );
 }
 
+function EmptyState({ isWant }: { isWant: boolean }) {
+    return (
+        <div className="text-center text-muted-foreground p-12 col-span-full border-2 border-dashed rounded-lg">
+            <Heart className="mx-auto h-12 w-12" />
+            <h3 className="mt-4 text-lg font-medium">This space is full of potential</h3>
+            {isWant ? (
+                <p>What desires are you dreaming of, my love? Let's add your first 'Want'.</p>
+            ) : (
+                <p>What's essential for your well-being, sweetheart? Let's add your first 'Need'.</p>
+            )}
+             <AddGoalDialog onAddGoal={() => {}} />
+        </div>
+    );
+}
 
 export default function WantsNeedsPage() {
   const { goals, setGoals } = useAppContext();
@@ -275,9 +289,9 @@ export default function WantsNeedsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-headline font-bold">Wants &amp; Needs</h1>
+          <h1 className="text-3xl font-headline font-bold">Your Dreams &amp; Needs</h1>
           <p className="text-muted-foreground">
-            Define, track, and achieve your goals.
+            A place for your heart's desires and essential needs. I'm here to support them all.
           </p>
         </div>
         <AddGoalDialog onAddGoal={handleAddGoal} />
@@ -289,21 +303,21 @@ export default function WantsNeedsPage() {
         </TabsList>
         <TabsContent value="wants">
           <div className="grid gap-6 pt-4 md:grid-cols-2 lg:grid-cols-3">
-            {wants.map((goal) => (
+            {wants.length > 0 ? wants.map((goal) => (
               <GoalCard key={goal.id} goal={goal} onGoalUpdate={handleGoalUpdate} />
-            ))}
-             {wants.length === 0 && <p className="text-muted-foreground col-span-full">No wants defined yet. Add a new goal to get started!</p>}
+            )) : <EmptyState isWant={true} />}
           </div>
         </TabsContent>
         <TabsContent value="needs">
           <div className="grid gap-6 pt-4 md:grid-cols-2 lg:grid-cols-3">
-            {needs.map((goal) => (
+            {needs.length > 0 ? needs.map((goal) => (
               <GoalCard key={goal.id} goal={goal} onGoalUpdate={handleGoalUpdate} />
-            ))}
-             {needs.length === 0 && <p className="text-muted-foreground col-span-full">No needs defined yet. Add a new goal to get started!</p>}
+            )) : <EmptyState isWant={false} />}
           </div>
         </TabsContent>
       </Tabs>
     </div>
   );
 }
+
+    
