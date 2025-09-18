@@ -89,19 +89,33 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [onboarded, setOnboarded] = useState<boolean | undefined>(() => getInitialState('onboarded', false));
-  const [userName, setUserName] = useState<string>(() => getInitialState('userName', ''));
-  const [companionName, setCompanionName] = useState<string>(() => getInitialState('companionName', 'Companion'));
-  const [tasks, setTasks] = useState<Task[]>(() => getInitialState('tasks', mockTasks));
-  const [goals, setGoals] = useState<Goal[]>(() => getInitialState('goals', mockGoals));
-  const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>(() => getInitialState('healthMetrics', mockHealthMetrics));
-  const [cycleInfo, setCycleInfo] = useState<CycleInfo>(() => getInitialState('cycleInfo', mockCycleInfo));
-  const [loggedSymptoms, setLoggedSymptoms] = useState<string[]>(() => getInitialState('loggedSymptoms', []));
-  const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>(() => getInitialState('diaryEntries', []));
-  const [anasReflection, setAnasReflection] = useState<AnasReflection>(() => getInitialState('anasReflection', mockAnasReflection));
-  const [chatHistory, setChatHistory] = useState<ChatMessage[]>(() => getInitialState('chatHistory', []));
-  const [profilePicture, setProfilePicture] = useState<string>(() => getInitialState('profilePicture', ''));
+  const [onboarded, setOnboarded] = useState<boolean | undefined>(undefined);
+  const [userName, setUserName] = useState<string>('');
+  const [companionName, setCompanionName] = useState<string>('Companion');
+  const [tasks, setTasks] = useState<Task[]>(mockTasks);
+  const [goals, setGoals] = useState<Goal[]>(mockGoals);
+  const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>(mockHealthMetrics);
+  const [cycleInfo, setCycleInfo] = useState<CycleInfo>(mockCycleInfo);
+  const [loggedSymptoms, setLoggedSymptoms] = useState<string[]>([]);
+  const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
+  const [anasReflection, setAnasReflection] = useState<AnasReflection>(mockAnasReflection);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [profilePicture, setProfilePicture] = useState<string>('');
 
+  useEffect(() => {
+    setOnboarded(getInitialState('onboarded', false));
+    setUserName(getInitialState('userName', ''));
+    setCompanionName(getInitialState('companionName', 'Companion'));
+    setTasks(getInitialState('tasks', mockTasks));
+    setGoals(getInitialState('goals', mockGoals));
+    setHealthMetrics(getInitialState('healthMetrics', mockHealthMetrics));
+    setCycleInfo(getInitialState('cycleInfo', mockCycleInfo));
+    setLoggedSymptoms(getInitialState('loggedSymptoms', []));
+    setDiaryEntries(getInitialState('diaryEntries', []));
+    setAnasReflection(getInitialState('anasReflection', mockAnasReflection));
+    setChatHistory(getInitialState('chatHistory', []));
+    setProfilePicture(getInitialState('profilePicture', ''));
+  }, []);
 
   useEffect(() => {
     try {
