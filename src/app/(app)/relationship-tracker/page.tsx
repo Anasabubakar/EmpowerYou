@@ -79,17 +79,17 @@ function EmojiRating({
 }
 
 export default function RelationshipTrackerPage() {
-  const { relationshipTracker, setRelationshipTracker } = useAppContext();
+  const { anasReflection, setAnasReflection } = useAppContext();
   const { toast } = useToast();
   const [isReportOpen, setIsReportOpen] = useState(false);
   
-  const [myBehavior, setMyBehavior] = useState(relationshipTracker.myBehavior);
-  const [hisBehavior, setHisBehavior] = useState(relationshipTracker.hisBehavior);
-  const [progressLog, setProgressLog] = useState(relationshipTracker.progressLog);
-  const [plans, setPlans] = useState(relationshipTracker.plans);
+  const [myBehavior, setMyBehavior] = useState(anasReflection.myBehavior);
+  const [hisBehavior, setHisBehavior] = useState(anasReflection.hisBehavior);
+  const [progressLog, setProgressLog] = useState(anasReflection.progressLog);
+  const [plans, setPlans] = useState(anasReflection.plans);
 
   const handleSave = () => {
-    setRelationshipTracker({
+    setAnasReflection({
       myBehavior,
       hisBehavior,
       progressLog,
@@ -191,22 +191,22 @@ export default function RelationshipTrackerPage() {
           <div className="space-y-4 py-4 text-sm">
              <div className="flex justify-between">
                 <p className="font-medium">My average behavior:</p>
-                <p>{ratings.find(r => r.value === relationshipTracker.myBehavior)?.label} ({relationshipTracker.myBehavior}/5)</p>
+                <p>{ratings.find(r => r.value === anasReflection.myBehavior)?.label} ({anasReflection.myBehavior}/5)</p>
              </div>
              <div className="flex justify-between">
                 <p className="font-medium">Their average behavior:</p>
-                <p>{ratings.find(r => r.value === relationshipTracker.hisBehavior)?.label} ({relationshipTracker.hisBehavior}/5)</p>
+                <p>{ratings.find(r => r.value === anasReflection.hisBehavior)?.label} ({anasReflection.hisBehavior}/5)</p>
              </div>
              <div>
                 <p className="font-medium mb-2">Highlights from your logs:</p>
                 <p className="text-muted-foreground italic border-l-2 pl-4">
-                    &quot;{relationshipTracker.progressLog}&quot;
+                    &quot;{anasReflection.progressLog}&quot;
                 </p>
              </div>
              <div>
                 <p className="font-medium mb-2">Your plans moving forward:</p>
                 <p className="text-muted-foreground italic border-l-2 pl-4">
-                     &quot;{relationshipTracker.plans}&quot;
+                     &quot;{anasReflection.plans}&quot;
                 </p>
              </div>
              <p className="text-xs text-center pt-4 text-muted-foreground">This is a summary of your latest entry. Keep logging for more detailed weekly trends!</p>
