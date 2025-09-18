@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function LoginPage() {
-  const { user, signInWithGoogle } = useAuth();
+  const { user, signInWithGoogle, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -24,6 +24,14 @@ export default function LoginPage() {
       console.error('Failed to sign in with Google:', error);
     }
   };
+
+  if (loading && !user) {
+    return (
+        <div className="flex min-h-screen flex-col items-center justify-center bg-background">
+            <p className="mt-4 text-sm text-muted-foreground">Loading...</p>
+        </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
