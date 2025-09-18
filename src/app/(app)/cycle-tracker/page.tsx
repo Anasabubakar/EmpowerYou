@@ -12,36 +12,18 @@ import {
   CardTitle,
   CardFooter,
 } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAppContext } from '@/context/app-context';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { suggestSymptomRelief } from '@/ai/flows/suggest-symptom-relief';
-import { predictNextCycles } from '@/ai/flows/predict-next-cycles';
-import { Loader2, Sparkles } from 'lucide-react';
 
 export default function CycleTrackerPage() {
   const { cycleInfo, setCycleInfo, loggedSymptoms, setLoggedSymptoms } = useAppContext();
   const { toast } = useToast();
   const [range, setRange] = useState<DateRange | undefined>();
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>(loggedSymptoms);
-
-  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
-  const [loadingPredictions, setLoadingPredictions] = useState(false);
-  const [aiSuggestions, setAiSuggestions] = useState('');
-  const [aiPredictions, setAiPredictions] = useState<string[]>([]);
-  const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
-  const [isPredictionOpen, setIsPredictionOpen] = useState(false);
 
   const symptoms = ["Cramps", "Bloating", "Headache", "Mood Swings", "Fatigue", "Acne"];
 
@@ -55,17 +37,19 @@ export default function CycleTrackerPage() {
   
   const handleLogPeriod = () => {
     if (range?.from) {
-      const cycleLength = 28; // Assuming an average cycle length
-      const today = new Date();
-      const newCurrentDay = differenceInDays(today, range.from) + 1;
-      const newPredictedDate = addDays(range.from, cycleLength);
-      const newNextPeriodIn = differenceInDays(newPredictedDate, today);
+      setCycleInfo(prev => {
+          const cycleLength = 28; // Assuming an average cycle length
+          const today = new Date();
+          const newCurrentDay = differenceInDays(today, range.from!) + 1;
+          const newPredictedDate = addDays(range.from!, cycleLength);
+          const newNextPeriodIn = differenceInDays(newPredictedDate, today);
 
-      setCycleInfo({
-        currentDay: newCurrentDay > 0 ? newCurrentDay : 1,
-        predictedDate: newPredictedDate,
-        nextPeriodIn: newNextPeriodIn >= 0 ? newNextPeriodIn : 0,
-        lastPeriodDate: range.from,
+          return {
+            currentDay: newCurrentDay > 0 ? newCurrentDay : 1,
+            predictedDate: newPredictedDate,
+            nextPeriodIn: newNextPeriodIn >= 0 ? newNextPeriodIn : 0,
+            lastPeriodDate: range.from,
+          }
       });
 
       toast({
@@ -81,54 +65,19 @@ export default function CycleTrackerPage() {
     }
   }
   
-  const handleLogSymptoms = async () => {
+  const handleLogSymptoms = () => {
     if(selectedSymptoms.length > 0) {
         setLoggedSymptoms(selectedSymptoms);
         toast({
             title: "Symptoms Logged",
             description: `Logged symptoms: ${selectedSymptoms.join(', ')}`,
         });
-
-        setLoadingSuggestions(true);
-        setIsSuggestionOpen(true);
-        try {
-          const result = await suggestSymptomRelief(selectedSymptoms);
-          setAiSuggestions(result.suggestions);
-        } catch (error) {
-          console.error("Failed to get suggestions", error);
-          setAiSuggestions("Could not load suggestions at this time.");
-        } finally {
-          setLoadingSuggestions(false);
-        }
-
     } else {
         toast({
             title: "No Symptoms Selected",
             description: "Please select at least one symptom to log.",
             variant: "destructive",
         });
-    }
-  }
-
-  const handlePredictCycles = async () => {
-    if (!cycleInfo.lastPeriodDate) {
-      toast({
-        title: "No Period Date",
-        description: "Please log your last period date first.",
-        variant: "destructive",
-      });
-      return;
-    }
-    setLoadingPredictions(true);
-    setIsPredictionOpen(true);
-    try {
-      const result = await predictNextCycles({lastPeriodDate: cycleInfo.lastPeriodDate.toISOString()});
-      setAiPredictions(result.predictedDates);
-    } catch (error) {
-      console.error("Failed to get predictions", error);
-      setAiPredictions([]);
-    } finally {
-      setLoadingPredictions(false);
     }
   }
 
@@ -167,12 +116,6 @@ export default function CycleTrackerPage() {
               </div>
             </div>
           </CardContent>
-          <CardFooter>
-            <Button className="w-full" onClick={handlePredictCycles}>
-              <Sparkles className="mr-2 h-4 w-4" />
-              Predict Future Cycles
-            </Button>
-          </CardFooter>
         </Card>
 
         <Card className="lg:col-span-2">
@@ -216,61 +159,9 @@ export default function CycleTrackerPage() {
               </Badge>
             ))}
           </div>
-          <Button className="mt-4" onClick={handleLogSymptoms}>Save Symptoms & Get Advice</Button>
+          <Button className="mt-4" onClick={handleLogSymptoms}>Save Symptoms</Button>
         </CardContent>
       </Card>
-      
-      {/* AI Suggestions Dialog */}
-      <Dialog open={isSuggestionOpen} onOpenChange={setIsSuggestionOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>AI-Powered Suggestions</DialogTitle>
-            <DialogDescription>
-              Based on your logged symptoms, here are some gentle, non-medical suggestions for relief.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            {loadingSuggestions ? (
-              <div className="flex items-center justify-center">
-                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                <p>Generating suggestions...</p>
-              </div>
-            ) : (
-              <p className="whitespace-pre-wrap">{aiSuggestions}</p>
-            )}
-          </div>
-          <DialogFooter>
-             <Button onClick={() => setIsSuggestionOpen(false)}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* AI Predictions Dialog */}
-      <Dialog open={isPredictionOpen} onOpenChange={setIsPredictionOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Future Cycle Predictions</DialogTitle>
-            <DialogDescription>
-              Here are the AI-predicted start dates for your next few cycles.
-            </DialogDescription>
-          </Header>
-          <div className="py-4">
-            {loadingPredictions ? (
-              <div className="flex items-center justify-center">
-                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                <p>Calculating predictions...</p>
-              </div>
-            ) : (
-              <ul className="space-y-2 list-disc list-inside">
-                {aiPredictions.map((date, index) => <li key={index}>{date}</li>)}
-              </ul>
-            )}
-          </div>
-          <DialogFooter>
-             <Button onClick={() => setIsPredictionOpen(false)}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
