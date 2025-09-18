@@ -82,6 +82,8 @@ interface AppContextType {
   setAnasReflection: React.Dispatch<React.SetStateAction<AnasReflection>>;
   chatHistory: ChatMessage[];
   setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  profilePicture: string;
+  setProfilePicture: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -98,6 +100,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>(() => getInitialState('diaryEntries', []));
   const [anasReflection, setAnasReflection] = useState<AnasReflection>(() => getInitialState('anasReflection', mockAnasReflection));
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>(() => getInitialState('chatHistory', []));
+  const [profilePicture, setProfilePicture] = useState<string>(() => getInitialState('profilePicture', ''));
+
 
   useEffect(() => {
     try {
@@ -114,10 +118,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('diaryEntries', JSON.stringify(diaryEntries));
       localStorage.setItem('anasReflection', JSON.stringify(anasReflection));
       localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+      localStorage.setItem('profilePicture', profilePicture);
     } catch (error) {
       console.warn('Error writing to localStorage:', error);
     }
-  }, [userName, onboarded, companionName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, anasReflection, chatHistory]);
+  }, [userName, onboarded, companionName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, anasReflection, chatHistory, profilePicture]);
 
   return (
     <AppContext.Provider value={{
@@ -131,7 +136,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       loggedSymptoms, setLoggedSymptoms,
       diaryEntries, setDiaryEntries,
       anasReflection, setAnasReflection,
-      chatHistory, setChatHistory
+      chatHistory, setChatHistory,
+      profilePicture, setProfilePicture,
     }}>
       {children}
     </AppContext.Provider>
