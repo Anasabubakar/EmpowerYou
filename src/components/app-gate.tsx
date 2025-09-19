@@ -17,46 +17,38 @@ export function AppGate({ children }: { children: React.ReactNode }) {
     const { onboarded } = useAppContext();
 
     useEffect(() => {
-        // Wait until the onboarding status is definitively known.
+        // Wait until the onboarding status is definitively known from localStorage.
         if (onboarded === undefined) {
-            return; // Still loading the state, show the loading screen.
+            return; // State is still loading, do nothing.
         }
 
         const isOnboardingPage = pathname === '/onboarding';
 
-        // If the user is authenticated (onboarded), they should not be on the onboarding page.
-        // Redirect them to the dashboard.
+        // If user is onboarded but on the onboarding page, redirect to dashboard.
         if (onboarded && isOnboardingPage) {
             router.replace('/dashboard');
         }
 
-        // If the user is NOT authenticated (not onboarded), they should be on the onboarding page.
-        // Redirect them there unless they are already on it.
+        // If user is not onboarded and not on the onboarding page, redirect there.
         if (!onboarded && !isOnboardingPage) {
             router.replace('/onboarding');
         }
 
     }, [onboarded, pathname, router]);
 
-    // While we determine the state, show a loading screen.
+    // While we determine the state from localStorage, show a loading screen.
     if (onboarded === undefined) {
         return <Loading />;
     }
     
-    // If the user is not authenticated and is trying to access other pages,
-    // they will be redirected by the useEffect. Rendering the children here
-    // might cause a flash of content, so we can show a loading screen
-    // until the redirect is complete.
-    if (!onboarded && pathname !== '/onboarding') {
-        return <Loading />;
+    // If a redirect is needed, show loading until Next.js router takes over.
+    if (onboarded && pathname !== '/dashboard' && pathname === '/onboarding') {
+      return <Loading />;
     }
-    
-    // If the user is authenticated and tries to go to /onboarding, they
-    // will be redirected. Show loading until that happens.
-    if (onboarded && pathname === '/onboarding') {
-        return <Loading />;
+    if (!onboarded && pathname !== '/onboarding') {
+      return <Loading />;
     }
 
-    // Once the status is clear and they are on the correct path, render the children.
+    // Once the status is clear and the user is on the correct path, render the page.
     return <>{children}</>;
 }
