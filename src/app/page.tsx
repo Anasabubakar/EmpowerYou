@@ -1,10 +1,25 @@
 
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAppContext } from '@/context/app-context';
 import Loading from './loading';
 
 export default function RootPage() {
-    // This page is now a placeholder.
-    // The routing logic is handled by AppGate in the root layout.
-    // This ensures that the user is always directed to the correct
-    // page without seeing a flash of content.
-    return <Loading />;
+  const { onboarded } = useAppContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (onboarded !== undefined) {
+      if (onboarded) {
+        router.replace('/dashboard');
+      } else {
+        router.replace('/onboarding');
+      }
+    }
+  }, [onboarded, router]);
+
+  // Render a loading component while the redirection is happening.
+  return <Loading />;
 }

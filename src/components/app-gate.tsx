@@ -17,38 +17,31 @@ export function AppGate({ children }: { children: React.ReactNode }) {
     const { onboarded } = useAppContext();
 
     useEffect(() => {
-        // Wait until the onboarding status is definitively known from localStorage.
         if (onboarded === undefined) {
-            return; // State is still loading, do nothing.
+            return; // Still loading the onboarding status
         }
 
-        const isOnboardingPage = pathname === '/onboarding';
+        const isPublicPage = pathname === '/onboarding' || pathname === '/';
 
-        // If user is onboarded but on the onboarding page, redirect to dashboard.
-        if (onboarded && isOnboardingPage) {
+        if (onboarded && isPublicPage) {
             router.replace('/dashboard');
-        }
-
-        // If user is not onboarded and not on the onboarding page, redirect there.
-        if (!onboarded && !isOnboardingPage) {
+        } else if (!onboarded && !isPublicPage) {
             router.replace('/onboarding');
         }
-
     }, [onboarded, pathname, router]);
 
-    // While we determine the state from localStorage, show a loading screen.
+    // While loading state or during redirection, show a loading screen.
     if (onboarded === undefined) {
         return <Loading />;
     }
     
-    // If a redirect is needed, show loading until Next.js router takes over.
-    if (onboarded && pathname !== '/dashboard' && pathname === '/onboarding') {
-      return <Loading />;
+    const isPublicPage = pathname === '/onboarding' || pathname === '/';
+    if (onboarded && isPublicPage) {
+        return <Loading />; // Show loading while redirecting to dashboard
     }
-    if (!onboarded && pathname !== '/onboarding') {
-      return <Loading />;
+    if (!onboarded && !isPublicPage) {
+        return <Loading />; // Show loading while redirecting to onboarding
     }
 
-    // Once the status is clear and the user is on the correct path, render the page.
     return <>{children}</>;
 }
