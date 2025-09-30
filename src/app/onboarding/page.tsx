@@ -10,6 +10,7 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   updateProfile,
+  sendEmailVerification,
 } from 'firebase/auth';
 
 import { AppLogo } from '@/components/app-logo';
@@ -102,6 +103,8 @@ export default function OnboardingPage() {
       );
       await updateProfile(userCredential.user, { displayName: data.name });
       
+      await sendEmailVerification(userCredential.user);
+
       // Create user document in Firestore
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         userName: data.name,
@@ -110,10 +113,12 @@ export default function OnboardingPage() {
       });
 
       toast({
-        title: 'Account Created!',
-        description: 'Welcome to EmpowerYou. You are now logged in.',
+        title: 'Verification Email Sent',
+        description: 'Please check your inbox and verify your email address to complete sign-up.',
+        duration: 10000,
       });
-      router.push('/dashboard');
+      setActiveTab('sign-in');
+      signUpForm.reset();
     } catch (error: any) {
       toast({
         title: 'Sign Up Failed',
@@ -131,7 +136,42 @@ export default function OnboardingPage() {
   const handleSignIn: SubmitHandler<SignInFormValues> = async (data) => {
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+      
+      if (!userCredential.user.emailVerified) {
+         toast({
+          title: 'Email Not Verified',
+          description: 'Please verify your email address before signing in. We can send the link again if you need.',
+          variant: 'destructive',
+          action: (
+             <Button
+              variant="secondary"
+              onClick={async () => {
+                try {
+                  await sendEmailVerification(userCredential.user);
+                  toast({
+                    title: 'Verification Email Sent',
+                    description: 'Please check your inbox.',
+                  });
+                } catch (error) {
+                  toast({
+                    title: 'Error',
+                    description: 'Failed to send verification email. Please try again later.',
+                    variant: 'destructive',
+                  });
+                }
+              }}
+            >
+              Resend Email
+            </Button>
+          ),
+          duration: 10000,
+        });
+        await auth.signOut(); // Ensure user is not partially logged in
+        setLoading(false);
+        return;
+      }
+      
       toast({
         title: 'Welcome Back!',
         description: "You've successfully signed in.",
