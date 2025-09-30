@@ -141,30 +141,8 @@ export default function OnboardingPage() {
       if (!userCredential.user.emailVerified) {
          toast({
           title: 'Email Not Verified',
-          description: 'Please verify your email address before signing in. We can send the link again if you need.',
+          description: 'Please check your inbox to verify your email. Once verified, return to the website to log in again.',
           variant: 'destructive',
-          action: (
-             <Button
-              variant="secondary"
-              onClick={async () => {
-                try {
-                  await sendEmailVerification(userCredential.user);
-                  toast({
-                    title: 'Verification Email Sent',
-                    description: 'Please check your inbox.',
-                  });
-                } catch (error) {
-                  toast({
-                    title: 'Error',
-                    description: 'Failed to send verification email. Please try again later.',
-                    variant: 'destructive',
-                  });
-                }
-              }}
-            >
-              Resend Email
-            </Button>
-          ),
           duration: 10000,
         });
         await auth.signOut(); // Ensure user is not partially logged in
