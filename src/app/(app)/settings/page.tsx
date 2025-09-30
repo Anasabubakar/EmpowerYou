@@ -42,10 +42,18 @@ import {
 import { auth } from '@/lib/firebase';
 import { reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
 
+const passwordValidation = z
+  .string()
+  .min(8, 'Password must be at least 8 characters')
+  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+  .regex(/[0-9]/, 'Password must contain at least one number')
+  .regex(/[^a-zA-Z0-9]/, 'Password must contain at least one special character');
+
 const passwordSchema = z
   .object({
     currentPassword: z.string().min(1, 'Current password is required'),
-    newPassword: z.string().min(6, 'New password must be at least 6 characters'),
+    newPassword: passwordValidation,
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
@@ -154,7 +162,7 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="companion-name">Companion&apos;s Name</Label>
+              <Label htmlFor="companion-name">Companion's Name</Label>
               <div className="flex gap-2">
                 <Input id="companion-name" value={cName} onChange={(e) => setCName(e.target.value)} placeholder="e.g., Sage"/>
                 <Button onClick={handleCompanionNameChange}>Save</Button>
