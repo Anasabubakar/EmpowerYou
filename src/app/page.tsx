@@ -10,7 +10,10 @@ export default function RootPage() {
     const router = useRouter();
 
       useEffect(() => {
-          if (authStatus === 'loading') return;
+          if (authStatus === 'loading') {
+            // Wait until the authentication status is determined
+            return;
+          }
 
           if (authStatus === 'authenticated') {
               router.replace('/dashboard');
@@ -19,6 +22,7 @@ export default function RootPage() {
           }
       }, [authStatus, router]);
 
-    // Render a loading component while the redirection is happening.
+    // Render a loading component while the authentication check and redirection are in progress.
+    // This ensures the page always returns a valid component, preventing 404 errors.
     return <Loading />;
 }
