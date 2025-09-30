@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useAppContext } from '@/context/app-context';
 import { Settings, LogOut, Moon, Sun } from 'lucide-react';
@@ -16,12 +16,15 @@ import Link from 'next/link';
 import { useTheme } from '@/context/theme-context';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { auth } from '@/lib/firebase';
+import { useToast } from '@/hooks/use-toast';
 
 export function ProfileButton() {
-  const { userName } = useAppContext();
+  const { user } = useAppContext();
+  const { toast } = useToast();
   const { theme, setTheme } = useTheme();
 
-  const getInitials = (name: string) => {
+  const getInitials = (name?: string | null) => {
     if (!name) return 'U';
     const names = name.split(' ');
     if (names.length > 1) {
@@ -29,6 +32,25 @@ export function ProfileButton() {
     }
     return name.substring(0, 2).toUpperCase();
   };
+
+  const handleSignOut = async () => {
+    try {
+      await auth.signOut();
+      toast({
+        title: 'Signed Out',
+        description: 'You have been successfully signed out.',
+      });
+      // The AppGate will handle redirection.
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to sign out. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+  
+  const userName = user?.displayName || user?.email || 'User';
 
   return (
     <DropdownMenu>
@@ -38,9 +60,7 @@ export function ProfileButton() {
           className="flex h-auto w-full items-center justify-start gap-3 p-2"
         >
           <Avatar className="h-8 w-8">
-            {/* The user can add a profile picture in a future update. */}
-            {/* <AvatarImage src={profilePicture} alt={userName} /> */}
-            <AvatarFallback>{getInitials(userName)}</AvatarFallback>
+            <AvatarFallback>{getInitials(user?.displayName)}</AvatarFallback>
           </Avatar>
           <span className="truncate text-sm font-medium">{userName}</span>
         </Button>
@@ -49,7 +69,9 @@ export function ProfileButton() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{userName}</p>
-            {/* User email can be added here in the future */}
+            <p className="text-xs leading-none text-muted-foreground">
+              {user?.email}
+            </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -75,7 +97,10 @@ export function ProfileButton() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        {/* Sign out functionality can be added here */}
+        <DropdownMenuItem onClick={handleSignOut}>
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Sign Out</span>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

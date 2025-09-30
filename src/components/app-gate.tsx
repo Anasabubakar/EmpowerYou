@@ -14,32 +14,31 @@ import Loading from '@/app/loading';
 export function AppGate({ children }: { children: React.ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
-    const { onboarded } = useAppContext();
+    const { authStatus } = useAppContext();
 
     useEffect(() => {
-        if (onboarded === undefined) {
-            return; // Still loading the onboarding status
+        if (authStatus === 'loading') {
+            return; // Still loading the auth status
         }
 
-        const isPublicPage = pathname === '/onboarding' || pathname === '/';
+        const isAuthPage = pathname === '/onboarding';
 
-        if (onboarded && isPublicPage) {
+        if (authStatus === 'authenticated' && isAuthPage) {
             router.replace('/dashboard');
-        } else if (!onboarded && !isPublicPage) {
+        } else if (authStatus === 'unauthenticated' && !isAuthPage) {
             router.replace('/onboarding');
         }
-    }, [onboarded, pathname, router]);
+    }, [authStatus, pathname, router]);
 
-    // While loading state or during redirection, show a loading screen.
-    if (onboarded === undefined) {
+    if (authStatus === 'loading') {
         return <Loading />;
     }
-    
-    const isPublicPage = pathname === '/onboarding' || pathname === '/';
-    if (onboarded && isPublicPage) {
+
+    const isAuthPage = pathname === '/onboarding';
+    if (authStatus === 'authenticated' && isAuthPage) {
         return <Loading />; // Show loading while redirecting to dashboard
     }
-    if (!onboarded && !isPublicPage) {
+    if (authStatus === 'unauthenticated' && !isAuthPage) {
         return <Loading />; // Show loading while redirecting to onboarding
     }
 

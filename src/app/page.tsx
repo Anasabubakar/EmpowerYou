@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -7,19 +6,19 @@ import { useAppContext } from '@/context/app-context';
 import Loading from './loading';
 
 export default function RootPage() {
-  const { onboarded } = useAppContext();
-  const router = useRouter();
+  const { authStatus } = useAppContext();
+    const router = useRouter();
 
-  useEffect(() => {
-    if (onboarded !== undefined) {
-      if (onboarded) {
-        router.replace('/dashboard');
-      } else {
-        router.replace('/onboarding');
-      }
-    }
-  }, [onboarded, router]);
+      useEffect(() => {
+          if (authStatus === 'loading') return;
 
-  // Render a loading component while the redirection is happening.
-  return <Loading />;
+          if (authStatus === 'authenticated') {
+              router.replace('/dashboard');
+          } else {
+              router.replace('/onboarding');
+          }
+      }, [authStatus, router]);
+
+    // Render a loading component while the redirection is happening.
+    return <Loading />;
 }

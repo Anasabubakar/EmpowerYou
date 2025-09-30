@@ -1,142 +1,193 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import type { Task, Goal, HealthMetric, CycleInfo, DiaryEntry, AnasReflection, ChatMessage } from '@/lib/types';
 import { mockTasks, mockGoals, mockHealthMetrics, mockCycleInfo, mockAnasReflection } from '@/lib/data';
+import { auth, db } from '@/lib/firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 
-// Helper function to get initial state from localStorage
+type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
+
+// Helper function to get initial state from localStorage for non-user-specific data
 function getInitialState<T>(key: string, defaultValue: T): T {
   if (typeof window === 'undefined') {
     return defaultValue;
   }
   try {
     const item = window.localStorage.getItem(key);
-    if (item) {
-        // Special handling for dates inside Goal objects
-      if (key === 'goals' && item) {
-        const parsed = JSON.parse(item);
-        if (!Array.isArray(parsed)) return defaultValue;
-        return parsed.map((goal: any) => ({
-          ...goal,
-          deadline: new Date(goal.deadline),
-          createdAt: goal.createdAt ? goal.createdAt : new Date().toISOString(), // Fallback for old data
-        })) as T;
-      }
-       // Special handling for dates inside Task objects
-      if (key === 'tasks' && item) {
-        const parsed = JSON.parse(item);
-        if (!Array.isArray(parsed)) return defaultValue;
-        return parsed.map((task: any) => ({
-          ...task,
-          createdAt: task.createdAt ? task.createdAt : new Date().toISOString(), // Fallback for old data
-        })) as T;
-      }
-       // Special handling for dates inside HealthMetric objects
-      if (key === 'healthMetrics' && item) {
-        const parsed = JSON.parse(item);
-        if (!Array.isArray(parsed)) return defaultValue;
-        return parsed.map((metric: any) => ({
-          ...metric,
-          createdAt: metric.createdAt ? metric.createdAt : new Date().toISOString(), // Fallback for old data
-        })) as T;
-      }
-      // Special handling for dates inside CycleInfo object
-      if (key === 'cycleInfo' && item) {
-        const parsed = JSON.parse(item);
-        return {
-          ...parsed,
-          predictedDate: new Date(parsed.predictedDate),
-          lastPeriodDate: parsed.lastPeriodDate ? new Date(parsed.lastPeriodDate) : undefined,
-        } as T;
-      }
-      return JSON.parse(item);
-    }
+    return item ? JSON.parse(item) : defaultValue;
   } catch (error) {
     console.warn(`Error reading localStorage key "${key}":`, error);
+    return defaultValue;
   }
-  return defaultValue;
 }
 
 interface AppContextType {
-  onboarded?: boolean;
-  setOnboarded: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  authStatus: AuthStatus;
+  user: User | null;
   userName: string;
   setUserName: React.Dispatch<React.SetStateAction<string>>;
   companionName: string;
-  setCompanionName: React.Dispatch<React.SetStateAction<string>>;
+  setCompanionName: (name: string) => void;
   tasks: Task[];
-  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  setTasks: (tasks: Task[]) => void;
   goals: Goal[];
-  setGoals: React.Dispatch<React.SetStateAction<Goal[]>>;
+  setGoals: (goals: Goal[]) => void;
   healthMetrics: HealthMetric[];
-  setHealthMetrics: React.Dispatch<React.SetStateAction<HealthMetric[]>>;
+  setHealthMetrics: (metrics: HealthMetric[]) => void;
   cycleInfo: CycleInfo;
-  setCycleInfo: React.Dispatch<React.SetStateAction<CycleInfo>>;
+  setCycleInfo: (info: CycleInfo) => void;
   loggedSymptoms: string[];
-  setLoggedSymptoms: React.Dispatch<React.SetStateAction<string[]>>;
+  setLoggedSymptoms: (symptoms: string[]) => void;
   diaryEntries: DiaryEntry[];
-  setDiaryEntries: React.Dispatch<React.SetStateAction<DiaryEntry[]>>;
+  setDiaryEntries: (entries: DiaryEntry[]) => void;
   anasReflection: AnasReflection;
-  setAnasReflection: React.Dispatch<React.SetStateAction<AnasReflection>>;
+  setAnasReflection: (reflection: AnasReflection) => void;
   chatHistory: ChatMessage[];
-  setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  setChatHistory: (history: ChatMessage[]) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+// Debounce function
+function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+
+  return (...args: Parameters<F>): void => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => func(...args), waitFor);
+  };
+}
+
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [onboarded, setOnboarded] = useState<boolean | undefined>(undefined);
+  const [authStatus, setAuthStatus] = useState<AuthStatus>('loading');
+  const [user, setUser] = useState<User | null>(null);
+
   const [userName, setUserName] = useState<string>('');
-  const [companionName, setCompanionName] = useState<string>('Companion');
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [goals, setGoals] = useState<Goal[]>([]);
-  const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>([]);
-  const [cycleInfo, setCycleInfo] = useState<CycleInfo>(mockCycleInfo);
-  const [loggedSymptoms, setLoggedSymptoms] = useState<string[]>([]);
-  const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
-  const [anasReflection, setAnasReflection] = useState<AnasReflection>(mockAnasReflection);
-  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [companionName, _setCompanionName] = useState<string>('Companion');
+  const [tasks, _setTasks] = useState<Task[]>([]);
+  const [goals, _setGoals] = useState<Goal[]>([]);
+  const [healthMetrics, _setHealthMetrics] = useState<HealthMetric[]>([]);
+  const [cycleInfo, _setCycleInfo] = useState<CycleInfo>(mockCycleInfo);
+  const [loggedSymptoms, _setLoggedSymptoms] = useState<string[]>([]);
+  const [diaryEntries, _setDiaryEntries] = useState<DiaryEntry[]>([]);
+  const [anasReflection, _setAnasReflection] = useState<AnasReflection>(mockAnasReflection);
+  const [chatHistory, _setChatHistory] = useState<ChatMessage[]>([]);
   
-  // Load data from localStorage on initial client render
+  // Firestore data management
+  const writeToDb = useCallback(debounce(async (userId: string, data: any) => {
+    if (!userId) return;
+    try {
+      await updateDoc(doc(db, 'users', userId), data);
+    } catch (e) {
+      console.error("Error updating document: ", e);
+    }
+  }, 1000), []);
+
+
+  // --- Wrapped setters that write to Firestore ---
+  const setTasks = (newTasks: Task[]) => { _setTasks(newTasks); if(user) writeToDb(user.uid, { tasks: newTasks }); };
+  const setGoals = (newGoals: Goal[]) => { _setGoals(newGoals); if(user) writeToDb(user.uid, { goals: newGoals }); };
+  const setHealthMetrics = (newMetrics: HealthMetric[]) => { _setHealthMetrics(newMetrics); if(user) writeToDb(user.uid, { healthMetrics: newMetrics }); };
+  const setCycleInfo = (newInfo: CycleInfo) => { _setCycleInfo(newInfo); if(user) writeToDb(user.uid, { cycleInfo: JSON.parse(JSON.stringify(newInfo)) }); };
+  const setLoggedSymptoms = (newSymptoms: string[]) => { _setLoggedSymptoms(newSymptoms); if(user) writeToDb(user.uid, { loggedSymptoms: newSymptoms }); };
+  const setDiaryEntries = (newEntries: DiaryEntry[]) => { _setDiaryEntries(newEntries); if(user) writeToDb(user.uid, { diaryEntries: newEntries }); };
+  const setAnasReflection = (newReflection: AnasReflection) => { _setAnasReflection(newReflection); if(user) writeToDb(user.uid, { anasReflection: newReflection }); };
+  const setChatHistory = (newHistory: ChatMessage[]) => { _setChatHistory(newHistory); if(user) writeToDb(user.uid, { chatHistory: newHistory }); };
+  const setCompanionName = (newName: string) => { 
+    _setCompanionName(newName);
+    if(user) writeToDb(user.uid, { companionName: newName }); 
+    localStorage.setItem('companionName', newName); // Also save to local storage for consistency
+  };
+  
+
+  // Effect to listen for auth state changes
   useEffect(() => {
-    setOnboarded(getInitialState('onboarded', false));
-    setUserName(getInitialState('userName', ''));
-    setCompanionName(getInitialState('companionName', 'Companion'));
-    setTasks(getInitialState('tasks', mockTasks));
-    setGoals(getInitialState('goals', mockGoals));
-    setHealthMetrics(getInitialState('healthMetrics', mockHealthMetrics));
-    setCycleInfo(getInitialState('cycleInfo', mockCycleInfo));
-    setLoggedSymptoms(getInitialState('loggedSymptoms', []));
-    setDiaryEntries(getInitialState('diaryEntries', []));
-    setAnasReflection(getInitialState('anasReflection', mockAnasReflection));
-    setChatHistory(getInitialState('chatHistory', []));
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        setAuthStatus('authenticated');
+        // Load user data from Firestore
+        const docRef = doc(db, 'users', currentUser.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setUserName(data.userName || currentUser.displayName || '');
+          _setCompanionName(data.companionName || 'Companion');
+          _setTasks(data.tasks || []);
+          _setGoals((data.goals || []).map((g: any) => ({...g, deadline: new Date(g.deadline.seconds * 1000)})));
+          _setHealthMetrics(data.healthMetrics || []);
+          if(data.cycleInfo) {
+            _setCycleInfo({ ...data.cycleInfo, predictedDate: new Date(data.cycleInfo.predictedDate.seconds * 1000), lastPeriodDate: data.cycleInfo.lastPeriodDate ? new Date(data.cycleInfo.lastPeriodDate.seconds * 1000) : undefined });
+          } else {
+             _setCycleInfo(mockCycleInfo);
+          }
+          _setLoggedSymptoms(data.loggedSymptoms || []);
+          _setDiaryEntries(data.diaryEntries || []);
+          _setAnasReflection(data.anasReflection || mockAnasReflection);
+          _setChatHistory(data.chatHistory || []);
+        } else {
+          // If no doc, create one
+          const initialData = {
+            userName: currentUser.displayName || '',
+            email: currentUser.email,
+            createdAt: new Date().toISOString(),
+            companionName: 'Companion',
+            tasks: mockTasks,
+            goals: mockGoals,
+            healthMetrics: mockHealthMetrics,
+            cycleInfo: JSON.parse(JSON.stringify(mockCycleInfo)),
+            loggedSymptoms: [],
+            diaryEntries: [],
+            anasReflection: mockAnasReflection,
+            chatHistory: [],
+          };
+          await setDoc(docRef, initialData);
+          setUserName(initialData.userName);
+          // Set local state with mock data
+          _setCompanionName(initialData.companionName);
+          _setTasks(initialData.tasks);
+          _setGoals(initialData.goals);
+          _setHealthMetrics(initialData.healthMetrics);
+          _setCycleInfo(mockCycleInfo);
+          _setLoggedSymptoms(initialData.loggedSymptoms);
+          _setDiaryEntries(initialData.diaryEntries);
+          _setAnasReflection(initialData.anasReflection);
+          _setChatHistory(initialData.chatHistory);
+        }
+      } else {
+        setUser(null);
+        setAuthStatus('unauthenticated');
+        // Reset state to defaults when logged out
+        setUserName('');
+        _setCompanionName('Companion');
+        _setTasks([]);
+        _setGoals([]);
+        _setHealthMetrics([]);
+        _setCycleInfo(mockCycleInfo);
+        _setLoggedSymptoms([]);
+        _setDiaryEntries([]);
+        _setAnasReflection(mockAnasReflection);
+        _setChatHistory([]);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  // Save data to localStorage whenever it changes
+  // Use localStorage for non-sensitive, non-user specific data like companion name preference
   useEffect(() => {
-    // We don't want to save the initial undefined state
-    if (onboarded === undefined) return;
-    try {
-      localStorage.setItem('onboarded', JSON.stringify(onboarded));
-      localStorage.setItem('userName', userName);
-      localStorage.setItem('companionName', companionName);
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-      localStorage.setItem('goals', JSON.stringify(goals));
-      localStorage.setItem('healthMetrics', JSON.stringify(healthMetrics));
-      localStorage.setItem('cycleInfo', JSON.stringify(cycleInfo));
-      localStorage.setItem('loggedSymptoms', JSON.stringify(loggedSymptoms));
-      localStorage.setItem('diaryEntries', JSON.stringify(diaryEntries));
-      localStorage.setItem('anasReflection', JSON.stringify(anasReflection));
-      localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-    } catch (error) {
-      console.warn('Error writing to localStorage:', error);
-    }
-  }, [onboarded, userName, companionName, tasks, goals, healthMetrics, cycleInfo, loggedSymptoms, diaryEntries, anasReflection, chatHistory]);
-
-
+    const savedCompanionName = getInitialState('companionName', 'Companion');
+    _setCompanionName(savedCompanionName);
+  }, []);
+  
   return (
     <AppContext.Provider value={{
-      onboarded, setOnboarded,
+      authStatus, user,
       userName, setUserName,
       companionName, setCompanionName,
       tasks, setTasks,
