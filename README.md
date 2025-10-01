@@ -56,5 +56,3 @@ To run this project locally, follow these steps:
     This will start the Genkit development server and watch for changes in your flow files located in `src/ai/flows/`.
 
 ---
-
-This project was bootstrapped in **Firebase Studio**.
