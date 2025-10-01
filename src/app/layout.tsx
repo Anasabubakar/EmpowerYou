@@ -5,7 +5,6 @@ import { Toaster } from '@/components/ui/toaster';
 import 'react-image-crop/dist/ReactCrop.css';
 import { AppProvider } from '@/context/app-context';
 import { ThemeProvider } from '@/context/theme-context';
-import { AppGate } from '@/components/app-gate';
 
 export const metadata: Metadata = {
   title: 'EmpowerYou',
@@ -31,9 +30,7 @@ export default function RootLayout({
       <body className="font-body antialiased transition-colors duration-300">
         <ThemeProvider>
           <AppProvider>
-            <AppGate>
-              {children}
-            </AppGate>
+            {children}
           </AppProvider>
         </ThemeProvider>
         <Toaster />

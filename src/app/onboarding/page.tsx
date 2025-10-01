@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,6 +37,8 @@ import { auth } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useAppContext } from '@/context/app-context';
+import Loading from '../loading';
 
 const passwordValidation = z
   .string()
@@ -77,6 +79,14 @@ export default function OnboardingPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('sign-in');
+  const { authStatus } = useAppContext();
+
+  useEffect(() => {
+    if (authStatus === 'authenticated') {
+      router.replace('/dashboard');
+    }
+  }, [authStatus, router]);
+
 
   const signUpForm = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -187,6 +197,10 @@ export default function OnboardingPage() {
       setLoading(false);
     }
   };
+  
+  if (authStatus === 'loading' || authStatus === 'authenticated') {
+    return <Loading />;
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">

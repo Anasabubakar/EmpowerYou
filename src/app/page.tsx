@@ -1,11 +1,21 @@
 'use client';
 
 import Loading from './loading';
+import { useAppContext } from '@/context/app-context';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function RootPage() {
-    // This page is now a placeholder.
-    // The routing logic is handled by AppGate in the root layout.
-    // This ensures that the user is always directed to the correct
-    // page without seeing a flash of content.
-    return <Loading />;
+  const { authStatus } = useAppContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (authStatus === 'authenticated') {
+      router.replace('/dashboard');
+    } else if (authStatus === 'unauthenticated') {
+      router.replace('/onboarding');
+    }
+  }, [authStatus, router]);
+  
+  return <Loading />;
 }
