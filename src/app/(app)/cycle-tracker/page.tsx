@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { format, differenceInDays, addDays } from 'date-fns';
+import { format, differenceInDays, addDays, isValid } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 import {
   Card,
@@ -45,9 +45,11 @@ export default function CycleTrackerPage() {
   const [isSuggestionDialogOpen, setIsSuggestionDialogOpen] = useState(false);
   
   const [isClient, setIsClient] = useState(false);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   useEffect(() => {
     setIsClient(true);
+    setCurrentDate(new Date());
   }, []);
 
 
@@ -64,10 +66,9 @@ export default function CycleTrackerPage() {
   const handleLogPeriod = () => {
     if (range?.from) {
       const cycleLength = 28; // Assuming an average cycle length
-      const today = new Date();
-      const newCurrentDay = differenceInDays(today, range.from) + 1;
+      const newCurrentDay = differenceInDays(currentDate, range.from) + 1;
       const newPredictedDate = addDays(range.from, cycleLength);
-      const newNextPeriodIn = differenceInDays(newPredictedDate, today);
+      const newNextPeriodIn = differenceInDays(newPredictedDate, currentDate);
 
       setCycleInfo({
         currentDay: newCurrentDay > 0 ? newCurrentDay : 1,
@@ -151,6 +152,10 @@ export default function CycleTrackerPage() {
   if (!isClient) {
     return null;
   }
+  
+  const safePredictedDate = cycleInfo.predictedDate instanceof Date && isValid(cycleInfo.predictedDate)
+    ? cycleInfo.predictedDate
+    : new Date(cycleInfo.predictedDate);
 
 
   return (
@@ -196,8 +201,8 @@ export default function CycleTrackerPage() {
                     <p className="text-3xl font-bold">
                       {cycleInfo.nextPeriodIn} days
                     </p>
-                    {cycleInfo.predictedDate && <p className="text-sm text-muted-foreground">
-                      around {format(cycleInfo.predictedDate, 'MMM do')}
+                    {isValid(safePredictedDate) && <p className="text-sm text-muted-foreground">
+                      around {format(safePredictedDate, 'MMM do')}
                     </p>}
                   </>
                 ) : (
@@ -315,5 +320,3 @@ export default function CycleTrackerPage() {
     </div>
   );
 }
-
-    
