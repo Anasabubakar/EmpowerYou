@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format, differenceInDays, addDays } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 import {
@@ -43,6 +43,13 @@ export default function CycleTrackerPage() {
   
   const [isPredictionDialogOpen, setIsPredictionDialogOpen] = useState(false);
   const [isSuggestionDialogOpen, setIsSuggestionDialogOpen] = useState(false);
+  
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
 
   const symptoms = ["Cramps", "Bloating", "Headache", "Mood Swings", "Fatigue", "Acne"];
 
@@ -140,6 +147,11 @@ export default function CycleTrackerPage() {
       setIsPredictionLoading(false);
     }
   };
+
+  if (!isClient) {
+    return null;
+  }
+
 
   return (
     <div className="space-y-6">
@@ -303,3 +315,5 @@ export default function CycleTrackerPage() {
     </div>
   );
 }
+
+    
