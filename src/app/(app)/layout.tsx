@@ -29,7 +29,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <ProfileButton />
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset>
+      <SidebarInset className="overflow-x-hidden">
         <header className="p-4 flex items-center md:hidden border-b fixed top-0 left-0 right-0 bg-background z-10 h-16">
            <SidebarTrigger />
            <div className="ml-4 flex items-center gap-2">
