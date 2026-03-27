@@ -122,7 +122,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           _setGoals((data.goals || []).map((g: any) => ({...g, deadline: new Date(g.deadline.seconds * 1000)})));
           _setHealthMetrics(data.healthMetrics || []);
           if(data.cycleInfo) {
-            _setCycleInfo({ ...data.cycleInfo, predictedDate: new Date(data.cycleInfo.predictedDate.seconds * 1000), lastPeriodDate: data.cycleInfo.lastPeriodDate ? new Date(data.cycleInfo.lastPeriodDate.seconds * 1000) : undefined });
+            _setCycleInfo({ ...data.cycleInfo, predictedDate: new Date(data.cycleInfo.predictedDate.seconds * 1000), lastPeriodDate: data.cycleInfo.lastPeriodDate ? new Date(data.cycleInfo.lastPeriodDate.seconds * 1000) : undefined, lastPeriodEndDate: data.cycleInfo.lastPeriodEndDate ? new Date(data.cycleInfo.lastPeriodEndDate.seconds * 1000) : undefined });
           } else {
              _setCycleInfo(mockCycleInfo);
           }

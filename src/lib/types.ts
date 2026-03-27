@@ -23,6 +23,7 @@ export type CycleInfo = {
   nextPeriodIn: number;
   predictedDate: Date;
   lastPeriodDate?: Date;
+  lastPeriodEndDate?: Date;
 };
 
 export type HealthMetric = {

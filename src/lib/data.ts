@@ -20,4 +20,5 @@ export const mockCycleInfo: CycleInfo = {
   nextPeriodIn: 0,
   predictedDate: new Date(),
   lastPeriodDate: undefined,
+  lastPeriodEndDate: undefined,
 };
