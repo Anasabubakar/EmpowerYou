@@ -6,6 +6,7 @@ import { mockTasks, mockGoals, mockHealthMetrics, mockCycleInfo, mockAnasReflect
 import { auth, db } from '@/lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { toDate } from '@/lib/date-utils';
 
 type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
 
@@ -119,10 +120,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           setUserName(data.userName || currentUser.displayName || '');
           _setCompanionName(data.companionName || 'Companion');
           _setTasks(data.tasks || []);
-          _setGoals((data.goals || []).map((g: any) => ({...g, deadline: new Date(g.deadline.seconds * 1000)})));
+          _setGoals((data.goals || []).map((g: any) => ({...g, deadline: toDate(g.deadline) || new Date()})));
           _setHealthMetrics(data.healthMetrics || []);
           if(data.cycleInfo) {
-            _setCycleInfo({ ...data.cycleInfo, predictedDate: new Date(data.cycleInfo.predictedDate.seconds * 1000), lastPeriodDate: data.cycleInfo.lastPeriodDate ? new Date(data.cycleInfo.lastPeriodDate.seconds * 1000) : undefined, lastPeriodEndDate: data.cycleInfo.lastPeriodEndDate ? new Date(data.cycleInfo.lastPeriodEndDate.seconds * 1000) : undefined });
+            _setCycleInfo({
+              ...data.cycleInfo,
+              predictedDate: toDate(data.cycleInfo.predictedDate) || new Date(),
+              lastPeriodDate: toDate(data.cycleInfo.lastPeriodDate),
+              lastPeriodEndDate: toDate(data.cycleInfo.lastPeriodEndDate),
+            });
           } else {
              _setCycleInfo(mockCycleInfo);
           }

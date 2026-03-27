@@ -29,6 +29,7 @@ import { useAppContext } from '@/context/app-context';
 import type { Goal } from '@/lib/types';
 import { PlusCircle, Heart, Sparkles } from 'lucide-react';
 import { format } from 'date-fns';
+import { toDate } from '@/lib/date-utils';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 
@@ -154,7 +155,7 @@ function GoalCard({ goal, onGoalUpdate }: { goal: Goal; onGoalUpdate: (updatedGo
       <CardHeader>
         <CardTitle className="text-lg">{goal.title}</CardTitle>
         <CardDescription>
-          By {format(goal.deadline, 'PPP')}
+          By {toDate(goal.deadline) ? format(toDate(goal.deadline)!, 'PPP') : 'No deadline'}
         </CardDescription>
       </CardHeader>
       <CardContent>

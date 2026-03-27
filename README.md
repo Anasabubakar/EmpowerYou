@@ -1,4 +1,4 @@
-# ✨ EmpowerYou: Your Personal AI Companion for Growth & Well-being
+# EmpowerYou: Your Personal AI Companion for Growth & Well-being
 
 EmpowerYou is a holistic, private, and AI-enhanced application designed to be a sanctuary for your thoughts, goals, and personal well-being. It's a comprehensive tool for promoting self-awareness, organization, and growth, with all data stored securely and privately on your own device.
 
@@ -13,7 +13,7 @@ EmpowerYou is a holistic, private, and AI-enhanced application designed to be a 
 - **AI Companion**: A supportive, empathetic AI friend available to chat anytime, providing a safe space to talk and feel heard.
 - **Personalized Insights**: Generate reports that aggregate your data, using AI to provide trend analysis, visual summaries, and actionable advice.
 
-## 🚀 技术栈 (Technology Stack)
+## 技术栈 (Technology Stack)
 
 This application is a modern, client-side web application built with a focus on performance and user experience.
 
@@ -26,7 +26,7 @@ This application is a modern, client-side web application built with a focus on 
 - **Icons**: [Lucide React](https://lucide.dev/guide/packages/lucide-react)
 - **Charts**: [Recharts](https://recharts.org/)
 
-## 🔒 Data Privacy & Persistence
+## Data Privacy & Persistence
 
 Your privacy is paramount. **All data you enter into EmpowerYou is stored exclusively on your own device** using your browser's `localStorage`. It is never sent to or stored on a central server. This ensures that your personal reflections, health data, and goals remain completely private and under your control.
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { format, differenceInDays, addDays, isValid } from 'date-fns';
+import { toDate } from '@/lib/date-utils';
 import {
   Card,
   CardContent,
@@ -166,10 +167,7 @@ export default function CycleTrackerPage() {
   }, [loggedSymptoms]);
 
   const safePredictedDate = useMemo(() => {
-    if (!cycleInfo.predictedDate) return new Date();
-    return cycleInfo.predictedDate instanceof Date && isValid(cycleInfo.predictedDate)
-      ? cycleInfo.predictedDate
-      : new Date(cycleInfo.predictedDate);
+    return toDate(cycleInfo.predictedDate) || new Date();
   }, [cycleInfo.predictedDate]);
 
   const handleSymptomToggle = (symptom: string) => {
@@ -389,21 +387,13 @@ export default function CycleTrackerPage() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-base">Last Logged</CardTitle>
                 <CardDescription className="text-xs">
-                  {cycleInfo.lastPeriodDate
-                    ? (() => {
-                        const start = cycleInfo.lastPeriodDate instanceof Date
-                          ? cycleInfo.lastPeriodDate
-                          : new Date(cycleInfo.lastPeriodDate);
-                        const end = cycleInfo.lastPeriodEndDate
-                          ? (cycleInfo.lastPeriodEndDate instanceof Date
-                              ? cycleInfo.lastPeriodEndDate
-                              : new Date(cycleInfo.lastPeriodEndDate))
-                          : null;
-                        return end
-                          ? `${format(start, 'MMM d')} – ${format(end, 'MMM d, yyyy')}`
-                          : format(start, 'MMMM d, yyyy');
-                      })()
-                    : 'No date recorded'}
+                  {(() => {
+                    const start = toDate(cycleInfo.lastPeriodDate);
+                    const end = toDate(cycleInfo.lastPeriodEndDate);
+                    if (!start) return 'No date recorded';
+                    if (end) return `${format(start, 'MMM d')} – ${format(end, 'MMM d, yyyy')}`;
+                    return format(start, 'MMMM d, yyyy');
+                  })()}
                 </CardDescription>
               </CardHeader>
               <CardContent>

@@ -28,6 +28,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { format, parseISO, differenceInCalendarDays, startOfDay, subDays } from 'date-fns';
+import { toDate } from '@/lib/date-utils';
 
 const emptyForm: Omit<DiaryEntry, 'createdAt'> = {
   dailyRemark: '',
@@ -148,7 +149,7 @@ export default function DiaryPage() {
   const sortedEntries = useMemo(
     () =>
       [...diaryEntries].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        (a, b) => (toDate(b.createdAt)?.getTime() ?? 0) - (toDate(a.createdAt)?.getTime() ?? 0)
       ),
     [diaryEntries]
   );
@@ -156,8 +157,10 @@ export default function DiaryPage() {
   const uniqueDates = useMemo(() => {
     const set = new Set<string>();
     diaryEntries.forEach((entry) => {
-      const dateKey = format(parseISO(entry.createdAt), 'yyyy-MM-dd');
-      set.add(dateKey);
+      const d = toDate(entry.createdAt);
+      if (d) {
+        set.add(format(d, 'yyyy-MM-dd'));
+      }
     });
     return Array.from(set).sort();
   }, [diaryEntries]);
@@ -391,7 +394,7 @@ export default function DiaryPage() {
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-sm font-semibold">
-                          {format(parseISO(entry.createdAt), 'PPP')}
+                          {toDate(entry.createdAt) ? format(toDate(entry.createdAt)!, 'PPP') : ''}
                         </p>
                         <p className="text-xs text-muted-foreground">{entry.dailyRemark}</p>
                       </div>
@@ -506,7 +509,7 @@ export default function DiaryPage() {
           {selectedEntry && (
             <>
               <DialogHeader>
-                <DialogTitle>{format(parseISO(selectedEntry.createdAt), 'PPP')}</DialogTitle>
+                <DialogTitle>{toDate(selectedEntry.createdAt) ? format(toDate(selectedEntry.createdAt)!, 'PPP') : ''}</DialogTitle>
                 <DialogDescription>{selectedEntry.dailyRemark}</DialogDescription>
               </DialogHeader>
               <div className="space-y-4 text-sm">

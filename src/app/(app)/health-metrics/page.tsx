@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAppContext } from '@/context/app-context';
 import type { HealthMetric } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
+import { toDate } from '@/lib/date-utils';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, BarChart, Bar } from 'recharts';
 import { Droplets, Footprints, HeartPulse, MoonStar, Activity, Sparkles } from 'lucide-react';
@@ -44,7 +45,7 @@ export default function HealthMetricsPage() {
   const sortedMetrics = useMemo(
     () =>
       [...healthMetrics].sort(
-        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        (a, b) => (toDate(a.createdAt)?.getTime() ?? 0) - (toDate(b.createdAt)?.getTime() ?? 0)
       ),
     [healthMetrics]
   );
@@ -54,7 +55,7 @@ export default function HealthMetricsPage() {
   const chartData = useMemo(
     () =>
       sortedMetrics.slice(-14).map((metric) => ({
-        date: format(parseISO(metric.createdAt), 'MMM d'),
+        date: toDate(metric.createdAt) ? format(toDate(metric.createdAt)!, 'MMM d') : '',
         mood: metric.mood,
         energy: metric.energy,
         sleep: metric.sleepHours ?? null,
@@ -270,7 +271,7 @@ export default function HealthMetricsPage() {
             {latestMetric ? (
               <>
                 <div className="text-sm text-muted-foreground">
-                  {format(parseISO(latestMetric.createdAt), 'PPP')}
+                  {toDate(latestMetric.createdAt) ? format(toDate(latestMetric.createdAt)!, 'PPP') : ''}
                 </div>
                 <div className="grid gap-3">
                   <div className="flex items-center justify-between text-sm">
@@ -461,7 +462,7 @@ export default function HealthMetricsPage() {
                   className="flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/70 p-4 text-sm"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-medium">{format(parseISO(metric.createdAt), 'PPP')}</span>
+                    <span className="font-medium">{toDate(metric.createdAt) ? format(toDate(metric.createdAt)!, 'PPP') : ''}</span>
                     <span className="text-xs text-muted-foreground">
                       Mood {metric.mood}/5 · Energy {metric.energy}/5
                     </span>

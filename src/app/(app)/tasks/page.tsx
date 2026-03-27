@@ -40,6 +40,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { format } from 'date-fns';
+import { toDate } from '@/lib/date-utils';
 
 const priorityColors = {
   high: 'bg-red-200 text-red-800',
@@ -162,8 +163,8 @@ function TaskItem({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const reminderLabel = useMemo(() => {
     if (!task.reminderEnabled || !task.reminderAt) return null;
-    const date = new Date(task.reminderAt);
-    return date.toLocaleString();
+    const date = toDate(task.reminderAt);
+    return date ? date.toLocaleString() : null;
   }, [task.reminderEnabled, task.reminderAt]);
 
   const handlePriorityChange = (priority: string) => {
@@ -288,8 +289,9 @@ export default function TaskManagerPage() {
     }
 
     tasks.forEach((task) => {
-      if (!task.reminderEnabled || !task.reminderAt || task.completed) return;
-      const remindAt = new Date(task.reminderAt).getTime();
+      const reminderDate = toDate(task.reminderAt);
+      if (!task.reminderEnabled || !reminderDate || task.completed) return;
+      const remindAt = reminderDate.getTime();
       const delay = remindAt - Date.now();
       if (delay <= 0) return;
       const timerId = window.setTimeout(() => {
@@ -425,8 +427,11 @@ export default function TaskManagerPage() {
       tasks
         .filter((task) => task.reminderEnabled && task.reminderAt && !task.completed)
         .map((task) => ({ ...task, reminderAt: task.reminderAt as string }))
-        .filter((task) => new Date(task.reminderAt).getTime() > Date.now())
-        .sort((a, b) => new Date(a.reminderAt).getTime() - new Date(b.reminderAt).getTime())
+        .filter((task) => {
+          const d = toDate(task.reminderAt);
+          return d ? d.getTime() > Date.now() : false;
+        })
+        .sort((a, b) => (toDate(a.reminderAt)?.getTime() ?? 0) - (toDate(b.reminderAt)?.getTime() ?? 0))
         .slice(0, 3),
     [tasks]
   );
@@ -482,7 +487,7 @@ export default function TaskManagerPage() {
                   <div key={task.id} className="flex items-center justify-between gap-3 text-sm">
                     <span className="line-clamp-1">{task.text}</span>
                     <span className="text-xs text-muted-foreground">
-                      {format(new Date(task.reminderAt), 'PPP p')}
+                      {toDate(task.reminderAt) ? format(toDate(task.reminderAt)!, 'PPP p') : ''}
                     </span>
                   </div>
                 ))
