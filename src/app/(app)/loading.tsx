@@ -1,4 +1,3 @@
-
 import { AppLogo } from '@/components/app-logo';
 
 export default function Loading() {
@@ -7,9 +6,7 @@ export default function Loading() {
       <div className="animate-pulse">
         <AppLogo />
       </div>
-      <p className="mt-4 text-sm text-muted-foreground">Just a moment, my love, preparing your sanctuary...</p>
+      <p className="mt-4 text-sm text-muted-foreground">Just a moment, setting the tone...</p>
     </div>
   );
 }
-
-    

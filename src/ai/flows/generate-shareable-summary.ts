@@ -32,6 +32,9 @@ const HealthMetricSchema = z.object({
 const DiaryEntrySchema = z.object({
   dailyRemark: z.string(),
   diaryEntry: z.string(),
+  gratitude: z.string(),
+  challenge: z.string(),
+  tomorrowFocus: z.string(),
   wantsNeedsProgress: z.string(),
   mood: z.string(),
   energyLevels: z.string(),
@@ -50,6 +53,8 @@ const AnasReflectionSchema = z.object({
     myBehavior: z.string(),
     hisBehavior: z.string(),
     progressLog: z.string(),
+    supportMoment: z.string(),
+    needs: z.string(),
     plans: z.string(),
 });
 
@@ -108,12 +113,17 @@ Here's everything {{{userName}}} has shared today:
 {{#each diaryEntries}}
 - I wrote: "{{diaryEntry}}"
 - And reflected on us: "{{partnerReflection}}"
+- Gratitude: "{{gratitude}}"
+- Challenge: "{{challenge}}"
+- Tomorrow I want to focus on: "{{tomorrowFocus}}"
 {{/each}}
 
 **My Reflections on Us (Relationship):**
 - How I felt I acted: {{partnerReflectionData.myBehavior}}/5
 - How I felt you (my partner) acted: {{partnerReflectionData.hisBehavior}}/5
 - What's been happening between us: "{{partnerReflectionData.progressLog}}"
+- What felt supportive: "{{partnerReflectionData.supportMoment}}"
+- What I need next: "{{partnerReflectionData.needs}}"
 
 **My Dreams & Goals (Wants & Needs):**
 {{#each wantsNeedsData}}

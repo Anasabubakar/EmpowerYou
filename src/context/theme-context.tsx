@@ -3,40 +3,91 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-type Theme = 'light' | 'dark';
+export type ThemePalette =
+  | 'classic'
+  | 'blush'
+  | 'emerald'
+  | 'ocean'
+  | 'amber'
+  | 'slate';
+
+export type ThemeMode = 'light' | 'dark';
+
+const THEME_PALETTES: ThemePalette[] = [
+  'classic',
+  'blush',
+  'emerald',
+  'ocean',
+  'amber',
+  'slate',
+];
 
 interface ThemeContextType {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
+  palette: ThemePalette;
+  mode: ThemeMode;
+  setPalette: (palette: ThemePalette) => void;
+  setMode: (mode: ThemeMode) => void;
+  setTheme: (theme: { palette: ThemePalette; mode: ThemeMode }) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>('light');
+  const [palette, setPalette] = useState<ThemePalette>('classic');
+  const [mode, setMode] = useState<ThemeMode>('light');
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem('theme') as Theme | null;
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const storedPalette = localStorage.getItem('themePalette') as ThemePalette | null;
+    const storedMode = localStorage.getItem('themeMode') as ThemeMode | null;
+    const legacyTheme = localStorage.getItem('theme');
+    const systemMode: ThemeMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
 
-    if (storedTheme) {
-      setTheme(storedTheme);
-    } else {
-      setTheme(systemTheme);
+    let nextPalette: ThemePalette = 'classic';
+    let nextMode: ThemeMode = systemMode;
+
+    if (storedPalette && THEME_PALETTES.includes(storedPalette)) {
+      nextPalette = storedPalette;
+    } else if (legacyTheme && THEME_PALETTES.includes(legacyTheme as ThemePalette)) {
+      nextPalette = legacyTheme as ThemePalette;
     }
+
+    if (storedMode === 'light' || storedMode === 'dark') {
+      nextMode = storedMode;
+    } else if (legacyTheme === 'light' || legacyTheme === 'dark') {
+      nextMode = legacyTheme;
+    }
+
+    setPalette(nextPalette);
+    setMode(nextMode);
   }, []);
 
   useEffect(() => {
-    if (theme === 'dark') {
+    document.documentElement.dataset.theme = palette;
+    document.documentElement.dataset.mode = mode;
+    if (mode === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+    localStorage.setItem('themePalette', palette);
+    localStorage.setItem('themeMode', mode);
+  }, [palette, mode]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ThemeContext.Provider
+      value={{
+        palette,
+        mode,
+        setPalette,
+        setMode,
+        setTheme: ({ palette: nextPalette, mode: nextMode }) => {
+          setPalette(nextPalette);
+          setMode(nextMode);
+        },
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );

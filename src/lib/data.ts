@@ -10,6 +10,8 @@ export const mockAnasReflection: AnasReflection = {
   myBehavior: '3',
   hisBehavior: '3',
   progressLog: '',
+  supportMoment: '',
+  needs: '',
   plans: '',
 };
 

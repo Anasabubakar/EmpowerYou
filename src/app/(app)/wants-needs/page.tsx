@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -28,7 +27,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useAppContext } from '@/context/app-context';
 import type { Goal } from '@/lib/types';
-import { PlusCircle, Heart } from 'lucide-react';
+import { PlusCircle, Heart, Sparkles } from 'lucide-react';
 import { format } from 'date-fns';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
@@ -49,7 +48,7 @@ function EditGoalDialog({
     onSave(editableGoal);
     setOpen(false);
   };
-  
+
   useEffect(() => {
     if (open) {
       setEditableGoal(goal);
@@ -59,11 +58,11 @@ function EditGoalDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
           <DialogTitle>Edit Goal</DialogTitle>
           <DialogDescription>
-            Let's refine this dream of yours.
+            Refine the dream. Make it feel more real.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4">
@@ -118,22 +117,22 @@ function EditGoalDialog({
               </div>
             </RadioGroup>
           </div>
-           <div className="grid grid-cols-4 items-start gap-4">
+          <div className="grid grid-cols-4 items-start gap-4">
             <Label htmlFor="progress" className="text-right pt-2">
               Progress
             </Label>
             <div className='col-span-3 flex items-center gap-4'>
-                 <Slider
-                    id="progress"
-                    value={[editableGoal.progress]}
-                    onValueChange={(value) => setEditableGoal({...editableGoal, progress: value[0]})}
-                    max={100}
-                    step={1}
-                    className="flex-1"
-                />
-                <span className="text-sm font-medium text-foreground w-12 text-right">
-                    {editableGoal.progress}%
-                </span>
+              <Slider
+                id="progress"
+                value={[editableGoal.progress]}
+                onValueChange={(value) => setEditableGoal({ ...editableGoal, progress: value[0] })}
+                max={100}
+                step={1}
+                className="flex-1"
+              />
+              <span className="text-sm font-medium text-foreground w-12 text-right">
+                {editableGoal.progress}%
+              </span>
             </div>
           </div>
         </div>
@@ -150,9 +149,10 @@ function EditGoalDialog({
 
 function GoalCard({ goal, onGoalUpdate }: { goal: Goal; onGoalUpdate: (updatedGoal: Goal) => void; }) {
   return (
-    <Card>
+    <Card className="relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
       <CardHeader>
-        <CardTitle>{goal.title}</CardTitle>
+        <CardTitle className="text-lg">{goal.title}</CardTitle>
         <CardDescription>
           By {format(goal.deadline, 'PPP')}
         </CardDescription>
@@ -189,7 +189,7 @@ function AddGoalDialog({ onAddGoal }: { onAddGoal: (newGoal: Goal) => void }) {
         description,
         category,
         progress: 0,
-        deadline: new Date(new Date().setDate(new Date().getDate() + 30)), // Default 30 days deadline
+        deadline: new Date(new Date().setDate(new Date().getDate() + 30)),
         createdAt: new Date().toISOString(),
       });
       setOpen(false);
@@ -202,16 +202,16 @@ function AddGoalDialog({ onAddGoal }: { onAddGoal: (newGoal: Goal) => void }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button size="lg">
           <PlusCircle className="mr-2 h-4 w-4" />
           Add New Goal
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle>What's in Your Heart?</DialogTitle>
           <DialogDescription>
-            Let's turn your desires and needs into beautiful goals.
+            Turn a wish into a plan. Keep it tender and specific.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -225,7 +225,7 @@ function AddGoalDialog({ onAddGoal }: { onAddGoal: (newGoal: Goal) => void }) {
             <Label htmlFor="add-description" className="text-right">
               A little detail
             </Label>
-            <Textarea id="add-description" placeholder="e.g., To express my creative side" value={description} onChange={(e) => setDescription(e.target.value)} className="col-span-3 text-base" />
+            <Textarea id="add-description" placeholder="e.g., Express my creative side" value={description} onChange={(e) => setDescription(e.target.value)} className="col-span-3 text-base" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label className="text-right">Is this a...</Label>
@@ -246,8 +246,8 @@ function AddGoalDialog({ onAddGoal }: { onAddGoal: (newGoal: Goal) => void }) {
           </div>
         </div>
         <DialogFooter>
-           <DialogClose asChild>
-             <Button variant="outline">Cancel</Button>
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
           </DialogClose>
           <Button onClick={handleSave}>Save Goal</Button>
         </DialogFooter>
@@ -257,18 +257,20 @@ function AddGoalDialog({ onAddGoal }: { onAddGoal: (newGoal: Goal) => void }) {
 }
 
 function EmptyState({ isWant, onAddGoal }: { isWant: boolean, onAddGoal: (newGoal: Goal) => void }) {
-    return (
-        <div className="text-center text-muted-foreground p-12 col-span-full border-2 border-dashed rounded-lg flex flex-col items-center gap-4">
-            <Heart className="mx-auto h-12 w-12" />
-            <h3 className="mt-4 text-lg font-medium">This space is full of potential</h3>
-            {isWant ? (
-                <p>What are you dreaming of? Let's add your first 'Want'.</p>
-            ) : (
-                <p>What's essential for your well-being? Let's add your first 'Need'.</p>
-            )}
-             <AddGoalDialog onAddGoal={onAddGoal} />
-        </div>
-    );
+  return (
+    <div className="text-center text-muted-foreground p-12 col-span-full border border-dashed rounded-2xl flex flex-col items-center gap-4 bg-background/60">
+      <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+        <Heart className="h-6 w-6" />
+      </span>
+      <h3 className="mt-2 text-lg font-semibold text-foreground">This space is full of potential</h3>
+      {isWant ? (
+        <p>What are you dreaming of? Add your first Want.</p>
+      ) : (
+        <p>What do you need to feel supported? Add your first Need.</p>
+      )}
+      <AddGoalDialog onAddGoal={onAddGoal} />
+    </div>
+  );
 }
 
 export default function WantsNeedsPage() {
@@ -276,40 +278,45 @@ export default function WantsNeedsPage() {
 
   const wants = goals.filter((g) => g.category === 'want');
   const needs = goals.filter((g) => g.category === 'need');
-  
+
   const handleGoalUpdate = (updatedGoal: Goal) => {
     setGoals(goals.map(g => g.id === updatedGoal.id ? updatedGoal : g));
   };
-  
+
   const handleAddGoal = (newGoal: Goal) => {
     setGoals([newGoal, ...goals]);
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-headline font-bold">Your Dreams &amp; Needs</h1>
-          <p className="text-muted-foreground">
-            A place for your heart's desires and essential needs.
+    <div className="space-y-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            <Sparkles className="h-3 w-3 text-primary" />
+            Intentions
+          </div>
+          <h1 className="text-4xl font-headline font-semibold">Your Dreams &amp; Needs</h1>
+          <p className="text-muted-foreground max-w-xl">
+            Keep the things you want close, and the things you need clear.
           </p>
         </div>
         <AddGoalDialog onAddGoal={handleAddGoal} />
       </div>
+
       <Tabs defaultValue="wants">
         <TabsList className="grid w-full grid-cols-2 md:w-1/3">
           <TabsTrigger value="wants">Wants</TabsTrigger>
           <TabsTrigger value="needs">Needs</TabsTrigger>
         </TabsList>
         <TabsContent value="wants">
-          <div className="grid gap-6 pt-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 pt-6 md:grid-cols-2 lg:grid-cols-3">
             {wants.length > 0 ? wants.map((goal) => (
               <GoalCard key={goal.id} goal={goal} onGoalUpdate={handleGoalUpdate} />
             )) : <EmptyState isWant={true} onAddGoal={handleAddGoal} />}
           </div>
         </TabsContent>
         <TabsContent value="needs">
-          <div className="grid gap-6 pt-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 pt-6 md:grid-cols-2 lg:grid-cols-3">
             {needs.length > 0 ? needs.map((goal) => (
               <GoalCard key={goal.id} goal={goal} onGoalUpdate={handleGoalUpdate} />
             )) : <EmptyState isWant={false} onAddGoal={handleAddGoal} />}

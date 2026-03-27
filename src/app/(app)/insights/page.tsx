@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -21,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { generatePersonalizedInsights } from '@/ai/flows/generate-personalized-insights';
 import { generateShareableSummary } from '@/ai/flows/generate-shareable-summary';
-import type { GenerateShareableSummaryInput, GenerateShareableSummaryOutput } from '@/ai/flows/generate-shareable-summary';
+import type { GenerateShareableSummaryInput } from '@/ai/flows/generate-shareable-summary';
 import { Loader2, Sparkles, Lightbulb, ClipboardList, TrendingUp, Share2, ClipboardCopy } from 'lucide-react';
 import type { GeneratePersonalizedInsightsOutput, GeneratePersonalizedInsightsInput } from '@/ai/flows/generate-personalized-insights';
 import { useAppContext } from '@/context/app-context';
@@ -43,13 +42,13 @@ function InsightCard({
   return (
     <Card className="lg:col-span-1">
       <CardHeader className="flex flex-row items-center gap-4 space-y-0">
-        <div className={`p-3 rounded-full ${iconBgColor}`}>
+        <div className={`p-3 rounded-2xl ${iconBgColor}`}>
           <Icon className={`h-6 w-6 ${iconColor}`} />
         </div>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="whitespace-pre-wrap">{content}</p>
+        <p className="whitespace-pre-wrap leading-relaxed">{content}</p>
       </CardContent>
     </Card>
   );
@@ -63,7 +62,7 @@ export default function InsightsPage() {
     useState<GeneratePersonalizedInsightsOutput | null>(null);
   const [shareableSummary, setShareableSummary] = useState<string>('');
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
-  
+
   const {
     userName,
     goals,
@@ -76,11 +75,10 @@ export default function InsightsPage() {
     chatHistory,
     companionName,
   } = useAppContext();
-  
+
   const getTodaysChat = () => {
-    // Assuming chat messages don't have timestamps, just take the last 10 messages for context.
     return chatHistory.slice(-10);
-  }
+  };
 
   const handleGenerate = async () => {
     if (!userName) return;
@@ -91,22 +89,21 @@ export default function InsightsPage() {
       userName: userName || 'friend',
       currentDate: new Date().toISOString(),
       wantsNeedsData: goals.map(g => ({
-        ...g, 
-        deadline: g.deadline.toISOString(), 
+        ...g,
+        deadline: g.deadline.toISOString(),
         createdAt: g.createdAt
       })),
-      menstrualCycleData: { 
-        ...cycleInfo, 
+      menstrualCycleData: {
+        ...cycleInfo,
         predictedDate: cycleInfo.predictedDate.toISOString(),
         lastPeriodDate: cycleInfo.lastPeriodDate?.toISOString(),
-        loggedSymptoms 
+        loggedSymptoms
       },
       taskData: tasks.map(t => ({ ...t, createdAt: t.createdAt })),
       healthMetricsData: healthMetrics.map(m => ({ ...m, createdAt: m.createdAt })),
-      diaryEntries: diaryEntries.slice(-7), // a few recent entries
+      diaryEntries: diaryEntries.slice(-7),
       partnerReflectionData: anasReflection,
     };
-
 
     try {
       const result = await generatePersonalizedInsights(input);
@@ -121,11 +118,11 @@ export default function InsightsPage() {
     }
     setLoading(false);
   };
-  
+
   const handleShare = async () => {
     if (!userName) return;
     setShareLoading(true);
-    
+
     const input: GenerateShareableSummaryInput = {
       userName: userName || 'friend',
       wantsNeedsData: goals.map(g => ({
@@ -152,7 +149,7 @@ export default function InsightsPage() {
       companionChat: getTodaysChat(),
       companionName: companionName,
     };
-    
+
     try {
       const result = await generateShareableSummary(input);
       setShareableSummary(result.summary);
@@ -167,24 +164,28 @@ export default function InsightsPage() {
     } finally {
       setShareLoading(false);
     }
-  }
-  
+  };
+
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shareableSummary);
     toast({
       title: 'Copied to clipboard',
       description: "You can now paste this into any app you'd like.",
     });
-  }
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col items-center text-center">
-        <h1 className="text-3xl font-headline font-bold">Your Personal Reflections</h1>
+    <div className="space-y-8">
+      <div className="flex flex-col items-center text-center gap-4">
+        <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          <Sparkles className="h-3 w-3 text-primary" />
+          Insight
+        </div>
+        <h1 className="text-4xl font-headline font-semibold">Your Personal Reflections</h1>
         <p className="text-muted-foreground max-w-xl">
-          Let's take a look at how you've been doing and uncover some insights to support your journey.
+          Let the AI connect the dots and reflect the patterns back to you.
         </p>
-        <div className="flex gap-2 mt-4">
+        <div className="flex flex-wrap gap-2">
           <Button onClick={handleGenerate} disabled={loading || !userName} size="lg">
             {loading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -205,7 +206,7 @@ export default function InsightsPage() {
       </div>
 
       {insights && (
-        <div className="grid grid-cols-1 gap-6 pt-6 lg:grid-cols-1">
+        <div className="grid grid-cols-1 gap-6 pt-2 lg:grid-cols-1">
           <InsightCard
             icon={TrendingUp}
             title="Observations & Trends"
@@ -224,19 +225,19 @@ export default function InsightsPage() {
             icon={Lightbulb}
             title="Actionable Advice"
             content={insights.advice}
-            iconBgColor="bg-secondary-foreground/10"
-            iconColor="text-secondary-foreground"
+            iconBgColor="bg-secondary/60"
+            iconColor="text-foreground"
           />
         </div>
       )}
-       {!insights && !loading && (
-        <div className="flex flex-col items-center justify-center text-center p-12 border-2 border-dashed rounded-lg mt-6">
+      {!insights && !loading && (
+        <div className="flex flex-col items-center justify-center text-center p-12 border border-dashed rounded-2xl mt-6 bg-background/60">
           <Sparkles className="h-12 w-12 text-muted-foreground" />
           <h3 className="mt-4 text-lg font-medium">Ready for your reflections?</h3>
           <p className="mt-1 text-sm text-muted-foreground">Click the button above and let the AI share what it sees.</p>
         </div>
       )}
-      
+
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -251,10 +252,10 @@ export default function InsightsPage() {
             </CardContent>
           </Card>
           <DialogFooter>
-             <Button variant="outline" onClick={() => setIsShareDialogOpen(false)}>Close</Button>
-             <Button onClick={copyToClipboard}>
-                <ClipboardCopy className="mr-2 h-4 w-4" />
-                Copy Summary
+            <Button variant="outline" onClick={() => setIsShareDialogOpen(false)}>Close</Button>
+            <Button onClick={copyToClipboard}>
+              <ClipboardCopy className="mr-2 h-4 w-4" />
+              Copy Summary
             </Button>
           </DialogFooter>
         </DialogContent>

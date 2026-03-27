@@ -128,7 +128,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           }
           _setLoggedSymptoms(data.loggedSymptoms || []);
           _setDiaryEntries(data.diaryEntries || []);
-          _setAnasReflection(data.anasReflection || mockAnasReflection);
+          _setAnasReflection({ ...mockAnasReflection, ...(data.anasReflection || {}) });
           _setChatHistory(data.chatHistory || []);
         } else {
           // If no doc, create one

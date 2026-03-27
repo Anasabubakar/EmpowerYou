@@ -12,8 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from '@/context/theme-context';
-import { Moon, Sun, Trash2, Loader2, LogOut } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
+import { Moon, Sun, Trash2, Loader2, LogOut, Sparkles } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import {
   AlertDialog,
@@ -41,6 +40,7 @@ import {
 } from '@/components/ui/form';
 import { auth } from '@/lib/firebase';
 import { reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
+import { cn } from '@/lib/utils';
 
 const passwordValidation = z
   .string()
@@ -65,10 +65,49 @@ type PasswordFormValues = z.infer<typeof passwordSchema>;
 
 export default function SettingsPage() {
   const { toast } = useToast();
-  const { theme, setTheme } = useTheme();
+  const { palette, mode, setPalette, setMode } = useTheme();
   const { companionName, setCompanionName, user } = useAppContext();
   const [cName, setCName] = useState(companionName);
   const [loading, setLoading] = useState(false);
+
+  const themeOptions = [
+    {
+      value: 'classic',
+      label: 'Classic',
+      description: 'Soft daylight',
+      swatches: ['hsl(7 70% 63%)', 'hsl(35 67% 84%)', 'hsl(181 63% 34%)'],
+    },
+    {
+      value: 'blush',
+      label: 'Blush (Women)',
+      description: 'Warm, feminine',
+      swatches: ['hsl(342 72% 56%)', 'hsl(10 55% 90%)', 'hsl(200 70% 45%)'],
+    },
+    {
+      value: 'emerald',
+      label: 'Green',
+      description: 'Fresh, grounded',
+      swatches: ['hsl(152 60% 35%)', 'hsl(85 40% 88%)', 'hsl(190 60% 40%)'],
+    },
+    {
+      value: 'ocean',
+      label: 'Ocean',
+      description: 'Calm clarity',
+      swatches: ['hsl(210 80% 45%)', 'hsl(190 50% 88%)', 'hsl(35 80% 55%)'],
+    },
+    {
+      value: 'amber',
+      label: 'Amber',
+      description: 'Golden energy',
+      swatches: ['hsl(28 90% 52%)', 'hsl(55 65% 86%)', 'hsl(205 70% 45%)'],
+    },
+    {
+      value: 'slate',
+      label: 'Slate',
+      description: 'Cool, modern calm',
+      swatches: ['hsl(220 45% 52%)', 'hsl(220 20% 88%)', 'hsl(190 60% 42%)'],
+    },
+  ] as const;
 
   const form = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
@@ -80,11 +119,11 @@ export default function SettingsPage() {
   });
 
   const handleClearData = () => {
-    // This function is now less relevant as data is in Firestore,
-    // but can be kept to clear any lingering local settings.
     localStorage.removeItem('theme');
+    localStorage.removeItem('themePalette');
+    localStorage.removeItem('themeMode');
     localStorage.removeItem('companionName');
-    
+
     toast({
       title: 'Local Settings Cleared',
       description: 'Your local device settings have been cleared.',
@@ -92,7 +131,7 @@ export default function SettingsPage() {
     });
     setTimeout(() => window.location.reload(), 1500);
   };
-  
+
   const handleCompanionNameChange = () => {
     setCompanionName(cName);
     toast({
@@ -110,7 +149,7 @@ export default function SettingsPage() {
     }
 
     const credential = EmailAuthProvider.credential(user.email, data.currentPassword);
-    
+
     try {
       await reauthenticateWithCredential(user, credential);
       await updatePassword(user, data.newPassword);
@@ -127,7 +166,7 @@ export default function SettingsPage() {
     }
   };
 
-    const handleSignOut = async () => {
+  const handleSignOut = async () => {
     try {
       await auth.signOut();
       toast({
@@ -143,13 +182,16 @@ export default function SettingsPage() {
     }
   };
 
-
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-headline font-bold">Preferences</h1>
-        <p className="text-muted-foreground">
-          Manage your application settings and preferences.
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          <Sparkles className="h-3 w-3 text-primary" />
+          Preferences
+        </div>
+        <h1 className="text-4xl font-headline font-semibold">Preferences</h1>
+        <p className="text-muted-foreground max-w-xl">
+          Shape your experience. Keep it personal.
         </p>
       </div>
 
@@ -161,16 +203,16 @@ export default function SettingsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="companion-name">Companion's Name</Label>
-              <div className="flex gap-2">
-                <Input id="companion-name" value={cName} onChange={(e) => setCName(e.target.value)} placeholder="e.g., Sage"/>
-                <Button onClick={handleCompanionNameChange}>Save</Button>
-              </div>
+          <div className="space-y-2">
+            <Label htmlFor="companion-name">Companion's Name</Label>
+            <div className="flex gap-2">
+              <Input id="companion-name" value={cName} onChange={(e) => setCName(e.target.value)} placeholder="e.g., Sage"/>
+              <Button onClick={handleCompanionNameChange}>Save</Button>
             </div>
+          </div>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader>
           <CardTitle>Change Password</CardTitle>
@@ -236,28 +278,83 @@ export default function SettingsPage() {
           <CardTitle>Appearance</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/70 p-4">
             <div className="space-y-0.5">
-              <Label htmlFor="dark-mode" className="text-base">
-                Dark Mode
-              </Label>
+              <Label className="text-base">Theme &amp; Mode</Label>
+              <p className="text-sm text-muted-foreground">Pick a palette, then choose light or dark.</p>
             </div>
-            <div className="flex items-center gap-2">
-              <Sun className="h-6 w-6" />
-              <Switch
-                id="dark-mode"
-                checked={theme === 'dark'}
-                onCheckedChange={(checked) =>
-                  setTheme(checked ? 'dark' : 'light')
-                }
-              />
-              <Moon className="h-6 w-6" />
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Sun className="h-5 w-5" />
+              <Moon className="h-5 w-5" />
             </div>
+          </div>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <button
+              type="button"
+              onClick={() => setMode('light')}
+              className={cn(
+                'group rounded-2xl border border-border/60 bg-background/70 p-4 text-left transition hover:border-primary/40',
+                mode === 'light' && 'border-primary/60 ring-2 ring-primary/20'
+              )}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold">Light Mode</p>
+                  <p className="text-xs text-muted-foreground">Brighter backgrounds</p>
+                </div>
+                <Sun className="h-5 w-5 text-primary" />
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('dark')}
+              className={cn(
+                'group rounded-2xl border border-border/60 bg-background/70 p-4 text-left transition hover:border-primary/40',
+                mode === 'dark' && 'border-primary/60 ring-2 ring-primary/20'
+              )}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold">Dark Mode</p>
+                  <p className="text-xs text-muted-foreground">Low-glow focus</p>
+                </div>
+                <Moon className="h-5 w-5 text-primary" />
+              </div>
+            </button>
+          </div>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {themeOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setPalette(option.value)}
+                className={cn(
+                  'group rounded-2xl border border-border/60 bg-background/70 p-4 text-left transition hover:border-primary/40',
+                  palette === option.value && 'border-primary/60 ring-2 ring-primary/20'
+                )}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold">{option.label}</p>
+                    <p className="text-xs text-muted-foreground">{option.description}</p>
+                  </div>
+                  <div className="flex gap-1">
+                    {option.swatches.map((swatch) => (
+                      <span
+                        key={swatch}
+                        className="h-4 w-4 rounded-full ring-1 ring-border/60"
+                        style={{ backgroundColor: swatch }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </button>
+            ))}
           </div>
         </CardContent>
       </Card>
-      
-      <Card className="border-destructive">
+
+      <Card className="border-destructive/40">
         <CardHeader>
           <CardTitle>Danger Zone</CardTitle>
         </CardHeader>
@@ -284,17 +381,16 @@ export default function SettingsPage() {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          
-           <Button variant="destructive" onClick={handleSignOut}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
-            </Button>
 
+          <Button variant="destructive" onClick={handleSignOut}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign Out
+          </Button>
         </CardContent>
         <CardFooter>
-             <p className="text-xs text-muted-foreground">
-                Signing out will end your current session. You can always sign back in.
-            </p>
+          <p className="text-xs text-muted-foreground">
+            Signing out will end your current session. You can always sign back in.
+          </p>
         </CardFooter>
       </Card>
     </div>

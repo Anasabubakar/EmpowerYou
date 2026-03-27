@@ -4,6 +4,8 @@ export type Task = {
   completed: boolean;
   priority: 'low' | 'medium' | 'high';
   createdAt: string;
+  reminderAt?: string | null;
+  reminderEnabled?: boolean;
 };
 
 export type Goal = {
@@ -27,6 +29,10 @@ export type HealthMetric = {
   date: string;
   mood: number;
   energy: number;
+  sleepHours?: number;
+  waterIntake?: number;
+  steps?: number;
+  stressLevel?: number;
   bloodPressure?: {
     systolic: number;
     diastolic: number;
@@ -44,12 +50,17 @@ export type AnasReflection = {
   myBehavior: string;
   hisBehavior: string;
   progressLog: string;
+  supportMoment: string;
+  needs: string;
   plans: string;
 };
 
 export type DiaryEntry = {
   dailyRemark: string;
   diaryEntry: string;
+  gratitude: string;
+  challenge: string;
+  tomorrowFocus: string;
   wantsNeedsProgress: string;
   mood: string;
   energyLevels: string;

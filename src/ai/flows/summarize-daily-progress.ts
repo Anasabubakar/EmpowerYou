@@ -15,6 +15,9 @@ import {z} from 'genkit';
 const SummarizeDailyProgressInputSchema = z.object({
   dailyRemark: z.string().describe('A brief remark about the day.'),
   diaryEntry: z.string().describe('A detailed diary entry for the day.'),
+  gratitude: z.string().describe('A gratitude note for the day.'),
+  challenge: z.string().describe('A challenge or hard moment from the day.'),
+  tomorrowFocus: z.string().describe('A focus or intention for tomorrow.'),
   wantsNeedsProgress: z.string().describe('Progress on wants and needs.'),
   mood: z.string().describe('The mood for the day.'),
   energyLevels: z.string().describe('The energy levels for the day.'),
@@ -45,6 +48,9 @@ Wants & Needs Progress: {{{wantsNeedsProgress}}}
 Mood: {{{mood}}}
 Energy Levels: {{{energyLevels}}}
 Partner Reflection: {{{partnerReflection}}}
+Gratitude: {{{gratitude}}}
+Challenge: {{{challenge}}}
+Tomorrow Focus: {{{tomorrowFocus}}}
 
 Now, write a caring and encouraging summary. Address them warmly and respectfully. Use "you" and "your" to speak directly to them.
 

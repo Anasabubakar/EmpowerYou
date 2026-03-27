@@ -22,7 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 export function ProfileButton() {
   const { user } = useAppContext();
   const { toast } = useToast();
-  const { theme, setTheme } = useTheme();
+  const { mode, setMode } = useTheme();
 
   const getInitials = (name?: string | null) => {
     if (!name) return 'U';
@@ -57,7 +57,7 @@ export function ProfileButton() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="flex h-auto w-full items-center justify-start gap-3 p-2"
+          className="flex h-auto w-full items-center justify-start gap-3 rounded-2xl border border-border/60 bg-background/70 p-3 shadow-sm"
         >
           <Avatar className="h-8 w-8">
             <AvatarFallback>{getInitials(user?.displayName)}</AvatarFallback>
@@ -78,15 +78,13 @@ export function ProfileButton() {
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           <div className="flex w-full items-center justify-between">
              <Label htmlFor="dark-mode-toggle" className="flex items-center gap-2 cursor-pointer">
-              {theme === 'dark' ? <Moon /> : <Sun />}
+              {mode === 'dark' ? <Moon /> : <Sun />}
               <span>Dark Mode</span>
             </Label>
             <Switch
               id="dark-mode-toggle"
-              checked={theme === 'dark'}
-              onCheckedChange={(checked) =>
-                setTheme(checked ? 'dark' : 'light')
-              }
+              checked={mode === 'dark'}
+              onCheckedChange={(checked) => setMode(checked ? 'dark' : 'light')}
             />
           </div>
         </DropdownMenuItem>

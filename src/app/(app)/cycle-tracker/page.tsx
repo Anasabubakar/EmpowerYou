@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -35,15 +34,15 @@ export default function CycleTrackerPage() {
   const { toast } = useToast();
   const [range, setRange] = useState<DateRange | undefined>();
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>(loggedSymptoms);
-  
+
   const [isPredictionLoading, setIsPredictionLoading] = useState(false);
   const [isSymptomsLoading, setIsSymptomsLoading] = useState(false);
   const [predictedDates, setPredictedDates] = useState<string[]>([]);
   const [symptomSuggestions, setSymptomSuggestions] = useState('');
-  
+
   const [isPredictionDialogOpen, setIsPredictionDialogOpen] = useState(false);
   const [isSuggestionDialogOpen, setIsSuggestionDialogOpen] = useState(false);
-  
+
   const [isClient, setIsClient] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -51,7 +50,6 @@ export default function CycleTrackerPage() {
     setIsClient(true);
     setCurrentDate(new Date());
   }, []);
-
 
   const symptoms = ["Cramps", "Bloating", "Headache", "Mood Swings", "Fatigue", "Acne"];
 
@@ -62,10 +60,10 @@ export default function CycleTrackerPage() {
         : [...prev, symptom]
     );
   };
-  
+
   const handleLogPeriod = () => {
     if (range?.from) {
-      const cycleLength = 28; // Assuming an average cycle length
+      const cycleLength = 28;
       const newCurrentDay = differenceInDays(currentDate, range.from) + 1;
       const newPredictedDate = addDays(range.from, cycleLength);
       const newNextPeriodIn = differenceInDays(newPredictedDate, currentDate);
@@ -88,8 +86,8 @@ export default function CycleTrackerPage() {
         variant: "destructive",
       });
     }
-  }
-  
+  };
+
   const handleLogSymptoms = async () => {
     if (selectedSymptoms.length > 0) {
       setLoggedSymptoms(selectedSymptoms);
@@ -97,7 +95,7 @@ export default function CycleTrackerPage() {
         title: "Symptoms Logged",
         description: `Logged: ${selectedSymptoms.join(', ')}. I'm here for you.`,
       });
-      
+
       setIsSymptomsLoading(true);
       try {
         const result = await suggestSymptomRelief(selectedSymptoms);
@@ -120,7 +118,7 @@ export default function CycleTrackerPage() {
         variant: "destructive",
       });
     }
-  }
+  };
 
   const handlePredictCycles = async () => {
     if (!cycleInfo.lastPeriodDate) {
@@ -131,7 +129,7 @@ export default function CycleTrackerPage() {
       });
       return;
     }
-    
+
     setIsPredictionLoading(true);
     try {
       const result = await predictNextCycles({ lastPeriodDate: cycleInfo.lastPeriodDate.toISOString() });
@@ -152,18 +150,21 @@ export default function CycleTrackerPage() {
   if (!isClient) {
     return null;
   }
-  
+
   const safePredictedDate = cycleInfo.predictedDate instanceof Date && isValid(cycleInfo.predictedDate)
     ? cycleInfo.predictedDate
     : new Date(cycleInfo.predictedDate);
 
-
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-headline font-bold">Cycle Tracker</h1>
-        <p className="text-muted-foreground">
-          Keep track of your cycle to better understand your body.
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          <Sparkles className="h-3 w-3 text-primary" />
+          Rhythm
+        </div>
+        <h1 className="text-4xl font-headline font-semibold">Cycle Tracker</h1>
+        <p className="text-muted-foreground max-w-xl">
+          Log your cycle with care, and let the pattern emerge.
         </p>
       </div>
 
@@ -178,27 +179,27 @@ export default function CycleTrackerPage() {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="max-w-xs text-sm">
-                    The cycle day is counted from the start of your last period. The prediction is an estimate based on a 28-day cycle. Your own cycle may be unique.
+                    Cycle day is counted from your last period start. Predictions assume a 28-day cycle.
                   </p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-baseline justify-center rounded-lg border bg-secondary p-6 text-center">
+            <div className="flex items-baseline justify-center rounded-2xl border bg-secondary/40 p-6 text-center">
               <div>
                 <p className="text-sm text-muted-foreground">Current Cycle Day</p>
-                <p className="text-6xl font-bold text-primary">
+                <p className="text-6xl font-semibold text-primary">
                   {cycleInfo.currentDay > 0 ? cycleInfo.currentDay : '-'}
                 </p>
               </div>
             </div>
-            <div className="flex items-baseline justify-center rounded-lg border p-6 text-center">
+            <div className="flex items-baseline justify-center rounded-2xl border p-6 text-center">
               <div>
                 <p className="text-sm text-muted-foreground">Next Period Prediction</p>
                 {cycleInfo.currentDay > 0 ? (
                   <>
-                    <p className="text-3xl font-bold">
+                    <p className="text-3xl font-semibold">
                       {cycleInfo.nextPeriodIn} days
                     </p>
                     {isValid(safePredictedDate) && <p className="text-sm text-muted-foreground">
@@ -206,7 +207,7 @@ export default function CycleTrackerPage() {
                     </p>}
                   </>
                 ) : (
-                  <p className="text-3xl font-bold">-</p>
+                  <p className="text-3xl font-semibold">-</p>
                 )}
               </div>
             </div>
@@ -225,15 +226,15 @@ export default function CycleTrackerPage() {
               mode="range"
               selected={range}
               onSelect={setRange}
-              className="rounded-md border"
+              className="rounded-2xl border"
             />
-             <div className="flex flex-col sm:flex-row gap-2 mt-4">
-                <Button onClick={handleLogPeriod}>Log Period Dates</Button>
-                <Button variant="outline" onClick={handlePredictCycles} disabled={isPredictionLoading}>
-                  {isPredictionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                  Predict Next Cycles
-                </Button>
-             </div>
+            <div className="flex flex-col sm:flex-row gap-2 mt-4">
+              <Button onClick={handleLogPeriod}>Log Period Dates</Button>
+              <Button variant="outline" onClick={handlePredictCycles} disabled={isPredictionLoading}>
+                {isPredictionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                Predict Next Cycles
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -248,14 +249,15 @@ export default function CycleTrackerPage() {
         <CardContent>
           <div className="flex flex-wrap gap-2">
             {symptoms.map((symptom) => (
-              <Badge 
-                key={symptom} 
+              <Badge
+                key={symptom}
                 variant={selectedSymptoms.includes(symptom) ? 'default' : 'outline'}
                 onClick={() => handleSymptomToggle(symptom)}
-                className={cn("text-base p-2 cursor-pointer transition-colors", {
+                className={cn("text-base px-3 py-2 cursor-pointer transition-colors rounded-full", {
                   "bg-primary text-primary-foreground": selectedSymptoms.includes(symptom),
-                  "hover:bg-accent": !selectedSymptoms.includes(symptom)
-                })}>
+                  "hover:bg-accent/20": !selectedSymptoms.includes(symptom)
+                })}
+              >
                 {symptom}
               </Badge>
             ))}
@@ -268,16 +270,16 @@ export default function CycleTrackerPage() {
           </Button>
         </CardContent>
       </Card>
-      
+
       <Dialog open={isPredictionDialogOpen} onOpenChange={setIsPredictionDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Sparkles className="text-primary h-5 w-5"/>
+              <Sparkles className="text-primary h-5 w-5" />
               Future Predictions
             </DialogTitle>
             <DialogDescription>
-              Based on what you've shared, here are some predictions. This is just an estimate to help you plan.
+              Estimates to help you plan gently ahead.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
@@ -290,30 +292,30 @@ export default function CycleTrackerPage() {
                 </li>
               ))}
             </ul>
-            <p className="text-xs text-muted-foreground mt-4 text-center">Remember, this is just an estimate. Your body is beautifully unique.</p>
+            <p className="text-xs text-muted-foreground mt-4 text-center">These are just estimates. Your body is unique.</p>
           </div>
           <DialogFooter>
-             <Button onClick={() => setIsPredictionDialogOpen(false)}>Close</Button>
+            <Button onClick={() => setIsPredictionDialogOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       <Dialog open={isSuggestionDialogOpen} onOpenChange={setIsSuggestionDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Bot className="text-primary h-5 w-5"/>
+              <Bot className="text-primary h-5 w-5" />
               Suggestions for Relief
             </DialogTitle>
             <DialogDescription>
-              I'm sorry you're not feeling your best. Here are a few thoughts on what might bring some comfort.
+              A few gentle ideas to help you feel better.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 whitespace-pre-wrap text-sm">
             {symptomSuggestions}
           </div>
           <DialogFooter>
-             <Button onClick={() => setIsSuggestionDialogOpen(false)}>I Understand</Button>
+            <Button onClick={() => setIsSuggestionDialogOpen(false)}>I Understand</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
