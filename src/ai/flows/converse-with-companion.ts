@@ -11,6 +11,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import {withRetry} from '@/lib/retry';
 
 const ChatMessageSchema = z.object({
   role: z.enum(['user', 'model']),
@@ -31,7 +32,7 @@ const ConverseWithCompanionOutputSchema = z.object({
 export type ConverseWithCompanionOutput = z.infer<typeof ConverseWithCompanionOutputSchema>;
 
 export async function converseWithCompanion(input: ConverseWithCompanionInput): Promise<ConverseWithCompanionOutput> {
-  return converseWithCompanionFlow(input);
+  return withRetry(() => converseWithCompanionFlow(input));
 }
 
 const companionPrompt = ai.definePrompt({

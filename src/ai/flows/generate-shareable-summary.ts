@@ -3,6 +3,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import {withRetry} from '@/lib/retry';
 
 const GoalSchema = z.object({
   id: z.string(),
@@ -82,7 +83,7 @@ const GenerateShareableSummaryOutputSchema = z.object({
 export type GenerateShareableSummaryOutput = z.infer<typeof GenerateShareableSummaryOutputSchema>;
 
 export async function generateShareableSummary(input: GenerateShareableSummaryInput): Promise<GenerateShareableSummaryOutput> {
-  return generateShareableSummaryFlow(input);
+  return withRetry(() => generateShareableSummaryFlow(input));
 }
 
 const shareableSummaryPrompt = ai.definePrompt({

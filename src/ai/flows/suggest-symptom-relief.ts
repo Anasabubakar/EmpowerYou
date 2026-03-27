@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import {withRetry} from '@/lib/retry';
 
 const SuggestSymptomReliefInputSchema = z.array(z.string());
 export type SuggestSymptomReliefInput = z.infer<typeof SuggestSymptomReliefInputSchema>;
@@ -20,7 +21,7 @@ const SuggestSymptomReliefOutputSchema = z.object({
 export type SuggestSymptomReliefOutput = z.infer<typeof SuggestSymptomReliefOutputSchema>;
 
 export async function suggestSymptomRelief(input: SuggestSymptomReliefInput): Promise<SuggestSymptomReliefOutput> {
-  return suggestSymptomReliefFlow(input);
+  return withRetry(() => suggestSymptomReliefFlow(input));
 }
 
 const symptomReliefPrompt = ai.definePrompt({

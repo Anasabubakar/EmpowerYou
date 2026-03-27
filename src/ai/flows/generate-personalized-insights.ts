@@ -12,6 +12,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import {withRetry} from '@/lib/retry';
 import type { Task, Goal, HealthMetric, DiaryEntry, CycleInfo, AnasReflection } from '@/lib/types';
 
 
@@ -89,7 +90,7 @@ const GeneratePersonalizedInsightsOutputSchema = z.object({
 export type GeneratePersonalizedInsightsOutput = z.infer<typeof GeneratePersonalizedInsightsOutputSchema>;
 
 export async function generatePersonalizedInsights(input: GeneratePersonalizedInsightsInput): Promise<GeneratePersonalizedInsightsOutput> {
-  return generatePersonalizedInsightsFlow(input);
+  return withRetry(() => generatePersonalizedInsightsFlow(input));
 }
 
 const trendSpottingPrompt = ai.definePrompt({

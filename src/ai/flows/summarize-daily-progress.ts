@@ -11,6 +11,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import {withRetry} from '@/lib/retry';
 
 const SummarizeDailyProgressInputSchema = z.object({
   dailyRemark: z.string().describe('A brief remark about the day.'),
@@ -31,7 +32,7 @@ const SummarizeDailyProgressOutputSchema = z.object({
 export type SummarizeDailyProgressOutput = z.infer<typeof SummarizeDailyProgressOutputSchema>;
 
 export async function summarizeDailyProgress(input: SummarizeDailyProgressInput): Promise<SummarizeDailyProgressOutput> {
-  return summarizeDailyProgressFlow(input);
+  return withRetry(() => summarizeDailyProgressFlow(input));
 }
 
 const summarizeDailyProgressPrompt = ai.definePrompt({

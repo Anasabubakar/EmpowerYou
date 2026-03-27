@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import {withRetry} from '@/lib/retry';
 
 const PredictNextCyclesInputSchema = z.object({
   lastPeriodDate: z.string().describe("The ISO date string of the user's last period start date."),
@@ -22,7 +23,7 @@ const PredictNextCyclesOutputSchema = z.object({
 export type PredictNextCyclesOutput = z.infer<typeof PredictNextCyclesOutputSchema>;
 
 export async function predictNextCycles(input: PredictNextCyclesInput): Promise<PredictNextCyclesOutput> {
-  return predictNextCyclesFlow(input);
+  return withRetry(() => predictNextCyclesFlow(input));
 }
 
 const cyclePredictionPrompt = ai.definePrompt({
